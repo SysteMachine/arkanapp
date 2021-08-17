@@ -1,5 +1,5 @@
 package com.example.android.arkanoid;
-//ciao michè
+
 public class Ball {
 
     protected float xRychlost;
