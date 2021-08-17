@@ -6,6 +6,8 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.android.arkanoid.GameComponents.TestRendering;
+
 public class MainActivity extends AppCompatActivity {
     private Game game;
     private UpdateThread myThread;
@@ -19,13 +21,16 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // vytvori novu hru
-        game = new Game(this, 3, 0);
-        setContentView(game);
+        //game = new Game(this, 3, 0);
+        TestRendering tr = new TestRendering(this);
+        setContentView(tr);
+        tr.start();
 
+        //Test
         // vytvori handler a thread
-        VytvorHandler();
-        myThread = new UpdateThread(updateHandler);
-        myThread.start();
+        //VytvorHandler();
+        //myThread = new UpdateThread(updateHandler);
+        //.start();
     }
 
     private void VytvorHandler() {
@@ -40,12 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onPause() {
         super.onPause();
-        game.zastavSnimanie();
+        //game.zastavSnimanie();
     }
 
     protected void onResume() {
         super.onResume();
-        game.spustiSnimanie();
+        //game.spustiSnimanie();
     }
 
 }

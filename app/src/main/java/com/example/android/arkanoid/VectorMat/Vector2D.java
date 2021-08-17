@@ -84,4 +84,12 @@ public class Vector2D {
     public static float prodottoScalare(Vector2D v1, Vector2D v2){
         return (v1.posX * v2.posX) + (v1.posY * v2.posY);
     }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
 }
