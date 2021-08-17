@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
-    //Ciro ciccici ppppppp
+    //Ciro ciaocomestai?
 
 
     private Game game;
