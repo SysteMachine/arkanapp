@@ -6,7 +6,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.android.arkanoid.GameComponents.TestRendering;
+import com.example.android.arkanoid.GameCore.GameLoop;
 
 public class MainActivity extends AppCompatActivity {
     private Game game;
@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
         // vytvori novu hru
         //game = new Game(this, 3, 0);
-        TestRendering tr = new TestRendering(this);
+        GameLoop tr = new GameLoop(this, 60);
         setContentView(tr);
         tr.start();
 
