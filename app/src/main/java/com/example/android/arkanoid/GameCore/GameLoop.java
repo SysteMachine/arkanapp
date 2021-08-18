@@ -222,13 +222,12 @@ public class GameLoop extends TextureView implements Runnable {
     @Override
     public void run() {
         long time = 0;
-        int ms = 1000 / this.fpsTarget;
+        float dt = 1;
+        float fps = this.fpsTarget;
+        int ns = (int)( Math.pow(10, 9) / this.fpsTarget );
+
         while(this.running){
-            long now = System.currentTimeMillis() - time;
-            float dt = ((float)now) / 1000;
-            int fps = (int)(1000 / now);
-            ms += fps > this.fpsTarget ? 1 : 0;
-            ms -= fps < this.fpsTarget && ms - 1 > 0 ? 1 : 0;
+            time = System.nanoTime();
 
             Canvas canvas = this.lockCanvas();
             Paint paint = new Paint();
@@ -242,11 +241,24 @@ public class GameLoop extends TextureView implements Runnable {
                 this.unlockCanvasAndPost(canvas);
             }
 
-            time = System.currentTimeMillis();
-
+            /*
             try{
                 Thread.sleep(ms);
             }catch (InterruptedException e){e.printStackTrace();}
+            */
+
+            long timeStamp = System.nanoTime();
+            while(System.nanoTime() - timeStamp < ns){}
+
+            System.out.println("NS: " + ns);
+
+            long now = System.nanoTime() - time;
+            dt = (float)( now / Math.pow(10, 9) );
+            fps = (float)( Math.pow(10, 9) / now );
+
+
+            ns += fps > this.fpsTarget ? 50000 : 0;
+            ns -= fps < this.fpsTarget && ns - 50000 > 0 ? 50000 : 0;
         }
     }
 }
