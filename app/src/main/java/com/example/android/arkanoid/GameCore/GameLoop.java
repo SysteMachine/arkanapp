@@ -221,12 +221,14 @@ public class GameLoop extends TextureView implements Runnable {
 
     @Override
     public void run() {
-        int fps = this.fpsTarget;
         long time = 0;
-        int ms = 1000 / fps;
-        float dt = 1;
+        int ms = 1000 / this.fpsTarget;
         while(this.running){
-            time = System.currentTimeMillis();
+            long now = System.currentTimeMillis() - time;
+            float dt = ((float)now) / 1000;
+            int fps = (int)(1000 / now);
+            ms += fps > this.fpsTarget ? 1 : 0;
+            ms -= fps < this.fpsTarget && ms - 1 > 0 ? 1 : 0;
 
             Canvas canvas = this.lockCanvas();
             Paint paint = new Paint();
@@ -240,16 +242,11 @@ public class GameLoop extends TextureView implements Runnable {
                 this.unlockCanvasAndPost(canvas);
             }
 
+            time = System.currentTimeMillis();
+
             try{
                 Thread.sleep(ms);
             }catch (InterruptedException e){e.printStackTrace();}
-            long now = System.currentTimeMillis() - time;
-
-            dt = ((float)now) / 1000;
-
-            fps = (int)(1000 / now);
-            ms += fps > this.fpsTarget ? 1 : 0;
-            ms -= fps < this.fpsTarget && ms - 1 > 0 ? 1 : 0;
         }
     }
 }
