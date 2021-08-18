@@ -22,7 +22,7 @@ public abstract class AbstractGameComponent implements GameComponentInterface{
      * Imposta il gameLoop della componente
      * @param gameLoop Game loop proprietario della componente
      */
-    void setGameLoop(GameLoop gameLoop){
+    protected void setGameLoop(GameLoop gameLoop){
         if(gameLoop != null)
             this.owner = gameLoop;
     }
@@ -30,7 +30,7 @@ public abstract class AbstractGameComponent implements GameComponentInterface{
     /**
      * Rimuove il gameLoop della componente
      */
-    void removeGameLoop(){
+    protected void removeGameLoop(){
         this.owner = null;
     }
 

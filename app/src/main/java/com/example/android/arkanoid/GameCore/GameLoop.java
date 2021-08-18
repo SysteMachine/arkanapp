@@ -13,13 +13,13 @@ import java.util.LinkedList;
 
 //GameLoop
 public class GameLoop extends TextureView implements Runnable {
-    private boolean running;                                //Flag di rendering del thread
-    private Thread gameThread;                              //Thread di rendering
+    private boolean running;                                     //Flag di rendering del thread
+    private Thread gameThread;                                   //Thread di rendering
 
     private final LinkedList<AbstractGameComponent> elementi;     //Elementi all'interno del gameLoop
     private int fpsTarget;                                        //Fps di riferimento del gameLoop
 
-    private boolean showFPS;                                 //Flag di visualizzazione dell'fps su schermo
+    private boolean showFPS;                                      //Flag di visualizzazione dell'fps su schermo
 
     public GameLoop(Context context, int fpsTarget) {
         super(context);
@@ -253,8 +253,6 @@ public class GameLoop extends TextureView implements Runnable {
 
             long timeStamp = System.nanoTime();
             while(System.nanoTime() - timeStamp < ns){}
-
-            System.out.println("NS: " + ns);
 
             long now = System.nanoTime() - time;
             dt = (float)( now / Math.pow(10, 9) );

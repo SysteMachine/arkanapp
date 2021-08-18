@@ -9,6 +9,7 @@ public abstract class AbstractEntity {
     private static int counterId = 0;
 
     protected int id;
+    protected String name;
 
     protected Vector2D position;
     protected Vector2D direction;
@@ -16,6 +17,11 @@ public abstract class AbstractEntity {
 
     public AbstractEntity(){
         this.id = AbstractEntity.counterId ++;
+    }
+
+    public AbstractEntity(String name){
+        this();
+        this.name = name;
     }
 
     /**
@@ -60,6 +66,14 @@ public abstract class AbstractEntity {
 
     public void setSpeed(float speed) {
         this.speed = speed;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     //Altro

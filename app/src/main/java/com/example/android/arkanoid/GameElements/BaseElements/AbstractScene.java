@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import com.example.android.arkanoid.GameCore.AbstractGameComponent;
 import com.example.android.arkanoid.Util.ParamList;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public abstract class AbstractScene extends AbstractGameComponent {
@@ -42,6 +43,22 @@ public abstract class AbstractScene extends AbstractGameComponent {
      */
     protected void clearEntita(){
         this.entita.clear();
+    }
+
+    /**
+     * Restituisce le entità che corrispondono al nome inserito
+     * @param name Nome dell'entità da trovare
+     * @return Restituisce la lista delle entità che rispettano il nome inserito
+     */
+    protected AbstractEntity[] getEntityByName(String name){
+        ArrayList<AbstractEntity> trovati = new ArrayList<AbstractEntity>();
+        for(AbstractEntity ae : this.entita){
+            if(ae.getName().equals(name)){
+                trovati.add(ae);
+            }
+        }
+
+        return trovati.toArray(new AbstractEntity[trovati.size()]);
     }
 
     @Override
