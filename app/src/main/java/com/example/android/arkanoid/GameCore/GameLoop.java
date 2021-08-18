@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.view.TextureView;
 
 import java.util.Comparator;
@@ -18,11 +19,14 @@ public class GameLoop extends TextureView implements Runnable {
     private final LinkedList<AbstractGameComponent> elementi;     //Elementi all'interno del gameLoop
     private int fpsTarget;                                        //Fps di riferimento del gameLoop
 
+    private boolean showFPS;                                 //Flag di visualizzazione dell'fps su schermo
+
     public GameLoop(Context context, int fpsTarget) {
         super(context);
 
         this.fpsTarget = fpsTarget;
         this.running = false;
+        this.showFPS = false;
 
         this.elementi = new LinkedList<>();
     }
@@ -178,6 +182,19 @@ public class GameLoop extends TextureView implements Runnable {
         for(AbstractGameComponent agc : this.elementi){
             agc.render(dt, screenWidth, screenHeight, canvas, paint);
         }
+
+        if(this.showFPS){
+            float FPS = 1000 / (dt * 1000);
+            String messaggioFps = "FPS: " + Math.round(FPS);
+
+            paint.setTextSize(16 * this.getResources().getDisplayMetrics().density);
+
+            Rect bounds = new Rect();
+            paint.getTextBounds(messaggioFps, 0, messaggioFps.length(), bounds);
+
+            paint.setColor(Color.YELLOW);
+            canvas.drawText(messaggioFps, 0, 30, paint);
+        }
     }
 
     //Beam
@@ -198,7 +215,9 @@ public class GameLoop extends TextureView implements Runnable {
         this.fpsTarget = fpsTarget;
     }
 
+    public boolean isShowFPS() { return showFPS; }
 
+    public void setShowFPS(boolean showFPS) { this.showFPS = showFPS; }
 
     @Override
     public void run() {
