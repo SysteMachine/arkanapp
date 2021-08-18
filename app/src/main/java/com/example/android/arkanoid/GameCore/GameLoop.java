@@ -64,10 +64,14 @@ public class GameLoop extends TextureView implements Runnable {
      * @return Restituisce l'esito dell'inserimento
      */
     public boolean addGameComponent(AbstractGameComponent component){
-        boolean esito = this.elementi.add(component);
-        if(esito)
-            component.setGameLoop(this);
-        this.sort();
+        boolean esito = false;
+
+        if(!this.elementi.contains(component)){
+            esito = this.elementi.add(component);
+            if(esito)
+                component.setGameLoop(this);
+            this.sort();
+        }
 
         return esito;
     }
