@@ -77,7 +77,7 @@ public class Sprite {
         Bitmap esito = null;
 
         Matrix mat = new Matrix();
-        mat.setRotate(degree, (float)(this.immagine.getWidth() * 0.5), (float)(this.immagine.getHeight() * 0.5));
+        mat.postRotate(degree, (float)(this.immagine.getWidth() * 0.5), (float)(this.immagine.getHeight() * 0.5));
         esito = Bitmap.createBitmap(this.immagine, 0, 0, this.immagine.getWidth(), this.immagine.getHeight(), mat, true);
 
         return esito;
@@ -130,23 +130,6 @@ public class Sprite {
         this.aviable = true;
     }
 
-    private Vector2D calcolaPesiRidimensionamento(){
-        Vector2D v1 = new Vector2D(this.immagine.getWidth() * 0.5f, this.immagine.getHeight() * 0.5f);
-        Vector2D v2 = new Vector2D(this.immagine.getWidth(), this.immagine.getHeight());
-
-        Vector2D v3 = new Vector2D(this.immagine.getWidth(), 0);
-
-        //Vector2D nV1 = Vector2D.differenzaVettoriale(v2, v1);
-        //nV1 = nV1.ruotaVettore(-45);
-
-        Vector2D nV2 = Vector2D.differenzaVettoriale(v3, v1);
-        Vector2D nnV2 = nV2.prodottoPerScalare((float)Math.abs( Math.cos(Math.toRadians(this.rotazione))));
-
-        float p = nV2.getMagnitude() / nnV2.getMagnitude();
-
-        return new Vector2D(p, p);
-    }
-
     /**
      * Disegna lo sprite sulla canvas
      * @param posX Posizione di disegno X dello sprite (indica il punto centrale X)
@@ -161,10 +144,9 @@ public class Sprite {
             Bitmap immagine = this.immagine;                        //Copiamo la sorgente per poter eseguire modifiche
             Vector2D pesi = new Vector2D(1, 1);          //Pesi per il ridimensionamento dell'immagine
 
-
             if(this.rotazione % 360 != 0){
                 immagine = this.ruotaImmagine(this.rotazione);
-                pesi = this.calcolaPesiRidimensionamento();
+                pesi = new Vector2D(((float)immagine.getWidth()) / this.immagine.getWidth(), ((float)immagine.getHeight()) / this.immagine.getHeight());
             }
 
             canvas.drawBitmap(
