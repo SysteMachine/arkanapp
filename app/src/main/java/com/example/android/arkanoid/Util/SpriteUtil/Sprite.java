@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
+import com.example.android.arkanoid.VectorMat.Vector2D;
 import com.example.android.arkanoid.VectorMat.Vector3D;
 
 public class Sprite {
@@ -129,6 +130,23 @@ public class Sprite {
         this.aviable = true;
     }
 
+    private Vector2D calcolaPesiRidimensionamento(){
+        Vector2D v1 = new Vector2D(this.immagine.getWidth() * 0.5f, this.immagine.getHeight() * 0.5f);
+        Vector2D v2 = new Vector2D(this.immagine.getWidth(), this.immagine.getHeight());
+
+        Vector2D v3 = new Vector2D(this.immagine.getWidth(), 0);
+
+        //Vector2D nV1 = Vector2D.differenzaVettoriale(v2, v1);
+        //nV1 = nV1.ruotaVettore(-45);
+
+        Vector2D nV2 = Vector2D.differenzaVettoriale(v3, v1);
+        Vector2D nnV2 = nV2.prodottoPerScalare((float)Math.abs( Math.cos(Math.toRadians(this.rotazione))));
+
+        float p = nV2.getMagnitude() / nnV2.getMagnitude();
+
+        return new Vector2D(p, p);
+    }
+
     /**
      * Disegna lo sprite sulla canvas
      * @param posX Posizione di disegno X dello sprite (indica il punto centrale X)
@@ -140,19 +158,23 @@ public class Sprite {
      */
     public void drawSprite(int posX, int posY, int width, int height, Canvas canvas, Paint paint){
         if(this.aviable && canvas != null && paint != null){
-            Bitmap immagine = this.immagine;        //Copiamo la sorgente per poter eseguire modifiche
+            Bitmap immagine = this.immagine;                        //Copiamo la sorgente per poter eseguire modifiche
+            Vector2D pesi = new Vector2D(1, 1);          //Pesi per il ridimensionamento dell'immagine
 
-            if(this.rotazione % 360 != 0)
+
+            if(this.rotazione % 360 != 0){
                 immagine = this.ruotaImmagine(this.rotazione);
+                pesi = this.calcolaPesiRidimensionamento();
+            }
 
             canvas.drawBitmap(
                     immagine,
                     null,
                     new Rect(
-                            (int)( posX - (width * 0.5) ),
-                            (int)(posY - (height * 0.5) ),
-                            (int)(posX + (width * 0.5) ),
-                            (int)(posY + (height * 0.5) )
+                            (int)( posX - (width * pesi.getPosX() * 0.5) ),
+                            (int)(posY - (height * pesi.getPosY() * 0.5) ),
+                            (int)(posX + (width * pesi.getPosX() * 0.5) ),
+                            (int)(posY + (height * pesi.getPosY() * 0.5) )
                     ),
                     paint
             );
