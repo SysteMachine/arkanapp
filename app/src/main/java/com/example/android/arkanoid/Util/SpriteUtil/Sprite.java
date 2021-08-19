@@ -3,7 +3,6 @@ package com.example.android.arkanoid.Util.SpriteUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -16,7 +15,7 @@ public class Sprite {
     protected boolean aviable;              //Flag di validità dello sprite
     protected Bitmap immagine;              //Bitmap associato allo sprite
 
-    public float rotazione;                 //Rotazione dello sprite
+    protected float rotazione;              //Rotazione dello sprite
 
     public Sprite(int drawableId, GameLoop gameLoop){
         this.rotazione = 0;
@@ -75,11 +74,11 @@ public class Sprite {
      */
     private Bitmap ruotaImmagine(float degree){
         Bitmap esito = null;
-
-        Matrix mat = new Matrix();
-        mat.postRotate(degree, (float)(this.immagine.getWidth() * 0.5), (float)(this.immagine.getHeight() * 0.5));
-        esito = Bitmap.createBitmap(this.immagine, 0, 0, this.immagine.getWidth(), this.immagine.getHeight(), mat, true);
-
+        if(this.aviable){
+            Matrix mat = new Matrix();
+            mat.postRotate(degree, (float)(this.immagine.getWidth() * 0.5), (float)(this.immagine.getHeight() * 0.5));
+            esito = Bitmap.createBitmap(this.immagine, 0, 0, this.immagine.getWidth(), this.immagine.getHeight(), mat, true);
+        }
         return esito;
     }
 
@@ -114,20 +113,22 @@ public class Sprite {
      * Specchia l'immagine verticalmente
      */
     public void flipSprite(){
-        this.aviable = false;
+        if(this.aviable){
+            this.aviable = false;
 
-        Bitmap image = this.immagine.copy(Bitmap.Config.ARGB_8888, true);
-        for(int i = this.immagine.getWidth() - 1 ; i >= 0; i--){
-            for(int j = 0; j < this.immagine.getHeight(); j++){
-                image.setPixel(
-                        this.immagine.getWidth() - 1 - i, //Parte da 0
-                        j,
-                        this.immagine.getPixel(i, j));
+            Bitmap image = this.immagine.copy(Bitmap.Config.ARGB_8888, true);
+            for(int i = this.immagine.getWidth() - 1 ; i >= 0; i--){
+                for(int j = 0; j < this.immagine.getHeight(); j++){
+                    image.setPixel(
+                            this.immagine.getWidth() - 1 - i, //Parte da 0
+                            j,
+                            this.immagine.getPixel(i, j));
+                }
             }
-        }
-        this.immagine = image;
+            this.immagine = image;
 
-        this.aviable = true;
+            this.aviable = true;
+        }
     }
 
     /**

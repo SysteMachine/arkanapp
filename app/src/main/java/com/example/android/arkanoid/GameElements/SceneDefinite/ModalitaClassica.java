@@ -3,6 +3,7 @@ package com.example.android.arkanoid.GameElements.SceneDefinite;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,6 +14,8 @@ import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.Ball;
 import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
 import com.example.android.arkanoid.R;
+import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
+import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
@@ -26,7 +29,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public ModalitaClassica() {
         super(0);
 
-        this.palla = new Ball(300, new Vector2D(300, 500), 30, 50);
+        this.palla = new Ball(300, new Vector2D(300, 500), 30, 150);
         this.palla.setName("palla");
 
         this.addEntita(this.palla);
@@ -36,9 +39,9 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected void setGameLoop(GameLoop gameLoop) {
         super.setGameLoop(gameLoop);
         gameLoop.setOnTouchListener(this);
-        this.sPalla = new Sprite(R.drawable.palla_palla1, this.owner);
-        this.sPalla.replaceColor(Color.rgb(255, 255, 255), Color.rgb(255, 100, 0), 200);
-        this.sPalla.flipSprite();
+        this.sPalla = new AnimatedSprite(R.drawable.destra, this.owner, 4, 10);
+        //this.sPalla.replaceColor(Color.rgb(255, 255, 255), Color.rgb(255, 100, 0), 200);
+        //this.sPalla.flipSprite();
     }
 
     @Override
@@ -77,11 +80,18 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     @Override
     public void update(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
         super.update(dt, screenWidth, screenHeight, canvas, paint);
-        this.rotazionePalla += this.velocitaRotazionePalla * dt;
+        //this.rotazionePalla += this.velocitaRotazionePalla * dt;
     }
 
     @Override
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
+        paint.setColor(Color.WHITE);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(
+                new Rect(0, 0, screenWidth, screenHeight),
+                paint
+        );
+
         this.disegnaPalla(canvas, paint);
     }
 
