@@ -3,12 +3,9 @@ package com.example.android.arkanoid.GameElements.SceneDefinite;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -41,6 +38,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         gameLoop.setOnTouchListener(this);
         this.sPalla = new Sprite(R.drawable.palla_palla1, this.owner);
         this.sPalla.replaceColor(Color.rgb(255, 255, 255), Color.rgb(255, 100, 0), 200);
+        this.sPalla.flipSprite();
     }
 
     @Override
@@ -56,23 +54,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      */
     private void disegnaPalla(Canvas canvas, Paint paint){
         if(palla != null){
-            //this.sPalla.ruotaImmagine(this.rotazionePalla); //TODO Vedere la rotazione degli sprite
-
-            //Controllo sulla palla
-
-            /*
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.YELLOW);
-
-            canvas.drawRect(
-                    new Rect(
-                            (int)(this.palla.getPosition().getPosX() - this.palla.getRaggio()),
-                            (int)(this.palla.getPosition().getPosY() - this.palla.getRaggio()),
-                            (int)(this.palla.getPosition().getPosX() + this.palla.getRaggio()),
-                            (int)(this.palla.getPosition().getPosY() + this.palla.getRaggio())
-                    ),
-                    paint
-            );*/
+            this.sPalla.setRotazione(this.rotazionePalla);
 
             if(this.sPalla != null){
                 this.sPalla.drawSprite(

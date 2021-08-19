@@ -15,18 +15,17 @@ public class Sprite {
     protected boolean aviable;              //Flag di validità dello sprite
     protected Bitmap immagine;              //Bitmap associato allo sprite
 
+    public float rotazione;                 //Rotazione dello sprite
+
     public Sprite(int drawableId, GameLoop gameLoop){
+        this.rotazione = 0;
+
         this.aviable = false;
         if(gameLoop != null){
             try{
                 this.immagine = BitmapFactory.decodeResource(gameLoop.getResources(), drawableId);
                 this.immagine = this.immagine.copy(Bitmap.Config.ARGB_8888, true);  //Rendiamo l'immagine modificabile
                 this.aviable = true;
-
-                int[] co = this.getArgbFromInt(Color.argb(78, 50, 32, 34));
-                for(int c : co){
-                    System.out.println(c);
-                }
             }catch(Exception e){
                 this.aviable = false;
             }
@@ -68,15 +67,19 @@ public class Sprite {
         return Vector3D.differenzaVettoriale(vDestColor, vSourceColor).getMagnitude();
     }
 
-    public void ruotaImmagine(float degree){
-        this.aviable = false;
+    /**
+     * Restituisce l'immagine ruotata dei gradi impostati
+     * @param degree Gradi di rotazione dell'immagine
+     * @return Restituisce l'immagine ruotata
+     */
+    private Bitmap ruotaImmagine(float degree){
+        Bitmap esito = null;
 
         Matrix mat = new Matrix();
-        mat.setRotate(degree);
-        this.immagine = Bitmap.createBitmap(this.immagine, 0, 0, this.immagine.getWidth(), this.immagine.getHeight(), mat, true);
-        this.immagine = this.immagine.copy(Bitmap.Config.ARGB_8888, true);
+        mat.setRotate(degree, (float)(this.immagine.getWidth() * 0.5), (float)(this.immagine.getHeight() * 0.5));
+        esito = Bitmap.createBitmap(this.immagine, 0, 0, this.immagine.getWidth(), this.immagine.getHeight(), mat, true);
 
-        this.aviable = true;
+        return esito;
     }
 
     /**
@@ -107,6 +110,26 @@ public class Sprite {
     }
 
     /**
+     * Specchia l'immagine verticalmente
+     */
+    public void flipSprite(){
+        this.aviable = false;
+
+        Bitmap image = this.immagine.copy(Bitmap.Config.ARGB_8888, true);
+        for(int i = this.immagine.getWidth() - 1 ; i >= 0; i--){
+            for(int j = 0; j < this.immagine.getHeight(); j++){
+                image.setPixel(
+                        this.immagine.getWidth() - 1 - i, //Parte da 0
+                        j,
+                        this.immagine.getPixel(i, j));
+            }
+        }
+        this.immagine = image;
+
+        this.aviable = true;
+    }
+
+    /**
      * Disegna lo sprite sulla canvas
      * @param posX Posizione di disegno X dello sprite (indica il punto centrale X)
      * @param posY Posizione di disegno Y dello sprite (indica il punto centrale Y)
@@ -117,8 +140,13 @@ public class Sprite {
      */
     public void drawSprite(int posX, int posY, int width, int height, Canvas canvas, Paint paint){
         if(this.aviable && canvas != null && paint != null){
+            Bitmap immagine = this.immagine;        //Copiamo la sorgente per poter eseguire modifiche
+
+            if(this.rotazione % 360 != 0)
+                immagine = this.ruotaImmagine(this.rotazione);
+
             canvas.drawBitmap(
-                    this.immagine,
+                    immagine,
                     null,
                     new Rect(
                             (int)( posX - (width * 0.5) ),
@@ -129,5 +157,18 @@ public class Sprite {
                     paint
             );
         }
+    }
+
+    //Beam
+    public float getRotazione() {
+        return rotazione;
+    }
+
+    public void setRotazione(float rotazione) {
+        this.rotazione = rotazione;
+    }
+
+    public boolean isAviable() {
+        return aviable;
     }
 }
