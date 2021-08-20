@@ -20,7 +20,23 @@ public class Brick extends AbstractEntity {
     }
 
     @Override
-    public void logica(float dt, int screenWidth, int screenHeight, ParamList params) {
+    public void logica(float dt, int screenWidth, int screenHeight, ParamList params) {}
 
+    /**
+     * Decrementa la vita del brick
+     */
+    public void decrementaVita(){
+        this.health --;
+        if(this.health < 0)
+            this.health = 0;
+    }
+
+    //Beam
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public int getHealth() {
+        return health;
     }
 }

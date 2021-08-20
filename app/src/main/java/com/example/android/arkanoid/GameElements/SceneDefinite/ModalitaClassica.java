@@ -3,31 +3,38 @@ package com.example.android.arkanoid.GameElements.SceneDefinite;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.Ball;
 import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
+import com.example.android.arkanoid.GameElements.Brick;
+import com.example.android.arkanoid.GameElements.Map;
 import com.example.android.arkanoid.GameElements.Paddle;
 import com.example.android.arkanoid.R;
-import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
+import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class ModalitaClassica extends AbstractScene implements View.OnTouchListener{
+    public final static String MAPPA = "Mappa";
+
     private Ball palla;
     private Paddle paddle;
+    private Map mappa;
 
     //Sprite degli elementi
     private Sprite sPalla;
     private Sprite sPaddle;
-    private MultiSprite sBrick;
+    private MultiSprite[] sBrick;
+    private int[] coloriBrick = {
+            Color.GREEN,
+            Color.YELLOW,
+            Color.rgb(255, 165, 0),
+            Color.RED
+    };
 
     public ModalitaClassica() {
         super(0);
@@ -43,6 +50,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected void removeGameLoop() {
         this.owner.setOnTouchListener(null);
         super.removeGameLoop();
+    }
+
+    @Override
+    protected ParamList creaParametriEntita() {
+        ParamList listaParametri = super.creaParametriEntita();
+        listaParametri.add(ModalitaClassica.MAPPA, this.mappa);
+        return listaParametri;
     }
 
     /**
@@ -81,6 +95,39 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         }
     }
 
+    /**
+     * Disegna i brick presenti nella scena
+     * @param canvas Canvas di disegno
+     * @param paint Paint di disegno
+     */
+    private void disegnaMappa(Canvas canvas, Paint paint){
+        if(this.mappa != null && this.sBrick != null){
+            for(int i = 0; i < this.mappa.getnRighe(); i++){
+                for(int j = 0; j < this.mappa.getnColonne(); j++){
+                    Brick brick = this.mappa.getElementiMappa()[i][j];
+                    if(brick != null && brick.getHealth() > 0){
+                        float pesoVita = 1 - ((float)brick.getHealth()) / brick.getMaxHealth();
+                        float pesoColore = ((float)brick.getHealth()) / Map.MAX_HEALTH_BRICK;
+
+                        int spriteVita = (int)( pesoVita * (this.sBrick[0].getnImages() ) );
+                        int colore = (int)( pesoColore * (this.coloriBrick.length - 1) );
+
+                        this.sBrick[colore].setCurrentFrame(spriteVita);
+
+                        this.sBrick[colore].drawSprite(
+                                (int)brick.getPosition().getPosX(),
+                                (int)brick.getPosition().getPosY(),
+                                (int)brick.getSize().getPosX(),
+                                (int)brick.getSize().getPosY(),
+                                canvas,
+                                paint
+                        );
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void setup(int screenWidth, int screenHeight) {
         this.palla = new Ball(800, new Vector2D(screenWidth * 0.5f, screenHeight * 0.6f), 40, 50);
@@ -88,6 +135,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
         this.paddle = new Paddle(300, new Vector2D(screenWidth * 0.5f, screenHeight * 0.7f), 300, 40);
         this.sPaddle = new Sprite(R.drawable.paddle_paddle1, this.owner);
+
+        this.mappa = new Map(6, 8, 0, (int)(screenHeight * 0.2), screenWidth, (int)(screenWidth * 0.5));
+        this.sBrick = new MultiSprite[this.coloriBrick.length];
+        for(int i = 0; i < this.coloriBrick.length; i++){
+            this.sBrick[i] = new MultiSprite(R.drawable.brick_birk1, this.owner, 3);
+            this.sBrick[i].replaceColor(Color.WHITE, this.coloriBrick[i], 200);
+        }
 
         //Inserimento delle entità per la logica di base
         this.addEntita(this.palla);
@@ -102,6 +156,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
         this.disegnaPalla(canvas, paint);
         this.disegnaPaddle(canvas, paint);
+        this.disegnaMappa(canvas, paint);
     }
 
     //Eventi

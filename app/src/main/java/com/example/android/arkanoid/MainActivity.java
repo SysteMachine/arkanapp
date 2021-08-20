@@ -1,14 +1,9 @@
 package com.example.android.arkanoid;
 
 import android.content.pm.ActivityInfo;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.android.arkanoid.GameCore.AbstractGameComponent;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 

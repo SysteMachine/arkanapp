@@ -89,6 +89,30 @@ public class Ball extends AbstractEntity {
         return esito;
     }
 
+    private Vector2D controllaCollisioneBrick(Vector2D posizione, Map mappa){
+        Vector2D esito = this.direction;
+
+        boolean collisioneTrovata = false;
+        for(int i = 0; i < mappa.getnRighe() && !collisioneTrovata; i++){
+            for(int j = 0; j < mappa.getnColonne() && !collisioneTrovata; j++){
+                Brick brick = mappa.getElementiMappa()[i][j];
+                if(brick != null && brick.getHealth() > 0){
+                    Rect collisioneBrick = brick.getBounds();
+                    Rect collisionePalla = this.getBounds(posizione.getPosX(), posizione.getPosY());
+
+                    if(collisioneBrick.intersect(collisionePalla)){
+                        collisioneTrovata = true;
+
+                        esito = new Vector2D(this.direction.getPosX() * -1, this.direction.getPosY() * -1);
+                        brick.decrementaVita();
+                    }
+                }
+            }
+        }
+
+        return esito;
+    }
+
     @Override
     public void logica(float dt, int screenWidth, int screenHeight, ParamList params) {
         if(this.isMoving){
@@ -101,6 +125,7 @@ public class Ball extends AbstractEntity {
             //Controllo collisione con schermo
             this.direction = this.controllaCollisioneSchermo(nextStep, screenWidth, screenHeight);
             this.direction = this.controllaCollisionePaddle(nextStep, params.<AbstractScene>get(AbstractScene.SCENA).<Paddle>getFirstEntityByName("Paddle"));
+            this.direction = this.controllaCollisioneBrick(nextStep, params.<Map>get(ModalitaClassica.MAPPA));
 
 
             //Cambia la posizione della palla con la nuova direzione

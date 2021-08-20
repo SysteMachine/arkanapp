@@ -29,6 +29,16 @@ public class MultiSprite extends Sprite{
         this.setCurrentFrame(0);
     }
 
+    @Override
+    public void replaceColor(int sourceColor, int destColor, float tolleranza) {
+        int lastIndex = this.currentFrame;
+        for(int i = 0; i < this.nImages; i++){
+            this.setCurrentFrame(i);
+            super.replaceColor(sourceColor, destColor, tolleranza);
+        }
+        this.setCurrentFrame(lastIndex);
+    }
+
     /**
      * Divide le immagini dello sprite
      */

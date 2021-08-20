@@ -5,7 +5,7 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 import java.lang.reflect.Method;
 
 public class Map {
-    private final int MAX_HEALTH_BRICK = 10;
+    public static final int MAX_HEALTH_BRICK = 10;
     private final int nRighe;
     private final int nColonne;
 
@@ -26,8 +26,6 @@ public class Map {
         this.posY = posY;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
-
-        this.aviable = false;
 
         try{
             this.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazione", int.class, int.class), this);
@@ -71,7 +69,7 @@ public class Map {
                 if((boolean)metodoGenerazione.invoke(possessoreMetodo, i, j)){
                     //Prima generazione casuale, il meccanismo può essere facilmente modificato
                     Brick brick = new Brick(
-                            1 + (int)(Math.random() * (this.MAX_HEALTH_BRICK - 1) ),
+                            1 + (int)(Math.random() * (Map.MAX_HEALTH_BRICK - 1) ),
                             new Vector2D(
                                     startX,
                                     startY
