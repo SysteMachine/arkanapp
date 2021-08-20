@@ -103,8 +103,11 @@ public class Ball extends AbstractEntity {
             this.direction = this.controllaCollisionePaddle(nextStep, params.<AbstractScene>get(AbstractScene.SCENA).<Paddle>getFirstEntityByName("Paddle"));
 
 
-            //Cambia la posizione della palla
-            this.position = nextStep;
+            //Cambia la posizione della palla con la nuova direzione
+            this.position = Vector2D.sommaVettoriale(
+                    this.position,
+                    this.direction.prodottoPerScalare(this.speed * dt)
+            );
         }
     }
 

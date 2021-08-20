@@ -112,7 +112,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             this.palla.startPalla();
 
         if(this.paddle != null && event.getAction() == MotionEvent.ACTION_MOVE){
-            System.out.println("Movimento");
             float lastPosY = this.paddle.getPosition().getPosY();
             this.paddle.setPosition( new Vector2D(event.getX(), lastPosY) );
         }
