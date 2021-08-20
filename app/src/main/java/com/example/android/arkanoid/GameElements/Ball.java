@@ -1,6 +1,10 @@
 package com.example.android.arkanoid.GameElements;
 
+import android.graphics.Rect;
+
 import com.example.android.arkanoid.GameElements.BaseElements.AbstractEntity;
+import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
+import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
@@ -12,13 +16,15 @@ public class Ball extends AbstractEntity {
 
     public Ball(float speed, Vector2D startPosition, int angoloInizialeLancioMassimo, int raggio){
         this.angoloInizialeLancioMassimo = angoloInizialeLancioMassimo;
-        this.speed = speed;
-        this.position = startPosition;
         this.startPosition = startPosition;
         this.raggio = raggio;
 
-        this.isMoving = false;
+        this.setSpeed(speed);
+        this.setPosition(this.startPosition);
+        this.setSize( new Vector2D(raggio * 2, raggio * 2) );
+        this.setName("Ball");
 
+        this.isMoving = false;
         this.calcolaDirezioneIniziale();
     }
 
@@ -59,6 +65,30 @@ public class Ball extends AbstractEntity {
         return esito;
     }
 
+    /**
+     * Controlla la collisione con il paddle
+     * @param posizione Posizione di controllo della palla
+     * @param paddle Paddle di cui controllare l'intersezione
+     * @return Restituisce la nuova direzione dopo il controllo
+     */
+    private Vector2D controllaCollisionePaddle(Vector2D posizione, Paddle paddle){
+        Vector2D esito = this.direction;
+
+        if(paddle != null){
+            Rect ballBounds = this.getBounds(posizione.getPosX(), posizione.getPosY());
+            Rect paddleBounds = paddle.getBounds();
+
+            if(ballBounds.intersect(paddleBounds)){
+                float dirX = this.direction.getPosX();
+                float dirY = this.direction.getPosY() * -1;
+
+                esito = new Vector2D(dirX, dirY);
+            }
+        }
+
+        return esito;
+    }
+
     @Override
     public void logica(float dt, int screenWidth, int screenHeight, ParamList params) {
         if(this.isMoving){
@@ -70,6 +100,8 @@ public class Ball extends AbstractEntity {
 
             //Controllo collisione con schermo
             this.direction = this.controllaCollisioneSchermo(nextStep, screenWidth, screenHeight);
+            this.direction = this.controllaCollisionePaddle(nextStep, params.<AbstractScene>get(AbstractScene.SCENA).<Paddle>getFirstEntityByName("Paddle"));
+
 
             //Cambia la posizione della palla
             this.position = nextStep;

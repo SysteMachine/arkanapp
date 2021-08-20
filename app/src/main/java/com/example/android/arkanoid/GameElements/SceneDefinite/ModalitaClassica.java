@@ -3,45 +3,40 @@ package com.example.android.arkanoid.GameElements.SceneDefinite;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.Ball;
 import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
+import com.example.android.arkanoid.GameElements.Paddle;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-public class ModalitaClassica extends AbstractScene implements View.OnTouchListener, SensorEventListener {
+public class ModalitaClassica extends AbstractScene implements View.OnTouchListener{
     private Ball palla;
-    private float rotazionePalla = 0;
-    private int velocitaRotazionePalla = 50;
+    private Paddle paddle;
 
+    //Sprite degli elementi
     private Sprite sPalla;
+    private Sprite sPaddle;
+    private MultiSprite sBrick;
 
     public ModalitaClassica() {
         super(0);
-
-        this.palla = new Ball(300, new Vector2D(300, 500), 30, 150);
-        this.palla.setName("palla");
-
-        this.addEntita(this.palla);
     }
 
     @Override
     protected void setGameLoop(GameLoop gameLoop) {
         super.setGameLoop(gameLoop);
         gameLoop.setOnTouchListener(this);
-        this.sPalla = new AnimatedSprite(R.drawable.destra, this.owner, 4, 10);
-        //this.sPalla.replaceColor(Color.rgb(255, 255, 255), Color.rgb(255, 100, 0), 200);
-        //this.sPalla.flipSprite();
     }
 
     @Override
@@ -53,64 +48,77 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     /**
      * Disegna la palla della scena
      * @param canvas Canvas di disegno
-     * @param paint Modificatore dello stile
+     * @param paint Paint di disegno
      */
     private void disegnaPalla(Canvas canvas, Paint paint){
-        if(palla != null){
-            this.sPalla.setRotazione(this.rotazionePalla);
+        if(this.palla != null && this.sPaddle != null){
+            this.sPalla.drawSprite(
+                    (int)this.palla.getPosition().getPosX(),
+                    (int)this.palla.getPosition().getPosY(),
+                    (int)this.palla.getSize().getPosX(),
+                    (int)this.palla.getSize().getPosY(),
+                    canvas,
+                    paint
+            );
+        }
+    }
 
-            if(this.sPalla != null){
-                this.sPalla.drawSprite(
-                        (int)this.palla.getPosition().getPosX(),
-                        (int)this.palla.getPosition().getPosY(),
-                        this.palla.getRaggio() * 2,
-                        this.palla.getRaggio() * 2,
-                        canvas,
-                        paint
-                        );
-            }
+    /**
+     * Disegna il paddle della scena
+     * @param canvas Cancas di disengo
+     * @param paint Paint di disegno
+     */
+    private void disegnaPaddle(Canvas canvas, Paint paint){
+        if(this.paddle != null && this.sPaddle != null){
+            this.sPaddle.drawSprite(
+                    (int)this.paddle.getPosition().getPosX(),
+                    (int)this.paddle.getPosition().getPosY(),
+                    (int)this.paddle.getSize().getPosX(),
+                    (int)this.paddle.getSize().getPosY(),
+                    canvas,
+                    paint
+            );
         }
     }
 
     @Override
     public void setup(int screenWidth, int screenHeight) {
-        super.setup(screenWidth, screenHeight);
-    }
+        this.palla = new Ball(800, new Vector2D(screenWidth * 0.5f, screenHeight * 0.6f), 40, 50);
+        this.sPalla = new Sprite(R.drawable.palla_palla1, this.owner);
 
-    @Override
-    public void update(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
-        super.update(dt, screenWidth, screenHeight, canvas, paint);
-        //this.rotazionePalla += this.velocitaRotazionePalla * dt;
+        this.paddle = new Paddle(300, new Vector2D(screenWidth * 0.5f, screenHeight * 0.7f), 300, 40);
+        this.sPaddle = new Sprite(R.drawable.paddle_paddle1, this.owner);
+
+        //Inserimento delle entità per la logica di base
+        this.addEntita(this.palla);
+        this.addEntita(this.paddle);
+
+        //Cambio di stile
+        this.sPalla.replaceColor(Color.WHITE, Color.RED, 200);
+        this.sPaddle.replaceColor(Color.WHITE, Color.rgb(200, 100, 25), 200);
     }
 
     @Override
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
-        paint.setColor(Color.WHITE);
-        paint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(
-                new Rect(0, 0, screenWidth, screenHeight),
-                paint
-        );
-
         this.disegnaPalla(canvas, paint);
+        this.disegnaPaddle(canvas, paint);
     }
+
+    //Eventi
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(!this.palla.isMoving())
+        if(this.palla != null && !this.palla.isMoving())
             this.palla.startPalla();
 
-        System.out.println(event.getX() + " - " + event.getY());
-        return false;
+        if(this.paddle != null && event.getAction() == MotionEvent.ACTION_MOVE){
+            System.out.println("Movimento");
+            float lastPosY = this.paddle.getPosition().getPosY();
+            this.paddle.setPosition( new Vector2D(event.getX(), lastPosY) );
+        }
+
+        return true;
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
 
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
 }

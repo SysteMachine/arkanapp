@@ -4,9 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.Typeface;
+import android.view.Display;
+import android.view.MotionEvent;
 import android.view.TextureView;
+import android.view.WindowManager;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -29,6 +32,18 @@ public class GameLoop extends TextureView implements Runnable {
         this.showFPS = false;
 
         this.elementi = new LinkedList<>();
+    }
+
+    /**
+     * Restituisce le dimensioni dello schermo
+     * @return Restituisce un point con le dimensioni dello schermo
+     */
+    private Point getScreenSize(){
+        Display display = ( (WindowManager)this.getContext().getSystemService(Context.WINDOW_SERVICE) ).getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        return size;
     }
 
     //Gestione della lista
@@ -83,8 +98,11 @@ public class GameLoop extends TextureView implements Runnable {
      */
     public boolean addGameComponentWithSetup(AbstractGameComponent component){
         boolean esito = this.addGameComponent(component);
-        if(esito)
-            component.setup(this.getWidth(), this.getHeight());
+        if(esito){
+            Point screenSize = this.getScreenSize();
+            component.setup(screenSize.x, screenSize.y);
+        }
+
 
         return esito;
     }
@@ -141,7 +159,8 @@ public class GameLoop extends TextureView implements Runnable {
      * Effettua il setup degli elementi all'interno del gameLoop
      */
     public void setupElements(){
-        this.setup(this.getWidth(), this.getHeight());
+        Point screenSize = this.getScreenSize();
+        this.setup(screenSize.x, screenSize.y);
     }
 
     /**
@@ -238,18 +257,10 @@ public class GameLoop extends TextureView implements Runnable {
 
             if(canvas != null){
                 //Aggiornamento degli elementi su schermo
-                try{
-                    this.update(dt, this.getWidth(), this.getHeight(), canvas, paint);
-                    this.render(dt, this.getWidth(), this.getHeight(), canvas, paint);
-                }catch(Exception e){}
+                this.update(dt, this.getWidth(), this.getHeight(), canvas, paint);
+                this.render(dt, this.getWidth(), this.getHeight(), canvas, paint);
                 this.unlockCanvasAndPost(canvas);
             }
-
-            /*
-            try{
-                Thread.sleep(ms);
-            }catch (InterruptedException e){e.printStackTrace();}
-            */
 
             long timeStamp = System.nanoTime();
             while(System.nanoTime() - timeStamp < ns){}

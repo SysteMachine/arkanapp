@@ -36,7 +36,7 @@ public class ParamList {
      */
     public <T> boolean add(String name, T value){
         boolean esito = false;
-        if(this.records.contains(new ParamRecord(name, null, null))){
+        if(this.searchElement(name) == -1){
             ParamRecord record = new ParamRecord(
                     name,
                     value,
@@ -104,19 +104,6 @@ public class ParamList {
 
         public void setClasse(Class classe) {
             this.classe = classe;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ParamRecord that = (ParamRecord) o;
-            return Objects.equals(name, that.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name);
         }
     }
 }

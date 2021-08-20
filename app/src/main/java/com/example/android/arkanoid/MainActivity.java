@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         this.gameLoop.start();
 
         ModalitaClassica modalitaClassica = new ModalitaClassica();
-        this.gameLoop.addGameComponent(modalitaClassica);
+        this.gameLoop.addGameComponentWithSetup(modalitaClassica);
     }
 
     protected void onPause() {
