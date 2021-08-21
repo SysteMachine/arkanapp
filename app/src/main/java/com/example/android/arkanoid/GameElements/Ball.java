@@ -92,21 +92,45 @@ public class Ball extends AbstractEntity {
     private Vector2D controllaCollisioneBrick(Vector2D posizione, Map mappa){
         Vector2D esito = this.direction;
 
-        boolean collisioneTrovata = false;
+        boolean collisioneTrovata = false;  //Flag di stop dei cicli for
         for(int i = 0; i < mappa.getnRighe() && !collisioneTrovata; i++){
             for(int j = 0; j < mappa.getnColonne() && !collisioneTrovata; j++){
+
+                //Preleviamo il brick dalla mappa
                 Brick brick = mappa.getElementiMappa()[i][j];
                 if(brick != null && brick.getHealth() > 0){
                     Rect collisioneBrick = brick.getBounds();
                     Rect collisionePalla = this.getBounds(posizione.getPosX(), posizione.getPosY());
 
                     if(collisioneBrick.intersect(collisionePalla)){
+                        //Intersezione avvenuta
                         collisioneTrovata = true;
 
-                        esito = new Vector2D(this.direction.getPosX() * -1, this.direction.getPosY() * -1);
+                        //Calcolo delle coordinate estreme del brick
+                        int top = collisioneBrick.top;
+                        int bottom = collisioneBrick.bottom;
+                        int left = collisioneBrick.left;
+                        int right = collisioneBrick.right;
+
+                        float dirX = this.direction.getPosX();
+                        float dirY = this.direction.getPosY();
+
+                        //Controllo della collisione latrale o frontale
+                        if(posizione.getPosX() > left && posizione.getPosX() < right){
+                            dirY *= -1;
+                        }else if(posizione.getPosY() > top && posizione.getPosY() < bottom){
+                            dirX *= -1;
+                        }else{
+                            dirX *= -1;
+                            dirY *= -1;
+                        }
+
+                        //Aggiornamento delle coordinate
+                        esito = new Vector2D(dirX, dirY);
                         brick.decrementaVita();
                     }
                 }
+
             }
         }
 

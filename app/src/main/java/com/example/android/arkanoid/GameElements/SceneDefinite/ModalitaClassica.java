@@ -3,6 +3,7 @@ package com.example.android.arkanoid.GameElements.SceneDefinite;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -28,7 +29,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     //Sprite degli elementi
     private Sprite sPalla;
     private Sprite sPaddle;
-    private MultiSprite[] sBrick;
+    private Sprite[] sBrick;
+    private MultiSprite sCrepe;
     private int[] coloriBrick = {
             Color.GREEN,
             Color.YELLOW,
@@ -106,15 +108,17 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 for(int j = 0; j < this.mappa.getnColonne(); j++){
                     Brick brick = this.mappa.getElementiMappa()[i][j];
                     if(brick != null && brick.getHealth() > 0){
-                        float pesoVita = 1 - ((float)brick.getHealth()) / brick.getMaxHealth();
-                        float pesoColore = ((float)brick.getHealth()) / Map.MAX_HEALTH_BRICK;
-
-                        int spriteVita = (int)( pesoVita * (this.sBrick[0].getnImages() ) );
-                        int colore = (int)( pesoColore * (this.coloriBrick.length - 1) );
-
-                        this.sBrick[colore].setCurrentFrame(spriteVita);
-
+                        int colore = (int)( (i + j) % this.coloriBrick.length);
                         this.sBrick[colore].drawSprite(
+                                (int)brick.getPosition().getPosX(),
+                                (int)brick.getPosition().getPosY(),
+                                (int)brick.getSize().getPosX(),
+                                (int)brick.getSize().getPosY(),
+                                canvas,
+                                paint
+                        );
+                        this.sCrepe.setCurrentFrame(Map.MAX_HEALTH_BRICK - brick.getHealth());
+                        this.sCrepe.drawSprite(
                                 (int)brick.getPosition().getPosX(),
                                 (int)brick.getPosition().getPosY(),
                                 (int)brick.getSize().getPosX(),
@@ -130,10 +134,10 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     @Override
     public void setup(int screenWidth, int screenHeight) {
-        this.palla = new Ball(800, new Vector2D(screenWidth * 0.5f, screenHeight * 0.6f), 40, 50);
+        this.palla = new Ball(800, new Vector2D(screenWidth * 0.5f, screenHeight * 0.6f), 40, 30);
         this.sPalla = new Sprite(R.drawable.palla_palla1, this.owner);
 
-        this.paddle = new Paddle(300, new Vector2D(screenWidth * 0.5f, screenHeight * 0.7f), 300, 40);
+        this.paddle = new Paddle(1000, new Vector2D(screenWidth * 0.5f, screenHeight * 0.7f), 300, 40);
         this.sPaddle = new Sprite(R.drawable.paddle_paddle1, this.owner);
 
         this.mappa = new Map(6, 8, 0, (int)(screenHeight * 0.2), screenWidth, (int)(screenWidth * 0.5));
@@ -142,6 +146,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             this.sBrick[i] = new MultiSprite(R.drawable.brick_birk1, this.owner, 3);
             this.sBrick[i].replaceColor(Color.WHITE, this.coloriBrick[i], 200);
         }
+        this.sCrepe = new MultiSprite(R.drawable.birk_crepe, this.owner, 10);
 
         //Inserimento delle entità per la logica di base
         this.addEntita(this.palla);
@@ -150,6 +155,10 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         //Cambio di stile
         this.sPalla.replaceColor(Color.WHITE, Color.RED, 200);
         this.sPaddle.replaceColor(Color.WHITE, Color.rgb(200, 100, 25), 200);
+
+        MediaPlayer mp = MediaPlayer.create(this.owner.getContext(), R.raw.audio_test1);
+        mp.setLooping(true);
+        mp.start();
     }
 
     @Override
@@ -166,9 +175,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         if(this.palla != null && !this.palla.isMoving())
             this.palla.startPalla();
 
-        if(this.paddle != null && event.getAction() == MotionEvent.ACTION_MOVE){
-            float lastPosY = this.paddle.getPosition().getPosY();
-            this.paddle.setPosition( new Vector2D(event.getX(), lastPosY) );
+        if(this.paddle != null){
+            this.paddle.setTargetX(event.getX());
         }
 
         return true;
