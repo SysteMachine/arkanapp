@@ -160,9 +160,14 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
         MediaPlayer mp = MediaPlayer.create(this.owner.getContext(), R.raw.audio_test1);
         try{
-            mp.prepare();
-            mp.setLooping(true);
-            mp.start();
+            mp.prepareAsync();
+            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.setLooping(true);
+                    mp.start();
+                }
+            });
         }catch(Exception e){e.printStackTrace();}
     }
 
