@@ -25,5 +25,11 @@ public class Stile {
     private int immagineBottom;
     private int immagineZonaPunteggio;
 
+    private int suonoBackground;
+    private int suonoCollisionePalla;
+    private int suonoRotturaBlocco;
 
+    public Stile(){
+
+    }
 }

@@ -20,6 +20,8 @@ import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class ModalitaClassica extends AbstractScene implements View.OnTouchListener{
+    public final static String EVENTO_BLOCCO_ROTTO = "rotturaBlocco";
+
     public final static String MAPPA = "Mappa";
 
     private Ball palla;
@@ -157,8 +159,11 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.sPaddle.replaceColor(Color.WHITE, Color.rgb(200, 100, 25), 200);
 
         MediaPlayer mp = MediaPlayer.create(this.owner.getContext(), R.raw.audio_test1);
-        mp.setLooping(true);
-        mp.start();
+        try{
+            mp.prepare();
+            mp.setLooping(true);
+            mp.start();
+        }catch(Exception e){e.printStackTrace();}
     }
 
     @Override
@@ -166,6 +171,11 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.disegnaPalla(canvas, paint);
         this.disegnaPaddle(canvas, paint);
         this.disegnaMappa(canvas, paint);
+    }
+
+    @Override
+    public void sendEvent(String idEvent, ParamList parametri) {
+        System.out.println("Evento: " + idEvent);
     }
 
     //Eventi

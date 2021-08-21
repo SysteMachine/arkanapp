@@ -89,7 +89,7 @@ public class Ball extends AbstractEntity {
         return esito;
     }
 
-    private Vector2D controllaCollisioneBrick(Vector2D posizione, Map mappa){
+    private Vector2D controllaCollisioneBrick(Vector2D posizione, Map mappa, AbstractScene scena){
         Vector2D esito = this.direction;
 
         boolean collisioneTrovata = false;  //Flag di stop dei cicli for
@@ -128,6 +128,8 @@ public class Ball extends AbstractEntity {
                         //Aggiornamento delle coordinate
                         esito = new Vector2D(dirX, dirY);
                         brick.decrementaVita();
+                        if(brick.getHealth() == 0)
+                            scena.sendEvent(ModalitaClassica.EVENTO_BLOCCO_ROTTO, new ParamList());
                     }
                 }
 
@@ -149,7 +151,7 @@ public class Ball extends AbstractEntity {
             //Controllo collisione con schermo
             this.direction = this.controllaCollisioneSchermo(nextStep, screenWidth, screenHeight);
             this.direction = this.controllaCollisionePaddle(nextStep, params.<AbstractScene>get(AbstractScene.SCENA).<Paddle>getFirstEntityByName("Paddle"));
-            this.direction = this.controllaCollisioneBrick(nextStep, params.<Map>get(ModalitaClassica.MAPPA));
+            this.direction = this.controllaCollisioneBrick(nextStep, params.<Map>get(ModalitaClassica.MAPPA), params.<AbstractScene>get(AbstractScene.SCENA));
 
 
             //Cambia la posizione della palla con la nuova direzione

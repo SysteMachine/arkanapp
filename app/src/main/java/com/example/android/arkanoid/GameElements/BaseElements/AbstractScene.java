@@ -111,4 +111,11 @@ public abstract class AbstractScene extends AbstractGameComponent {
 
     @Override
     public abstract void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint);
+
+    /**
+     * Permette alle entità di inviare un evento alla scena
+     * @param idEvent Identificatore testuale dell'evento
+     * @param parametri Parametri dell'evento
+     */
+    public abstract void sendEvent(String idEvent, ParamList parametri);
 }
