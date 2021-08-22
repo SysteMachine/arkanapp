@@ -247,8 +247,6 @@ public class GameLoop extends TextureView implements Runnable {
             Canvas canvas = new Canvas(this.bitmapCanvas);
             Paint paint = new Paint();
 
-            paint.setAntiAlias(false);
-
             if(canvas != null){
                 //Aggiornamento degli elementi su schermo
                 try{
@@ -275,6 +273,8 @@ public class GameLoop extends TextureView implements Runnable {
                 );
                 this.unlockCanvasAndPost(canvas);
             }
+
+            this.invalidate();
             //---------------------
 
             long timeStamp = System.nanoTime();
