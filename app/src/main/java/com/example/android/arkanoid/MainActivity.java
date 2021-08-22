@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        this.gameLoop = new GameLoop(this, 60);
+        this.gameLoop = new GameLoop(this, 60, 720, 1280);
         this.gameLoop.setShowFPS(true);
         this.setContentView(this.gameLoop);
         this.gameLoop.start();

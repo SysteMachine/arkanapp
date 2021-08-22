@@ -1,15 +1,12 @@
 package com.example.android.arkanoid.GameCore;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
-import android.view.Display;
-import android.view.MotionEvent;
 import android.view.TextureView;
-import android.view.WindowManager;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -24,7 +21,11 @@ public class GameLoop extends TextureView implements Runnable {
 
     private boolean showFPS;                                      //Flag di visualizzazione dell'fps su schermo
 
-    public GameLoop(Context context, int fpsTarget) {
+    private Bitmap bitmapCanvas;                                  //Bitmap di disegno
+    private int canvasWidht;                                      //Larghezza della canvas
+    private int canvasHeight;                                     //Altezza della canvas
+
+    public GameLoop(Context context, int fpsTarget, int canvasWidht, int canvasHeight) {
         super(context);
 
         this.fpsTarget = fpsTarget;
@@ -32,18 +33,11 @@ public class GameLoop extends TextureView implements Runnable {
         this.showFPS = false;
 
         this.elementi = new LinkedList<>();
-    }
 
-    /**
-     * Restituisce le dimensioni dello schermo
-     * @return Restituisce un point con le dimensioni dello schermo
-     */
-    private Point getScreenSize(){
-        Display display = ( (WindowManager)this.getContext().getSystemService(Context.WINDOW_SERVICE) ).getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
+        this.canvasWidht = canvasWidht;
+        this.canvasHeight = canvasHeight;
 
-        return size;
+        bitmapCanvas = Bitmap.createBitmap(this.canvasWidht, this.canvasHeight, Bitmap.Config.ARGB_8888);
     }
 
     //Gestione della lista
@@ -99,8 +93,7 @@ public class GameLoop extends TextureView implements Runnable {
     public boolean addGameComponentWithSetup(AbstractGameComponent component){
         boolean esito = this.addGameComponent(component);
         if(esito){
-            Point screenSize = this.getScreenSize();
-            component.setup(screenSize.x, screenSize.y);
+            component.setup(this.canvasWidht, this.canvasHeight);
         }
 
 
@@ -159,8 +152,7 @@ public class GameLoop extends TextureView implements Runnable {
      * Effettua il setup degli elementi all'interno del gameLoop
      */
     public void setupElements(){
-        Point screenSize = this.getScreenSize();
-        this.setup(screenSize.x, screenSize.y);
+        this.setup(this.canvasWidht, this.canvasHeight);
     }
 
     /**
@@ -252,17 +244,38 @@ public class GameLoop extends TextureView implements Runnable {
         while(this.running){
             time = System.nanoTime();
 
-            Canvas canvas = this.lockCanvas();
+            Canvas canvas = new Canvas(this.bitmapCanvas);
             Paint paint = new Paint();
+
+            paint.setAntiAlias(false);
 
             if(canvas != null){
                 //Aggiornamento degli elementi su schermo
                 try{
-                    this.update(dt, this.getWidth(), this.getHeight(), canvas, paint);
-                    this.render(dt, this.getWidth(), this.getHeight(), canvas, paint);
+                    this.update(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
+                    this.render(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                 }catch(Exception e){e.printStackTrace();}
+            }
+
+            //Disegno sullo schermo
+            canvas = this.lockCanvas();
+            if(canvas != null){
+                float rapporto = this.getWidth() / (float)this.canvasWidht;
+
+                int width = this.getWidth();
+                int height = (int)(this.canvasHeight * rapporto);
+                int posX = (int)( (this.getWidth() * 0.5) - (width * 0.5) );
+                int posY = (int)( (this.getHeight() * 0.5) - (height * 0.5) );
+
+                canvas.drawBitmap(
+                        this.bitmapCanvas,
+                        null,
+                        new Rect(posX, posY, posX + width, posY + height),
+                        paint
+                );
                 this.unlockCanvasAndPost(canvas);
             }
+            //---------------------
 
             long timeStamp = System.nanoTime();
             while(System.nanoTime() - timeStamp < ns){}
