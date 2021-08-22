@@ -13,12 +13,12 @@ public class Paddle extends AbstractEntity {
     private final Vector2D startPosition;               //Posizione iniziale del paddle
     private float targetX;                              //Posizione target da raggiongere del paddle
 
-    public Paddle(float speed, Vector2D startPosition, int width, int height) {
+    public Paddle(float speed, Vector2D startPosition, Vector2D size) {
         this.startPosition = startPosition;
 
         this.setSpeed(speed);
         this.setDirection(new Vector2D(1, 0));
-        this.setSize(new Vector2D(width, height));
+        this.setSize(size);
         this.setPosition(startPosition);
         this.setName("Paddle");
     }

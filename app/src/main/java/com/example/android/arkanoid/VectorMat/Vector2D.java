@@ -40,6 +40,15 @@ public class Vector2D {
     }
 
     /**
+     * Esegue un prodotto membro a membro degli elementi dei vettori e restituisce il vettore risultante (Operazione di necessità)
+     * @param vettore Vettore con gli elementi da moltiplicare
+     * @return Restituisce il vettore che moltiplica le componenti dei vettori
+     */
+    public Vector2D prodottoPerVettore(Vector2D vettore){
+        return new Vector2D(this.getPosX() * vettore.getPosX(), this.getPosY() * vettore.getPosY());
+    }
+
+    /**
      * Ruota il vettore di gradi
      * @param angoloGradi Gradi di rotazione
      * @return Restituisce il vettore rutotato

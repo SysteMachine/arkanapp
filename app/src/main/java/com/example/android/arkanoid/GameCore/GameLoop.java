@@ -257,8 +257,10 @@ public class GameLoop extends TextureView implements Runnable {
 
             if(canvas != null){
                 //Aggiornamento degli elementi su schermo
-                this.update(dt, this.getWidth(), this.getHeight(), canvas, paint);
-                this.render(dt, this.getWidth(), this.getHeight(), canvas, paint);
+                try{
+                    this.update(dt, this.getWidth(), this.getHeight(), canvas, paint);
+                    this.render(dt, this.getWidth(), this.getHeight(), canvas, paint);
+                }catch(Exception e){e.printStackTrace();}
                 this.unlockCanvasAndPost(canvas);
             }
 

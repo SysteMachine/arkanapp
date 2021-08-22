@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
+import com.example.android.arkanoid.GameElements.Stile;
 
 public class MainActivity extends AppCompatActivity {
     private GameLoop gameLoop;
@@ -21,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
         this.setContentView(this.gameLoop);
         this.gameLoop.start();
 
-        ModalitaClassica modalitaClassica = new ModalitaClassica();
+        Stile stile = new Stile();
+        ModalitaClassica modalitaClassica = new ModalitaClassica(stile);
         this.gameLoop.addGameComponentWithSetup(modalitaClassica);
     }
 

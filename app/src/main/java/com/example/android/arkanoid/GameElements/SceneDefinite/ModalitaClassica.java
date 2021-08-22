@@ -13,6 +13,7 @@ import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
 import com.example.android.arkanoid.GameElements.Brick;
 import com.example.android.arkanoid.GameElements.Map;
 import com.example.android.arkanoid.GameElements.Paddle;
+import com.example.android.arkanoid.GameElements.Stile;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
@@ -21,27 +22,25 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class ModalitaClassica extends AbstractScene implements View.OnTouchListener{
     public final static String EVENTO_BLOCCO_ROTTO = "rotturaBlocco";
-
     public final static String MAPPA = "Mappa";
 
-    private Ball palla;
-    private Paddle paddle;
-    private Map mappa;
+    protected Ball palla;
+    protected Paddle paddle;
+    protected Map mappa;
 
-    //Sprite degli elementi
-    private Sprite sPalla;
-    private Sprite sPaddle;
-    private Sprite[] sBrick;
-    private MultiSprite sCrepe;
-    private int[] coloriBrick = {
-            Color.GREEN,
-            Color.YELLOW,
-            Color.rgb(255, 165, 0),
-            Color.RED
-    };
+    protected Sprite sPalla;
+    protected Sprite sPaddle;
+    protected Sprite[] sBrick;
+    protected MultiSprite sCrepe;
+    protected Sprite sSfondo;
+    protected Sprite sBottom;
+    protected Sprite sZonaPunteggio;
 
-    public ModalitaClassica() {
+    protected Stile stile;
+
+    public ModalitaClassica(Stile stile) {
         super(0);
+        this.stile = stile;
     }
 
     @Override
@@ -64,12 +63,30 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     }
 
     /**
+     * Disegna lo sfondo della scena
+     * @param canvas Cancas di disengo
+     * @param paint Paint di disegno
+     */
+    protected void disegnaSfondo(int screenWidht, int screenHeight, Canvas canvas, Paint paint){
+        if(this.sSfondo != null){
+            this.sSfondo.drawSprite(
+                    (int)(screenWidht * 0.5f),
+                    (int)(screenHeight * 0.5f),
+                    screenWidht,
+                    screenHeight,
+                    canvas,
+                    paint
+            );
+        }
+    }
+
+    /**
      * Disegna la palla della scena
      * @param canvas Canvas di disegno
      * @param paint Paint di disegno
      */
-    private void disegnaPalla(Canvas canvas, Paint paint){
-        if(this.palla != null && this.sPaddle != null){
+    protected void disegnaPalla(Canvas canvas, Paint paint){
+        if(this.palla != null && this.sPalla != null){
             this.sPalla.drawSprite(
                     (int)this.palla.getPosition().getPosX(),
                     (int)this.palla.getPosition().getPosY(),
@@ -86,13 +103,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * @param canvas Cancas di disengo
      * @param paint Paint di disegno
      */
-    private void disegnaPaddle(Canvas canvas, Paint paint){
-        if(this.paddle != null && this.sPaddle != null){
+    protected void disegnaPaddle(Canvas canvas, Paint paint){
+        if(this.paddle != null && this.sPaddle != null) {
             this.sPaddle.drawSprite(
-                    (int)this.paddle.getPosition().getPosX(),
-                    (int)this.paddle.getPosition().getPosY(),
-                    (int)this.paddle.getSize().getPosX(),
-                    (int)this.paddle.getSize().getPosY(),
+                    (int) this.paddle.getPosition().getPosX(),
+                    (int) this.paddle.getPosition().getPosY(),
+                    (int) this.paddle.getSize().getPosX(),
+                    (int) this.paddle.getSize().getPosY(),
                     canvas,
                     paint
             );
@@ -104,75 +121,98 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * @param canvas Canvas di disegno
      * @param paint Paint di disegno
      */
-    private void disegnaMappa(Canvas canvas, Paint paint){
-        if(this.mappa != null && this.sBrick != null){
-            for(int i = 0; i < this.mappa.getnRighe(); i++){
-                for(int j = 0; j < this.mappa.getnColonne(); j++){
-                    Brick brick = this.mappa.getElementiMappa()[i][j];
-                    if(brick != null && brick.getHealth() > 0){
-                        int colore = (int)( (i + j) % this.coloriBrick.length);
-                        this.sBrick[colore].drawSprite(
-                                (int)brick.getPosition().getPosX(),
-                                (int)brick.getPosition().getPosY(),
-                                (int)brick.getSize().getPosX(),
-                                (int)brick.getSize().getPosY(),
-                                canvas,
-                                paint
-                        );
-                        this.sCrepe.setCurrentFrame(Map.MAX_HEALTH_BRICK - brick.getHealth());
-                        this.sCrepe.drawSprite(
-                                (int)brick.getPosition().getPosX(),
-                                (int)brick.getPosition().getPosY(),
-                                (int)brick.getSize().getPosX(),
-                                (int)brick.getSize().getPosY(),
-                                canvas,
-                                paint
-                        );
-                    }
+    protected void disegnaMappa(Canvas canvas, Paint paint){
+        if(this.mappa != null && this.sBrick != null && this.mappa.isAviable()){
+
+            Brick brick = this.mappa.getNextBrick();
+            int posizioneColoreCorrente = 0;    //Per impostare il colore del brick
+            while(brick != null){
+                //Lavoro sul singolo brick
+                if(brick.getHealth() > 0){
+                    int colore = (int)( posizioneColoreCorrente % this.stile.getColoriCasualiBrick().length);
+                    this.sBrick[colore].drawSprite(
+                            (int)brick.getPosition().getPosX(),
+                            (int)brick.getPosition().getPosY(),
+                            (int)brick.getSize().getPosX(),
+                            (int)brick.getSize().getPosY(),
+                            canvas,
+                            paint
+                    );
+                    /*
+                        Calcoliamo lo sprite della crepa per il brick sulla base della vita
+                        si calcola il peso e lo si moltiplica per la massima vita possibile dei blocchi.
+                         */
+                    int spriteCrepa = (int) ( (1 - ( ((float)brick.getHealth()) / brick.getMaxHealth()) ) * Map.MAX_HEALTH_BRICK );
+                    this.sCrepe.setCurrentFrame(Map.MAX_HEALTH_BRICK - brick.getHealth());
+                    this.sCrepe.drawSprite(
+                            (int)brick.getPosition().getPosX(),
+                            (int)brick.getPosition().getPosY(),
+                            (int)brick.getSize().getPosX(),
+                            (int)brick.getSize().getPosY(),
+                            canvas,
+                            paint
+                    );
                 }
+
+                brick = this.mappa.getNextBrick();
+                posizioneColoreCorrente++;
             }
+            this.mappa.azzeraContatori();
         }
+    }
+
+    /**
+     * Inizializza le risorse della scena
+     * @param screenWidht Larghezza dello schermo
+     * @param screenHeight Altezza dello schermo
+     */
+    protected void inizializzaRisorse(int screenWidht, int screenHeight){
+        this.clearEntita();
+
+        this.palla = new Ball(
+                this.stile.getVelocitaInizialePalla(),
+                this.stile.getPercentualePosizionePalla().prodottoPerVettore(new Vector2D(screenWidht, screenHeight)),
+                this.stile.getAngoloDiLancioMassimoPalla(),
+                (int)(this.stile.getPercentualeRaggioPalla() * screenWidht)
+        );
+        this.sPalla = this.stile.getImmaginePallaStile(this.owner);
+
+        this.paddle = new Paddle(
+                this.stile.getVelocitaInizialePaddle(),
+                this.stile.getPercentualePosizionePaddle().prodottoPerVettore(new Vector2D(screenWidht, screenHeight)),
+                this.stile.getPercentualeDimensionePaddle().prodottoPerVettore(new Vector2D(screenWidht, screenHeight))
+        );
+        this.sPaddle = this.stile.getImmaginePaddleStile(this.owner);
+
+        this.mappa = new Map(
+                this.stile.getNumeroRigheMappa(),
+                this.stile.getNumeroColonneMappa(),
+                this.stile.getPercentualePosizioneMappa().prodottoPerVettore(new Vector2D(screenWidht, screenHeight)),
+                this.stile.getPercentualeDimensioneMappa().prodottoPerVettore(new Vector2D(screenWidht, screenHeight))
+        );
+        this.sBrick = new Sprite[this.stile.getColoriCasualiBrick().length];
+        for(int i = 0; i < this.sBrick.length; i++){
+            this.sBrick[i] = this.stile.getImmagineBrickStile(this.owner, i);
+        }
+
+        this.sCrepe = new MultiSprite(R.drawable.crepebrick, this.owner, 10);
+        this.sSfondo = this.stile.getImmagineSfondoStile(this.owner);
+        this.sBottom = this.stile.getImmagineBottomStile(this.owner);
+        this.sZonaPunteggio = this.stile.getImmagineZonaPunteggioStile(this.owner);
+
+        this.addEntita(this.palla);
+        this.addEntita(this.paddle);
     }
 
     @Override
     public void setup(int screenWidth, int screenHeight) {
-        this.palla = new Ball(800, new Vector2D(screenWidth * 0.5f, screenHeight * 0.6f), 40, 30);
-        this.sPalla = new Sprite(R.drawable.palla_palla1, this.owner);
-
-        this.paddle = new Paddle(1000, new Vector2D(screenWidth * 0.5f, screenHeight * 0.7f), 300, 40);
-        this.sPaddle = new Sprite(R.drawable.paddle_paddle1, this.owner);
-
-        this.mappa = new Map(6, 8, 0, (int)(screenHeight * 0.2), screenWidth, (int)(screenWidth * 0.5));
-        this.sBrick = new MultiSprite[this.coloriBrick.length];
-        for(int i = 0; i < this.coloriBrick.length; i++){
-            this.sBrick[i] = new MultiSprite(R.drawable.brick_birk1, this.owner, 3);
-            this.sBrick[i].replaceColor(Color.WHITE, this.coloriBrick[i], 200);
-        }
-        this.sCrepe = new MultiSprite(R.drawable.birk_crepe, this.owner, 10);
-
-        //Inserimento delle entità per la logica di base
-        this.addEntita(this.palla);
-        this.addEntita(this.paddle);
-
-        //Cambio di stile
-        this.sPalla.replaceColor(Color.WHITE, Color.RED, 200);
-        this.sPaddle.replaceColor(Color.WHITE, Color.rgb(200, 100, 25), 200);
-
-        MediaPlayer mp = MediaPlayer.create(this.owner.getContext(), R.raw.audio_test1);
-        try{
-            mp.prepareAsync();
-            mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.setLooping(true);
-                    mp.start();
-                }
-            });
-        }catch(Exception e){e.printStackTrace();}
+        this.inizializzaRisorse(screenWidth, screenHeight);
     }
 
     @Override
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
+        this.disegnaSfondo(screenWidth, screenHeight, canvas, paint);
+
         this.disegnaPalla(canvas, paint);
         this.disegnaPaddle(canvas, paint);
         this.disegnaMappa(canvas, paint);
@@ -196,6 +236,4 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
         return true;
     }
-
-
 }

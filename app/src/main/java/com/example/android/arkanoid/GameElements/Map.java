@@ -5,27 +5,33 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 import java.lang.reflect.Method;
 
 public class Map {
-    public static final int MAX_HEALTH_BRICK = 10;
-    private final int nRighe;
-    private final int nColonne;
+    public static final int MAX_HEALTH_BRICK = 10;          //Vita massima che viene dato al singolo brick
+    private final int nRighe;                               //Numero di colonne della mappa
+    private final int nColonne;                             //Numero di righe della mappa
 
-    private final int posX;
-    private final int posY;
-    private final int mapWidth;
-    private final int mapHeight;
+    private final int posX;                                 //Posizione X della mappa
+    private final int posY;                                 //Posizione Y della mappa
+    private final int mapWidth;                             //Larghezza della mappa
+    private final int mapHeight;                            //Altezza della mappa
 
-    private boolean aviable;
+    private boolean aviable;                                //Flag di aviabilità della mappa
 
-    private Brick[][] elementiMappa;
+    private Brick[][] elementiMappa;                        //Brick presenti nella mappa
 
-    public Map(int nRighe, int nColonne, int posX, int posY, int mapWidth, int mapHeight){
+    private int rigaCorrente;                               //Riga corrente per restituire il prossimo elemento
+    private int colonnaCorrente;                            //Colonna corrente per restituire il prossimo elemento
+
+    public Map(int nRighe, int nColonne, Vector2D position, Vector2D size){
         this.nRighe = nRighe;
         this.nColonne = nColonne;
 
-        this.posX = posX;
-        this.posY = posY;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
+        this.posX = (int)position.getPosX();
+        this.posY = (int)position.getPosY();
+        this.mapWidth = (int)size.getPosX();
+        this.mapHeight = (int)size.getPosY();
+
+        this.rigaCorrente = 0;
+        this.colonnaCorrente = 0;
 
         try{
             this.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazione", int.class, int.class), this);
@@ -84,6 +90,38 @@ public class Map {
         }
 
         this.aviable = true;
+    }
+
+    /**
+     * Incrementa i contatori per il prossimo elemento
+     */
+    private void incrementaContatori(){
+        this.colonnaCorrente ++;
+        if(this.colonnaCorrente == this.nColonne){
+            this.colonnaCorrente = 0;
+            this.rigaCorrente ++;
+        }
+    }
+
+    /**
+     * Azzera i contatori della mappa
+     */
+    public void azzeraContatori(){
+        this.rigaCorrente = 0;
+        this.colonnaCorrente = 0;
+    }
+
+    /**
+     * Restituisce il prossimo brick nella mappa scansionando riga per riga
+     * @return Restituisce il prossimo brick o null nel caso tutti gli elementi siano stati forniti
+     */
+    public Brick getNextBrick(){
+        Brick next = null;
+        while(next == null && this.colonnaCorrente < this.nColonne && this.rigaCorrente < this.nRighe){
+            next = this.elementiMappa[this.rigaCorrente][this.colonnaCorrente];
+            this.incrementaContatori();
+        }
+        return next;
     }
 
     //Beam
