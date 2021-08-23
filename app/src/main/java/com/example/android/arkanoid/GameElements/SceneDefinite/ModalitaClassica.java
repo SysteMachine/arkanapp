@@ -8,10 +8,11 @@ import android.view.View;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.Ball;
 import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
+import com.example.android.arkanoid.GameElements.BaseElements.GameStatus;
 import com.example.android.arkanoid.GameElements.Brick;
 import com.example.android.arkanoid.GameElements.Map;
 import com.example.android.arkanoid.GameElements.Paddle;
-import com.example.android.arkanoid.GameElements.Stile;
+import com.example.android.arkanoid.GameElements.BaseElements.Stile;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
@@ -26,6 +27,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected Paddle paddle;
     protected Map mappa;
 
+    protected float rotazionePalla;
+
     protected Sprite sPalla;
     protected Sprite sPaddle;
     protected Sprite[] sBrick;
@@ -35,13 +38,15 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected Sprite sZonaPunteggio;
 
     protected Stile stile;
+    protected GameStatus status;
 
     protected boolean risorseCaricate;
 
-    public ModalitaClassica(Stile stile) {
+    public ModalitaClassica(Stile stile, GameStatus status) {
         super(0);
 
         this.stile = stile;
+        this.status = status;
         this.risorseCaricate = false;
     }
 
@@ -87,6 +92,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      */
     protected void disegnaPalla(Canvas canvas, Paint paint){
         if(this.palla != null && this.sPalla != null){
+            this.sPalla.setRotazione(this.rotazionePalla);
             this.sPalla.drawSprite(
                     (int)this.palla.getPosition().getPosX(),
                     (int)this.palla.getPosition().getPosY(),
@@ -135,7 +141,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                     );
 
                     float pesoVita = 1 - ( (float)brick.getHealth() / (float)brick.getMaxHealth() );    //Va da 0 a 1, 0 se la vita è al massimo, altrimenti restituisce 1
-                    int indexImmagine = (int)( (this.sCrepe.getnImages() - 1) * pesoVita );
+                    int indexImmagine = (int)Math.ceil( (this.sCrepe.getnImages() - 1) * pesoVita );
                     this.sCrepe.setCurrentFrame(indexImmagine);
 
                     this.sCrepe.drawSprite(
@@ -165,6 +171,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 this.stile.getAngoloDiLancioMassimoPalla(),
                 (int)(this.stile.getPercentualeRaggioPalla() * screenWidht)
         );
+        this.rotazionePalla = 0;
         this.sPalla = this.stile.getImmaginePallaStile(this.owner);
 
         this.paddle = new Paddle(
@@ -197,7 +204,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * @param screenWidth Larghezza dello schermo
      * @param screenHeight Altezza dello schermo
      */
-    private void resizeImages(int screenWidth, int screenHeight){
+    protected void resizeImages(int screenWidth, int screenHeight){
         //Ridimensionamento della palla
         this.sPalla.resizeImage(this.palla.getSize());
 
@@ -222,7 +229,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     /**
      * Aggiunge le entità alla scena
      */
-    private void addEntitaScena(){
+    protected void addEntitaScena(){
         this.entita.clear();
         this.addEntita(this.palla);
         this.addEntita(this.paddle);
@@ -241,6 +248,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.resizeImages(screenWidth, screenHeight);
         this.addEntitaScena();
         this.risorseCaricate = true;
+    }
+
+    @Override
+    public void update(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
+        super.update(dt, screenWidth, screenHeight, canvas, paint);
+        if(this.palla != null && this.palla.isMoving())
+            this.rotazionePalla += this.stile.getVelocitaRotazionePalla() * dt;
     }
 
     @Override

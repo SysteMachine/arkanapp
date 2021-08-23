@@ -1,4 +1,4 @@
-package com.example.android.arkanoid.GameElements;
+package com.example.android.arkanoid.GameElements.BaseElements;
 
 import android.graphics.Color;
 
@@ -58,7 +58,7 @@ public class Stile {
         this.immaginePalla = R.drawable.stilebase_palla;
         this.angoloDiLancioMassimoPalla = 40;
         this.velocitaInizialePalla = 800;
-        this.velocitaRotazionePalla = 360;
+        this.velocitaRotazionePalla = 45;
         this.percentualeRaggioPalla = 0.03f;
         this.percentualePosizionePalla = new Vector2D(0.5f, 0.8f);
         this.coloriPalla = new ReplaceColorRecord[2];

@@ -199,9 +199,9 @@ public class Sprite {
             }
 
             canvas.drawBitmap(
-                    this.immagine,
-                    posX - (int)( this.immagine.getWidth() * 0.5f ),
-                    posY - (int)( this.immagine.getHeight() * 0.5f ),
+                    immagine,
+                    posX - (int)( immagine.getWidth() * 0.5f ),
+                    posY - (int)( immagine.getHeight() * 0.5f ),
                     paint
             );
         }
