@@ -33,6 +33,25 @@ public class Sprite {
     }
 
     /**
+     * Ridimensiona l'immagine dello sprite
+     * @param nuovaDimensione Nuova dimensione dello sprite
+     */
+    public void resizeImage(Vector2D nuovaDimensione){
+        this.resizeImage((int)nuovaDimensione.getPosX(), (int)nuovaDimensione.getPosY());
+    }
+
+    /**
+     * Ridimensiona l'immagine dello sprite
+     * @param newWidth Nuova larghezza dello sprite
+     * @param newHeight Nuova altezza dello sprite
+     */
+    public void resizeImage(int newWidth, int newHeight){
+        this.aviable = false;
+        this.immagine = Bitmap.createScaledBitmap(this.immagine, newWidth, newHeight, false);
+        this.aviable = true;
+    }
+
+    /**
      * Converte il formato numerico di un colore in un vettore contente i valori ARGB
      * @param color Colore da cui prelevare i singoli componenti
      * @return Restituisce un array delle componenti del colore nelle posizioni ARGB
@@ -159,6 +178,30 @@ public class Sprite {
                             (int)(posX + (width * pesi.getPosX() * 0.5) ),
                             (int)(posY + (height * pesi.getPosY() * 0.5) )
                     ),
+                    paint
+            );
+        }
+    }
+
+    /**
+     * Disegna lo sprite sulla canvas
+     * @param posX Posizione di disegno X dello sprite (indica il punto centrale X)
+     * @param posY Posizione di disegno Y dello sprite (indica il punto centrale Y)
+     * @param canvas Canvas di disegno
+     * @param paint Oggetto Paint
+     */
+    public void drawSprite(int posX, int posY, Canvas canvas, Paint paint){
+        if(this.aviable && canvas != null && paint != null){
+            Bitmap immagine = this.immagine;                        //Copiamo la sorgente per poter eseguire modifiche
+
+            if(this.rotazione % 360 != 0){
+                immagine = this.ruotaImmagine(this.rotazione);
+            }
+
+            canvas.drawBitmap(
+                    this.immagine,
+                    posX - (int)( this.immagine.getWidth() * 0.5f ),
+                    posY - (int)( this.immagine.getHeight() * 0.5f ),
                     paint
             );
         }

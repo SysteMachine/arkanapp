@@ -35,6 +35,9 @@ public abstract class AbstractGameComponent implements GameComponentInterface{
     }
 
     @Override
+    public abstract void ownerSizeChange(int newScreenWidth, int newScreenHeight);
+
+    @Override
     public abstract void setup(int screenWidth, int screenHeight);
 
     @Override

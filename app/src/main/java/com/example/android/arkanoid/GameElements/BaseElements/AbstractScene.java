@@ -4,7 +4,9 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.example.android.arkanoid.GameCore.AbstractGameComponent;
+import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.Util.ParamList;
+import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,11 +17,21 @@ public abstract class AbstractScene extends AbstractGameComponent {
     public static String SCENA = "Scena";
     //----------------------------
 
+    protected int lastScreenWidth;
+    protected int lastScreenHeight;
+
     protected LinkedList<AbstractEntity> entita;
 
     public AbstractScene(int zIndex) {
         super(zIndex);
         this.entita = new LinkedList<AbstractEntity>();
+    }
+
+    @Override
+    protected void setGameLoop(GameLoop gameLoop) {
+        this.lastScreenWidth = gameLoop.getCanvasWidht();
+        this.lastScreenHeight = gameLoop.getCanvasHeight();
+        super.setGameLoop(gameLoop);
     }
 
     /**
@@ -107,6 +119,23 @@ public abstract class AbstractScene extends AbstractGameComponent {
         ParamList parametri = this.creaParametriEntita();
         for(AbstractEntity ae : this.entita)
             ae.logica(dt, screenWidth, screenHeight, parametri);
+    }
+
+    @Override
+    public void ownerSizeChange(int newScreenWidth, int newScreenHeight) {
+        if(this.lastScreenWidth != 0 && this.lastScreenHeight != 0){
+            float pesoWidht = (float)newScreenWidth / (float)this.lastScreenWidth;
+            float pesoHeight = (float)newScreenHeight / (float)this.lastScreenHeight;
+            Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
+            for(AbstractEntity ae : this.entita){
+                ae.setPosition(ae.getPosition().prodottoPerVettore(scaleVector));
+                ae.setSize(ae.getSize().prodottoPerVettore(scaleVector));
+                ae.setDirection(ae.getDirection().prodottoPerVettore(scaleVector));
+            }
+        }
+
+        this.lastScreenWidth = newScreenWidth;
+        this.lastScreenHeight = newScreenHeight;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.android.arkanoid.GameElements.SceneDefinite;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -38,9 +39,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     protected Stile stile;
 
+    protected boolean risorseCaricate;
+
     public ModalitaClassica(Stile stile) {
         super(0);
+
         this.stile = stile;
+        this.risorseCaricate = false;
     }
 
     @Override
@@ -51,8 +56,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     @Override
     protected void removeGameLoop() {
-        this.owner.setOnTouchListener(null);
         super.removeGameLoop();
+        this.owner.setOnTouchListener(null);
     }
 
     @Override
@@ -72,8 +77,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             this.sSfondo.drawSprite(
                     (int)(screenWidht * 0.5f),
                     (int)(screenHeight * 0.5f),
-                    screenWidht,
-                    screenHeight,
                     canvas,
                     paint
             );
@@ -130,21 +133,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 //Lavoro sul singolo brick
                 if(brick.getHealth() > 0){
                     int colore = (int)( posizioneColoreCorrente % this.stile.getColoriCasualiBrick().length);
+
                     this.sBrick[colore].drawSprite(
-                            (int)brick.getPosition().getPosX(),
-                            (int)brick.getPosition().getPosY(),
-                            (int)brick.getSize().getPosX(),
-                            (int)brick.getSize().getPosY(),
-                            canvas,
-                            paint
-                    );
-                    /*
-                        Calcoliamo lo sprite della crepa per il brick sulla base della vita
-                        si calcola il peso e lo si moltiplica per la massima vita possibile dei blocchi.
-                         */
-                    int spriteCrepa = (int) ( (1 - ( ((float)brick.getHealth()) / brick.getMaxHealth()) ) * Map.MAX_HEALTH_BRICK );
-                    this.sCrepe.setCurrentFrame(Map.MAX_HEALTH_BRICK - brick.getHealth());
-                    this.sCrepe.drawSprite(
                             (int)brick.getPosition().getPosX(),
                             (int)brick.getPosition().getPosY(),
                             (int)brick.getSize().getPosX(),
@@ -167,8 +157,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * @param screenHeight Altezza dello schermo
      */
     protected void inizializzaRisorse(int screenWidht, int screenHeight){
-        this.clearEntita();
-
         this.palla = new Ball(
                 this.stile.getVelocitaInizialePalla(),
                 this.stile.getPercentualePosizionePalla().prodottoPerVettore(new Vector2D(screenWidht, screenHeight)),
@@ -195,27 +183,79 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             this.sBrick[i] = this.stile.getImmagineBrickStile(this.owner, i);
         }
 
-        this.sCrepe = new MultiSprite(R.drawable.crepebrick, this.owner, 10);
         this.sSfondo = this.stile.getImmagineSfondoStile(this.owner);
+
+        this.sCrepe = new MultiSprite(R.drawable.crepebrick, this.owner, 10);
         this.sBottom = this.stile.getImmagineBottomStile(this.owner);
         this.sZonaPunteggio = this.stile.getImmagineZonaPunteggioStile(this.owner);
+    }
 
+    /**
+     * Ridimensiona gli elementi della scena
+     * @param screenWidth Larghezza dello schermo
+     * @param screenHeight Altezza dello schermo
+     */
+    private void resizeImages(int screenWidth, int screenHeight){
+        //Ridimensionamento della palla
+        this.sPalla.resizeImage(this.palla.getSize());
+
+        //Ridimensionamento del paddle
+        this.sPaddle.resizeImage(this.paddle.getSize());
+
+        //Ridimensionamento dei brick
+        Brick firstBrick = this.mappa.getNextBrick();
+        this.mappa.azzeraContatori();
+        for(int i = 0; i < this.sBrick.length; i++){
+            this.sBrick[i] = this.stile.getImmagineBrickStile(this.owner, i);
+            this.sBrick[i].resizeImage(firstBrick.getSize());
+        }
+
+        //Ridimensionamento dello sfondo
+        this.sSfondo.resizeImage(screenWidth, screenHeight);
+
+        //TODO ridimensionare crepe bottom e zonaPunteggio -> controllare le sottoclassi di sprite per il ridimensionamento
+    }
+
+    /**
+     * Aggiunge le entità alla scena
+     */
+    private void addEntitaScena(){
+        this.entita.clear();
         this.addEntita(this.palla);
         this.addEntita(this.paddle);
+        Brick brick = this.mappa.getNextBrick();
+        while(brick != null){
+            this.addEntita(brick);
+            brick = this.mappa.getNextBrick();
+        }
+        this.mappa.azzeraContatori();
     }
 
     @Override
     public void setup(int screenWidth, int screenHeight) {
+        this.risorseCaricate = false;
         this.inizializzaRisorse(screenWidth, screenHeight);
+        this.resizeImages(screenWidth, screenHeight);
+        this.addEntitaScena();
+        this.risorseCaricate = true;
     }
 
     @Override
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
-        this.disegnaSfondo(screenWidth, screenHeight, canvas, paint);
+        if(this.risorseCaricate){
+            this.disegnaSfondo(screenWidth, screenHeight, canvas, paint);
+            this.disegnaPalla(canvas, paint);
+            this.disegnaPaddle(canvas, paint);
+            this.disegnaMappa(canvas, paint);
+        }else{
+            //TODO schermata di caricamento
+        }
+    }
 
-        this.disegnaPalla(canvas, paint);
-        this.disegnaPaddle(canvas, paint);
-        this.disegnaMappa(canvas, paint);
+    @Override
+    public void ownerSizeChange(int newScreenWidth, int newScreenHeight) {
+        super.ownerSizeChange(newScreenWidth, newScreenHeight);
+        resizeImages(newScreenWidth, newScreenHeight);
     }
 
     @Override

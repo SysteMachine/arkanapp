@@ -36,7 +36,7 @@ public class ParamList {
      */
     public <T> boolean add(String name, T value){
         boolean esito = false;
-        if(this.searchElement(name) == -1){
+        if(this.searchElement(name) == -1 && value != null){
             ParamRecord record = new ParamRecord(
                     name,
                     value,

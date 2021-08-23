@@ -6,13 +6,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.view.TextureView;
+import android.graphics.SurfaceTexture;
 
 import java.util.Comparator;
 import java.util.LinkedList;
 
 //GameLoop
-public class GameLoop extends TextureView implements Runnable {
+public class GameLoop extends CustomTextureView implements Runnable {
     private boolean running;                                     //Flag di rendering del thread
     private Thread gameThread;                                   //Thread di rendering
 
@@ -28,6 +28,8 @@ public class GameLoop extends TextureView implements Runnable {
     public GameLoop(Context context, int fpsTarget, int canvasWidht, int canvasHeight) {
         super(context);
 
+        this.setSurfaceTextureListener(this);
+
         this.fpsTarget = fpsTarget;
         this.running = false;
         this.showFPS = false;
@@ -38,6 +40,19 @@ public class GameLoop extends TextureView implements Runnable {
         this.canvasHeight = canvasHeight;
 
         bitmapCanvas = Bitmap.createBitmap(this.canvasWidht, this.canvasHeight, Bitmap.Config.ARGB_8888);
+    }
+
+    /**
+     * Calcola la nuova dimensione della canvas di disegno
+     * @param width Larghezza attuale dello schermo
+     * @param height Altezza attuale dello schermo
+     */
+    private void calcolaNuovaDimensioneCanvas(int width, int height){
+        float peso = (float)this.canvasWidht / (float)width;
+        this.canvasWidht = width;
+        this.canvasHeight = height;
+
+        this.bitmapCanvas = Bitmap.createScaledBitmap(this.bitmapCanvas, this.canvasWidht, this.canvasHeight, true);
     }
 
     //Gestione della lista
@@ -234,6 +249,15 @@ public class GameLoop extends TextureView implements Runnable {
 
     public void setShowFPS(boolean showFPS) { this.showFPS = showFPS; }
 
+    public int getCanvasWidht() {
+        return canvasWidht;
+    }
+
+    public int getCanvasHeight() {
+        return canvasHeight;
+    }
+
+    //Override
     @Override
     public void run() {
         long time = 0;
@@ -247,8 +271,6 @@ public class GameLoop extends TextureView implements Runnable {
             Canvas canvas = new Canvas(this.bitmapCanvas);
             Paint paint = new Paint();
 
-            paint.setAntiAlias(false);
-
             if(canvas != null){
                 //Aggiornamento degli elementi su schermo
                 try{
@@ -260,18 +282,10 @@ public class GameLoop extends TextureView implements Runnable {
             //Disegno sullo schermo
             canvas = this.lockCanvas();
             if(canvas != null){
-                float rapporto = this.getWidth() / (float)this.canvasWidht;
-
-                //Cerchiamo la posizione centrale
-                int width = this.getWidth();
-                int height = (int)(this.canvasHeight * rapporto);
-                int posX = (int)( (this.getWidth() * 0.5) - (width * 0.5) );
-                int posY = (int)( (this.getHeight() * 0.5) - (height * 0.5) );
-
                 canvas.drawBitmap(
                         this.bitmapCanvas,
-                        null,
-                        new Rect(posX, posY, posX + width, posY + height),
+                        0,
+                        0,
                         paint
                 );
                 this.unlockCanvasAndPost(canvas);
@@ -289,5 +303,19 @@ public class GameLoop extends TextureView implements Runnable {
             ns += fps > this.fpsTarget ? 50000 : 0;
             ns -= fps < this.fpsTarget && ns - 50000 > 0 ? 50000 : 0;
         }
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        this.calcolaNuovaDimensioneCanvas(width, height);
+        for(AbstractGameComponent agc : this.elementi)
+            agc.ownerSizeChange(this.canvasWidht, this.canvasHeight);
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+        this.calcolaNuovaDimensioneCanvas(width, height);
+        for(AbstractGameComponent agc : this.elementi)
+            agc.ownerSizeChange(this.canvasWidht, this.canvasHeight);
     }
 }
