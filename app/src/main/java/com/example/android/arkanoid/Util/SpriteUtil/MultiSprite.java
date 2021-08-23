@@ -39,6 +39,15 @@ public class MultiSprite extends Sprite{
         this.setCurrentFrame(lastIndex);
     }
 
+    @Override
+    public void resizeImage(int newWidth, int newHeight) {
+        for(int i = 0; i < this.images.length; i++){
+            this.images[i] = Bitmap.createScaledBitmap(this.images[i], newWidth, newHeight, true);
+        }
+        this.singleWidht = newWidth;
+        this.singleHeight = newHeight;
+    }
+
     /**
      * Divide le immagini dello sprite
      */

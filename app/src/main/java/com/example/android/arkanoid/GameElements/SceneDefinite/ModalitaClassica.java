@@ -1,10 +1,7 @@
 package com.example.android.arkanoid.GameElements.SceneDefinite;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -93,8 +90,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             this.sPalla.drawSprite(
                     (int)this.palla.getPosition().getPosX(),
                     (int)this.palla.getPosition().getPosY(),
-                    (int)this.palla.getSize().getPosX(),
-                    (int)this.palla.getSize().getPosY(),
                     canvas,
                     paint
             );
@@ -111,8 +106,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             this.sPaddle.drawSprite(
                     (int) this.paddle.getPosition().getPosX(),
                     (int) this.paddle.getPosition().getPosY(),
-                    (int) this.paddle.getSize().getPosX(),
-                    (int) this.paddle.getSize().getPosY(),
                     canvas,
                     paint
             );
@@ -132,13 +125,22 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             while(brick != null){
                 //Lavoro sul singolo brick
                 if(brick.getHealth() > 0){
-                    int colore = (int)( posizioneColoreCorrente % this.stile.getColoriCasualiBrick().length);
+                    int colore = posizioneColoreCorrente % this.stile.getColoriCasualiBrick().length;
 
                     this.sBrick[colore].drawSprite(
                             (int)brick.getPosition().getPosX(),
                             (int)brick.getPosition().getPosY(),
-                            (int)brick.getSize().getPosX(),
-                            (int)brick.getSize().getPosY(),
+                            canvas,
+                            paint
+                    );
+
+                    float pesoVita = 1 - ( (float)brick.getHealth() / (float)brick.getMaxHealth() );    //Va da 0 a 1, 0 se la vita è al massimo, altrimenti restituisce 1
+                    int indexImmagine = (int)( (this.sCrepe.getnImages() - 1) * pesoVita );
+                    this.sCrepe.setCurrentFrame(indexImmagine);
+
+                    this.sCrepe.drawSprite(
+                            (int)brick.getPosition().getPosX(),
+                            (int)brick.getPosition().getPosY(),
                             canvas,
                             paint
                     );
@@ -184,8 +186,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         }
 
         this.sSfondo = this.stile.getImmagineSfondoStile(this.owner);
-
         this.sCrepe = new MultiSprite(R.drawable.crepebrick, this.owner, 10);
+
         this.sBottom = this.stile.getImmagineBottomStile(this.owner);
         this.sZonaPunteggio = this.stile.getImmagineZonaPunteggioStile(this.owner);
     }
@@ -212,6 +214,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
         //Ridimensionamento dello sfondo
         this.sSfondo.resizeImage(screenWidth, screenHeight);
+        this.sCrepe.resizeImage(firstBrick.getSize());
 
         //TODO ridimensionare crepe bottom e zonaPunteggio -> controllare le sottoclassi di sprite per il ridimensionamento
     }
