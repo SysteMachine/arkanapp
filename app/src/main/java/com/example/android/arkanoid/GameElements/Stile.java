@@ -59,7 +59,7 @@ public class Stile {
         this.angoloDiLancioMassimoPalla = 40;
         this.velocitaInizialePalla = 800;
         this.velocitaRotazionePalla = 360;
-        this.percentualeRaggioPalla = 0.05f;
+        this.percentualeRaggioPalla = 0.03f;
         this.percentualePosizionePalla = new Vector2D(0.5f, 0.8f);
         this.coloriPalla = new ReplaceColorRecord[2];
         this.coloriPalla[0] = new ReplaceColorRecord(Color.WHITE, Color.GREEN, 200);
@@ -84,7 +84,7 @@ public class Stile {
     protected void setStilePaddle(){
         this.immaginePaddle = R.drawable.stilebase_paddle;
         this.velocitaInizialePaddle = 1000;
-        this.percentualeDimensionePaddle = new Vector2D(0.3f, 0.03f);
+        this.percentualeDimensionePaddle = new Vector2D(0.2f, 0.03f);
         this.percentualePosizionePaddle = new Vector2D(0.5f, 0.85f);
         this.coloriPaddle = new ReplaceColorRecord[1];
         this.coloriPaddle[0] = new ReplaceColorRecord(Color.WHITE, Color.rgb(200, 100, 25), 200);
