@@ -262,6 +262,7 @@ public class GameLoop extends TextureView implements Runnable {
             if(canvas != null){
                 float rapporto = this.getWidth() / (float)this.canvasWidht;
 
+                //Cerchiamo la posizione centrale
                 int width = this.getWidth();
                 int height = (int)(this.canvasHeight * rapporto);
                 int posX = (int)( (this.getWidth() * 0.5) - (width * 0.5) );
