@@ -7,15 +7,15 @@ import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-public class BallSpeedDown extends AbstractPM {
-    public BallSpeedDown(Vector2D position, Vector2D size, GameLoop gameLoop) {
+public class BallSpeedUp extends AbstractPM {
+    public BallSpeedUp(Vector2D position, Vector2D size, GameLoop gameLoop) {
         super(
-                "ballSpeedDown",
+                "ballSpeedUp",
                 position,
                 size,
                 new Vector2D(300, 300),
-                new Sprite(R.drawable.alterazione_ball_speed_down, gameLoop),
-                new AlterazioneVelocitaPalla(15000, 0.6f)
+                new Sprite(R.drawable.alterazione_ball_speed_up, gameLoop),
+                new AlterazioneVelocitaPalla(15000, 1.4f)
         );
     }
 }

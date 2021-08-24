@@ -1,4 +1,4 @@
-package com.example.android.arkanoid.GameElements.BaseElements;
+package com.example.android.arkanoid.GameElements.ElementiBase;
 
 import android.graphics.Color;
 

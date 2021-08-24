@@ -1,4 +1,4 @@
-package com.example.android.arkanoid.GameElements.BaseElements;
+package com.example.android.arkanoid.GameElements.ElementiBase;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.Util.Util;
@@ -7,15 +7,15 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
-public class PowerupMalusList {
+public class PMList {
     private final ArrayList<PowerupMalusRecord> powerupList;
 
-    public PowerupMalusList(){
+    public PMList(){
         this.powerupList = new ArrayList<PowerupMalusRecord>();
     }
 
 
-    public void addPowerupMalus(Class<? extends AbstractPowerUpMalus> classe, int probabilita){
+    public void addPowerupMalus(Class<? extends AbstractPM> classe, int probabilita){
         this.powerupList.add(
                 new PowerupMalusRecord(classe, probabilita)
         );
@@ -29,7 +29,7 @@ public class PowerupMalusList {
      * @param <T> Tipo di restituzione del metodo
      * @return Restituisce un powerup
      */
-    public <T extends AbstractPowerUpMalus> T getPowerup(Vector2D position, Vector2D size, GameLoop gameLoop){
+    public <T extends AbstractPM> T getPowerup(Vector2D position, Vector2D size, GameLoop gameLoop){
         T esito = null;
 
         for(int i = 0; i < this.powerupList.size() && esito == null; i++){
@@ -46,16 +46,16 @@ public class PowerupMalusList {
     }
 
     public class PowerupMalusRecord{
-        private final Class<? extends AbstractPowerUpMalus> classe;
+        private final Class<? extends AbstractPM> classe;
         private final int probabilitaSpawn;
 
-        public PowerupMalusRecord(Class<? extends AbstractPowerUpMalus> classe, int percentualeSpawn) {
+        public PowerupMalusRecord(Class<? extends AbstractPM> classe, int percentualeSpawn) {
             this.classe = classe;
             this.probabilitaSpawn = percentualeSpawn;
         }
 
         //Beam
-        public Class<? extends AbstractPowerUpMalus> getClasse() {
+        public Class<? extends AbstractPM> getClasse() {
             return classe;
         }
 

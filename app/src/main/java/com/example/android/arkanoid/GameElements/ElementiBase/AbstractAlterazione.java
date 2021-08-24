@@ -1,8 +1,8 @@
-package com.example.android.arkanoid.GameElements.BaseElements;
+package com.example.android.arkanoid.GameElements.ElementiBase;
 
 import com.example.android.arkanoid.Util.ParamList;
 
-public abstract class Alterazione {
+public abstract class AbstractAlterazione {
     protected int durata;                       //Durata dell'alterazione
 
     protected long lastTimeStamp;               //Ultimo timeStamp per il controllo della durata
@@ -10,7 +10,7 @@ public abstract class Alterazione {
 
     protected String nomeAlterazione;           //Nome dell'alterazione
 
-    public Alterazione(int durata, String nomeAlterazione) {
+    public AbstractAlterazione(int durata, String nomeAlterazione) {
         this.nomeAlterazione = nomeAlterazione;
         this.durata = durata;
 

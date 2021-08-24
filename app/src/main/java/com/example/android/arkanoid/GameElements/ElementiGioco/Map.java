@@ -1,5 +1,7 @@
-package com.example.android.arkanoid.GameElements;
+package com.example.android.arkanoid.GameElements.ElementiGioco;
 
+import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
+import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.lang.reflect.Method;
@@ -14,6 +16,9 @@ public class Map {
     private final int mapWidth;                             //Larghezza della mappa
     private final int mapHeight;                            //Altezza della mappa
 
+    private final Sprite[] coloriBrick;                           //Colore dei brick
+    private final MultiSprite spriteCrepe;                        //Sprite delle crepe
+
     private boolean aviable;                                //Flag di aviabilità della mappa
 
     private Brick[][] elementiMappa;                        //Brick presenti nella mappa
@@ -21,7 +26,7 @@ public class Map {
     private int rigaCorrente;                               //Riga corrente per restituire il prossimo elemento
     private int colonnaCorrente;                            //Colonna corrente per restituire il prossimo elemento
 
-    public Map(int nRighe, int nColonne, Vector2D position, Vector2D size){
+    public Map(int nRighe, int nColonne, Vector2D position, Vector2D size, Sprite[] coloriBrick, MultiSprite spriteCrepe){
         this.nRighe = nRighe;
         this.nColonne = nColonne;
 
@@ -32,6 +37,9 @@ public class Map {
 
         this.rigaCorrente = 0;
         this.colonnaCorrente = 0;
+
+        this.coloriBrick = coloriBrick;
+        this.spriteCrepe = spriteCrepe;
 
         try{
             this.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazione", int.class, int.class), this);
@@ -59,7 +67,7 @@ public class Map {
      * @param possessoreMetodo Oggetto che possiede il metodo di generazione della mappa
      * @throws Exception Eccezzione lanciata nel caso di problemi con la generazione
      */
-    private void generaMappa(Method metodoGenerazione, Object possessoreMetodo) throws Exception{
+    public void generaMappa(Method metodoGenerazione, Object possessoreMetodo) throws Exception{
         this.aviable = false;
         this.elementiMappa = new Brick[this.nRighe][this.nColonne]; //Svuota l'array degli elementi
 
@@ -69,20 +77,21 @@ public class Map {
 
         //la posizione startX e startY fanno si che la posizione del blocco sia al centro per questo incrementiamo la prima volta della metà della dimensione sull'asse
         int startY = (int)(this.posY + (brickHeight * 0.5));
-        for(int i = 0; i < this.elementiMappa.length; i++){
+        for(int i = 0; i < this.nRighe; i++){
             int startX = (int)(this.posX + (brickWidth * 0.5));
-            for(int j = 0; j < this.elementiMappa[0].length; j++){
+            for(int j = 0; j < this.nColonne; j++){
                 if((boolean)metodoGenerazione.invoke(possessoreMetodo, i, j)){
                     //Prima generazione casuale, il meccanismo può essere facilmente modificato
-                    Brick brick = new Brick(
-                            1 + (int)(Math.random() * (Map.MAX_HEALTH_BRICK - 1) ),
-                            new Vector2D(
-                                    startX,
-                                    startY
-                            ),
-                            new Vector2D(brickWidth, brickHeight)
-                    );
-                    this.elementiMappa[i][j] = brick;   //Impostiamo il valore
+                    try{
+                        Brick brick = new Brick(
+                                new Vector2D(startX, startY),
+                                new Vector2D(brickWidth, brickHeight),
+                                this.coloriBrick[(i + j) % this.coloriBrick.length],
+                                this.spriteCrepe,
+                                1 + (int)(Math.random() * (Map.MAX_HEALTH_BRICK - 1) )
+                        );
+                        this.elementiMappa[i][j] = brick;   //Impostiamo il valore
+                    }catch (Exception e){e.printStackTrace();}
                 }
                 startX += brickWidth;
             }

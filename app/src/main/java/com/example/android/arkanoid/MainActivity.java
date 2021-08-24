@@ -1,18 +1,16 @@
 package com.example.android.arkanoid;
 
 import android.content.pm.ActivityInfo;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
-import com.example.android.arkanoid.GameElements.BaseElements.GameStatus;
-import com.example.android.arkanoid.GameElements.BaseElements.PowerupMalusList;
-import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeeUp;
+import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
+import com.example.android.arkanoid.GameElements.ElementiBase.PMList;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeedUp;
 import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeedDown;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
-import com.example.android.arkanoid.GameElements.BaseElements.Stile;
-import com.example.android.arkanoid.Util.Util;
+import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 
 public class MainActivity extends AppCompatActivity {
     private GameLoop gameLoop;
@@ -30,9 +28,9 @@ public class MainActivity extends AppCompatActivity {
 
         Stile stile = new Stile();
         GameStatus status = new GameStatus(3, 0);
-        PowerupMalusList powerupList = new PowerupMalusList();
+        PMList powerupList = new PMList();
 
-        powerupList.addPowerupMalus(BallSpeeUp.class, 20);
+        powerupList.addPowerupMalus(BallSpeedUp.class, 20);
         powerupList.addPowerupMalus(BallSpeedDown.class, 10);
 
         ModalitaClassica modalitaClassica = new ModalitaClassica(stile, status, powerupList);

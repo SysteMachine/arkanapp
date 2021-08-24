@@ -1,14 +1,13 @@
 package com.example.android.arkanoid.GameElements.AlterazioniDefinite;
 
-import com.example.android.arkanoid.GameElements.Ball;
-import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
-import com.example.android.arkanoid.GameElements.BaseElements.Alterazione;
-import com.example.android.arkanoid.GameElements.BaseElements.GameStatus;
+import com.example.android.arkanoid.GameElements.ElementiGioco.Ball;
+import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
+import com.example.android.arkanoid.GameElements.ElementiBase.AbstractAlterazione;
+import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.Util.ParamList;
 
-public class AlterazioneVelocitaPalla extends Alterazione{
-    private float percentualeIncremento;            //Percentuale di incremento della velocità della palla
-    private float vecchiaVelocita;                  //Vecchia velocità della palla
+public class AlterazioneVelocitaPalla extends AbstractAlterazione {
+    private final float percentualeIncremento;            //Percentuale di incremento della velocità della palla
 
     public AlterazioneVelocitaPalla(int durata, float percentualeIncremento) {
         super(durata, "Ball speed-up");
@@ -22,8 +21,7 @@ public class AlterazioneVelocitaPalla extends Alterazione{
         if(scena != null){
             Ball palla = scena.getFirstEntityByName("Ball");
             if(palla != null){
-                this.vecchiaVelocita = palla.getSpeed();
-                palla.setSpeed(palla.getSpeed() * this.percentualeIncremento);
+                palla.setSpeed(palla.getSpeed().prodottoPerScalare(percentualeIncremento));
                 esito = true;
             }
         }
@@ -36,7 +34,7 @@ public class AlterazioneVelocitaPalla extends Alterazione{
         if(scena != null){
             Ball palla = scena.getFirstEntityByName("Ball");
             if(palla != null){
-                palla.setSpeed(this.vecchiaVelocita);
+                palla.setSpeed(palla.getSpeed().prodottoPerScalare(1.0f / this.percentualeIncremento));
             }
         }
     }

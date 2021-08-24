@@ -1,4 +1,4 @@
-package com.example.android.arkanoid.GameElements.BaseElements;
+package com.example.android.arkanoid.GameElements.ElementiBase;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -24,11 +24,12 @@ public abstract class AbstractScene extends AbstractGameComponent {
 
     public AbstractScene(int zIndex) {
         super(zIndex);
-        this.entita = new LinkedList<AbstractEntity>();
+        this.entita = new LinkedList<>();
     }
 
     @Override
     protected void setGameLoop(GameLoop gameLoop) {
+        //Inizializza le dimensioni dello schermo
         this.lastScreenWidth = gameLoop.getCanvasWidht();
         this.lastScreenHeight = gameLoop.getCanvasHeight();
         super.setGameLoop(gameLoop);
@@ -40,7 +41,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * @return Restituisce la lista delle entità che rispettano il nome inserito
      */
     public AbstractEntity[] getEntityByName(String name){
-        ArrayList<AbstractEntity> trovati = new ArrayList<AbstractEntity>();
+        ArrayList<AbstractEntity> trovati = new ArrayList<>();
         for(AbstractEntity ae : this.entita){
             if(ae.getName() != null && ae.getName().equals(name)){
                 trovati.add(ae);
@@ -100,9 +101,8 @@ public abstract class AbstractScene extends AbstractGameComponent {
     protected ParamList creaParametriEntita(){
         ParamList parametri = new ParamList();
 
-        boolean esito = parametri.add(AbstractScene.PARAMETRO_ENTITA, this.entita.toArray(new AbstractEntity[this.entita.size()]));
-        esito = parametri.add(AbstractScene.PARAMETRO_SCENA, this);
-
+        parametri.add(AbstractScene.PARAMETRO_ENTITA, this.entita.toArray(new AbstractEntity[this.entita.size()]));
+        parametri.add(AbstractScene.PARAMETRO_SCENA, this);
 
         return parametri;
     }
@@ -122,24 +122,27 @@ public abstract class AbstractScene extends AbstractGameComponent {
     }
 
     @Override
+    public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint){
+        for(AbstractEntity ae : this.entita){
+            ae.drawEntity(canvas, paint);
+        }
+    }
+
+    @Override
     public void ownerSizeChange(int newScreenWidth, int newScreenHeight) {
-        if(this.lastScreenWidth != 0 && this.lastScreenHeight != 0){
-            float pesoWidht = (float)newScreenWidth / (float)this.lastScreenWidth;
-            float pesoHeight = (float)newScreenHeight / (float)this.lastScreenHeight;
-            Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
-            for(AbstractEntity ae : this.entita){
-                ae.setPosition(ae.getPosition().prodottoPerVettore(scaleVector));
-                ae.setSize(ae.getSize().prodottoPerVettore(scaleVector));
-                ae.setDirection(ae.getDirection().prodottoPerVettore(scaleVector));
-            }
+        float pesoWidht = (float)newScreenWidth / (float)this.lastScreenWidth;
+        float pesoHeight = (float)newScreenHeight / (float)this.lastScreenHeight;
+        Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
+        for(AbstractEntity ae : this.entita){
+            //Quando c'è un ridimensionamento dello schermo cambia il dimensionamento delle entita in posizione, dimensione e velocita
+            ae.setPosition(ae.getPosition().prodottoPerVettore(scaleVector));
+            ae.setSize(ae.getSize().prodottoPerVettore(scaleVector));
+            ae.setSpeed(ae.getSpeed().prodottoPerVettore(scaleVector));
         }
 
         this.lastScreenWidth = newScreenWidth;
         this.lastScreenHeight = newScreenHeight;
     }
-
-    @Override
-    public abstract void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint);
 
     /**
      * Permette alle entità di inviare un evento alla scena

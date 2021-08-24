@@ -1,4 +1,4 @@
-package com.example.android.arkanoid.GameElements.BaseElements;
+package com.example.android.arkanoid.GameElements.ElementiBase;
 
 public class GameStatus {
     protected int health;
