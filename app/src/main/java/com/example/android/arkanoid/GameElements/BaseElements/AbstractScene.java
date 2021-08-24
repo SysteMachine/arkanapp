@@ -42,7 +42,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
     public AbstractEntity[] getEntityByName(String name){
         ArrayList<AbstractEntity> trovati = new ArrayList<AbstractEntity>();
         for(AbstractEntity ae : this.entita){
-            if(ae.getName().equals(name)){
+            if(ae.getName() != null && ae.getName().equals(name)){
                 trovati.add(ae);
             }
         }

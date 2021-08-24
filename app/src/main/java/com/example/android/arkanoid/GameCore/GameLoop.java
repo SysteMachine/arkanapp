@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 
 import java.util.Comparator;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 
 //GameLoop
@@ -276,7 +277,8 @@ public class GameLoop extends CustomTextureView implements Runnable {
                 try{
                     this.update(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                     this.render(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
-                }catch(Exception e){e.printStackTrace();}
+                }catch(ConcurrentModificationException e){}
+                catch(Exception e){e.printStackTrace();}
             }
 
             //Disegno sullo schermo

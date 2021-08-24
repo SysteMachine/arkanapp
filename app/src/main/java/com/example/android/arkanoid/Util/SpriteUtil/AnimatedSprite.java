@@ -37,6 +37,12 @@ public final class AnimatedSprite extends MultiSprite{
         super.drawSprite(posX, posY, width, height, canvas, paint);
     }
 
+    @Override
+    public void drawSprite(int posX, int posY, Canvas canvas, Paint paint) {
+        this.aggiornaFrame();
+        super.drawSprite(posX, posY, canvas, paint);
+    }
+
     //Beam
     public int getFps() {
         return fps;

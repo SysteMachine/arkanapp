@@ -7,25 +7,38 @@ import android.view.View;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.Ball;
+import com.example.android.arkanoid.GameElements.BaseElements.AbstractPowerUpMalus;
 import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
+import com.example.android.arkanoid.GameElements.BaseElements.Alterazione;
 import com.example.android.arkanoid.GameElements.BaseElements.GameStatus;
 import com.example.android.arkanoid.GameElements.Brick;
 import com.example.android.arkanoid.GameElements.Map;
 import com.example.android.arkanoid.GameElements.Paddle;
 import com.example.android.arkanoid.GameElements.BaseElements.Stile;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeeUp;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.ParamList;
+import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
+import com.example.android.arkanoid.Util.Util;
 import com.example.android.arkanoid.VectorMat.Vector2D;
+
+import java.util.ArrayList;
 
 public class ModalitaClassica extends AbstractScene implements View.OnTouchListener{
     public final static String EVENTO_BLOCCO_ROTTO = "rotturaBlocco";
+    public final static String EVENTO_POWERUP = "powerup";
+    public final static String EVENTO_RIMOZIONE_POWERUP = "rimozionePowerup";
+
     public final static String MAPPA = "Mappa";
 
     protected Ball palla;
     protected Paddle paddle;
     protected Map mappa;
+
+    protected ArrayList<AbstractPowerUpMalus> powerUpMalus;
+    protected ArrayList<Alterazione> alterazioni;
 
     protected float rotazionePalla;
 
@@ -34,8 +47,10 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected Sprite[] sBrick;
     protected MultiSprite sCrepe;
     protected Sprite sSfondo;
-    protected Sprite sBottom;
-    protected Sprite sZonaPunteggio;
+
+    protected AnimatedSprite sIndicatoreVita;
+    protected Vector2D posizioneIndicatoreVita;
+    protected Vector2D dimensioneIndicatoreVita;
 
     protected Stile stile;
     protected GameStatus status;
@@ -48,6 +63,9 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.stile = stile;
         this.status = status;
         this.risorseCaricate = false;
+
+        this.powerUpMalus = new ArrayList<AbstractPowerUpMalus>();
+        this.alterazioni = new ArrayList<Alterazione>();
     }
 
     @Override
@@ -119,6 +137,29 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     }
 
     /**
+     * Disegna l'indicatore della vita
+     * @param canvas Cancas di disengo
+     * @param paint Paint di disegno
+     */
+    protected void disegnaIndicatoreVita(Canvas canvas, Paint paint){
+        if(this.sIndicatoreVita != null && this.status != null){
+            int startX = (int)this.posizioneIndicatoreVita.getPosX();
+            int startY = (int)this.posizioneIndicatoreVita.getPosY();
+            int step = (int)this.dimensioneIndicatoreVita.getPosX();
+
+            for(int i = 0; i < this.status.getHealth(); i++){
+                this.sIndicatoreVita.drawSprite(
+                        startX,
+                        startY,
+                        canvas,
+                        paint
+                );
+                startX += step;
+            }
+        }
+    }
+
+    /**
      * Disegna i brick presenti nella scena
      * @param canvas Canvas di disegno
      * @param paint Paint di disegno
@@ -160,6 +201,32 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     }
 
     /**
+     * Disegna i powerup sullo schermo
+     * @param canvas Canvas di disegno
+     * @param paint Paint di disegno
+     */
+    protected void disegnaPowerup(Canvas canvas, Paint paint){
+        for(AbstractPowerUpMalus apum : this.powerUpMalus){
+            Sprite sprite = apum.getPowerUpMalusImage();
+            sprite.drawSprite(
+                    (int)apum.getPosition().getPosX(),
+                    (int)apum.getPosition().getPosY(),
+                    canvas,
+                    paint
+            );
+        }
+    }
+
+    /**
+     * Logica di gestione delle alterazioni
+     */
+    protected void logicaAlterazioni(){
+        for(Alterazione alterazione : this.alterazioni){
+            alterazione.logica(this.status, this.creaParametriEntita());
+        }
+    }
+
+    /**
      * Inizializza le risorse della scena
      * @param screenWidht Larghezza dello schermo
      * @param screenHeight Altezza dello schermo
@@ -171,6 +238,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 this.stile.getAngoloDiLancioMassimoPalla(),
                 (int)(this.stile.getPercentualeRaggioPalla() * screenWidht)
         );
+        this.palla.setOffsetCollisioneSuperiore(80);
         this.rotazionePalla = 0;
         this.sPalla = this.stile.getImmaginePallaStile(this.owner);
 
@@ -195,8 +263,9 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.sSfondo = this.stile.getImmagineSfondoStile(this.owner);
         this.sCrepe = new MultiSprite(R.drawable.crepebrick, this.owner, 10);
 
-        this.sBottom = this.stile.getImmagineBottomStile(this.owner);
-        this.sZonaPunteggio = this.stile.getImmagineZonaPunteggioStile(this.owner);
+        this.sIndicatoreVita = new AnimatedSprite(R.drawable.indicatori_vita, this.owner, 4, 5);
+        this.dimensioneIndicatoreVita = new Vector2D(50, 50);
+        this.posizioneIndicatoreVita = new Vector2D(0 + (this.dimensioneIndicatoreVita.getPosX() * 0.5f), 20 + (this.dimensioneIndicatoreVita.getPosY() * 0.5f));
     }
 
     /**
@@ -223,7 +292,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.sSfondo.resizeImage(screenWidth, screenHeight);
         this.sCrepe.resizeImage(firstBrick.getSize());
 
-        //TODO ridimensionare crepe bottom e zonaPunteggio -> controllare le sottoclassi di sprite per il ridimensionamento
+        this.sIndicatoreVita.resizeImage(this.dimensioneIndicatoreVita);
     }
 
     /**
@@ -255,6 +324,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         super.update(dt, screenWidth, screenHeight, canvas, paint);
         if(this.palla != null && this.palla.isMoving())
             this.rotazionePalla += this.stile.getVelocitaRotazionePalla() * dt;
+        this.logicaAlterazioni();
     }
 
     @Override
@@ -264,6 +334,9 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             this.disegnaPalla(canvas, paint);
             this.disegnaPaddle(canvas, paint);
             this.disegnaMappa(canvas, paint);
+
+            this.disegnaPowerup(canvas, paint);
+            this.disegnaIndicatoreVita(canvas, paint);
         }else{
             //TODO schermata di caricamento
         }
@@ -271,13 +344,45 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     @Override
     public void ownerSizeChange(int newScreenWidth, int newScreenHeight) {
+        if(this.lastScreenWidth != 0 && this.lastScreenHeight != 0) {
+            float pesoWidht = (float) newScreenWidth / (float) this.lastScreenWidth;
+            float pesoHeight = (float) newScreenHeight / (float) this.lastScreenHeight;
+            Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
+
+            //Cambio la size per gli elementi della scenaClassica
+            this.palla.setOffsetCollisioneSuperiore((int)(this.palla.getOffsetCollisioneSuperiore() * pesoHeight));
+
+            this.dimensioneIndicatoreVita = this.dimensioneIndicatoreVita.prodottoPerVettore(scaleVector);
+            this.posizioneIndicatoreVita = this.posizioneIndicatoreVita.prodottoPerVettore(scaleVector);
+        }
         super.ownerSizeChange(newScreenWidth, newScreenHeight);
         resizeImages(newScreenWidth, newScreenHeight);
     }
 
     @Override
     public void sendEvent(String idEvent, ParamList parametri) {
-        System.out.println("Evento: " + idEvent);
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_BLOCCO_ROTTO) && Util.probabilita(10)){
+            Brick brick = parametri.get("brick");
+            BallSpeeUp ballSpeeUp = new BallSpeeUp(brick.getPosition(), new Vector2D(100, 100), this.owner);
+            this.powerUpMalus.add(ballSpeeUp);
+            this.addEntita(ballSpeeUp);
+        }
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_POWERUP)){
+            AbstractPowerUpMalus powerupMalus = parametri.get("powerup");
+            this.powerUpMalus.remove(powerupMalus);
+            this.removeEntita(powerupMalus);
+        }
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_POWERUP)){
+            AbstractPowerUpMalus powerupMalus = parametri.get("powerup");
+            Alterazione alterazione = powerupMalus.getAlterazione();
+            alterazione.attivaAlterazione(this.status, this.creaParametriEntita());
+            this.alterazioni.add(alterazione);
+            this.powerUpMalus.remove(powerupMalus);
+            this.removeEntita(powerupMalus);
+        }
     }
 
     //Eventi

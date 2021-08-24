@@ -13,8 +13,11 @@ public class Ball extends AbstractEntity {
     private final Vector2D startPosition;           //Posizione iniziale della palla
     private boolean isMoving;                       //Flag di controllo del movimento della palla
     private int raggio;                             //Raggio della palla
+    private int offsetCollisioneSuperiore;          //Numero sotto il quale la posizione y della palla non può essere impostato
 
     public Ball(float speed, Vector2D startPosition, int angoloInizialeLancioMassimo, int raggio){
+        this.offsetCollisioneSuperiore = 0;
+
         this.angoloInizialeLancioMassimo = angoloInizialeLancioMassimo;
         this.startPosition = startPosition;
         this.raggio = raggio;
@@ -58,7 +61,7 @@ public class Ball extends AbstractEntity {
         float yDown = posizione.getPosY() + this.raggio;
 
         float dirX = this.direction.getPosX() * (xLeft < 0 || xRight > screenWidth ? -1 : 1);
-        float dirY = this.direction.getPosY() * (yUp < 0 || yDown > screenHeight ? -1 : 1);
+        float dirY = this.direction.getPosY() * (yUp < this.offsetCollisioneSuperiore || yDown > screenHeight ? -1 : 1);
 
         esito = new Vector2D(dirX, dirY);
 
@@ -128,8 +131,12 @@ public class Ball extends AbstractEntity {
                         //Aggiornamento delle coordinate
                         esito = new Vector2D(dirX, dirY);
                         brick.decrementaVita();
-                        if(brick.getHealth() == 0)
-                            scena.sendEvent(ModalitaClassica.EVENTO_BLOCCO_ROTTO, new ParamList());
+                        if(brick.getHealth() == 0){
+                            ParamList paramList = new ParamList();
+                            paramList.add("brick", brick);
+                            scena.sendEvent(ModalitaClassica.EVENTO_BLOCCO_ROTTO, paramList);
+                        }
+
                     }
                 }
 
@@ -192,5 +199,13 @@ public class Ball extends AbstractEntity {
 
     public int getAngoloInizialeLancioMassimo() {
         return angoloInizialeLancioMassimo;
+    }
+
+    public int getOffsetCollisioneSuperiore() {
+        return offsetCollisioneSuperiore;
+    }
+
+    public void setOffsetCollisioneSuperiore(int offsetCollisioneSuperiore) {
+        this.offsetCollisioneSuperiore = offsetCollisioneSuperiore;
     }
 }

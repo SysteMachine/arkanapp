@@ -1,6 +1,7 @@
 package com.example.android.arkanoid;
 
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -8,6 +9,7 @@ import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.BaseElements.GameStatus;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.BaseElements.Stile;
+import com.example.android.arkanoid.Util.Util;
 
 public class MainActivity extends AppCompatActivity {
     private GameLoop gameLoop;
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         this.gameLoop.start();
 
         Stile stile = new Stile();
-        GameStatus status = new GameStatus(10, 0);
+        GameStatus status = new GameStatus(3, 0);
         ModalitaClassica modalitaClassica = new ModalitaClassica(stile, status);
         this.gameLoop.addGameComponentWithSetup(modalitaClassica);
     }

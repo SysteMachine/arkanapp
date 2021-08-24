@@ -34,12 +34,6 @@ public class Stile {
     protected int immagineSfondo;
     protected ReplaceColorRecord[] coloriSfondo;
 
-    protected int immagineBottom;
-    protected ReplaceColorRecord[] coloriBottom;
-
-    protected int immagineZonaPunteggio;
-    protected ReplaceColorRecord[] coloriZonaPunteggio;
-
     protected int suonoBackground;
     protected int suonoCollisionePalla;
     protected int suonoRotturaBlocco;
@@ -48,7 +42,7 @@ public class Stile {
         this.setStilePalla();
         this.setStilePaddle();
         this.setStileBrick();
-        this.setStileSfondoPunteggioBottom();
+        this.setStileSfondo();
     }
 
     /**
@@ -139,19 +133,9 @@ public class Stile {
     /**
      * Imposta lo stile dello sfondo, del punteggio e del bottom
      */
-    protected void setStileSfondoPunteggioBottom(){
-        this.immagineSfondo = R.drawable.stilebase_sfondo;
-        this.coloriSfondo = new ReplaceColorRecord[2];
-        this.coloriSfondo[0] = new ReplaceColorRecord(Color.BLACK, Color.rgb(65, 65, 128), 200);
-        this.coloriSfondo[1] = new ReplaceColorRecord(Color.WHITE, Color.YELLOW, 200);
-
-        this.immagineBottom = R.drawable.stilebase_bottom;
-        this.coloriBottom = new ReplaceColorRecord[1];
-        this.coloriBottom[0] = new ReplaceColorRecord(Color.WHITE, Color.RED, 200);
-
-        this.immagineZonaPunteggio = R.drawable.stilebase_zonapunteggio;
-        this.coloriZonaPunteggio =  new ReplaceColorRecord[1];
-        this.coloriZonaPunteggio[0] = new ReplaceColorRecord(Color.WHITE, Color.BLUE, 200);
+    protected void setStileSfondo(){
+        this.immagineSfondo = R.drawable.stilebase_background;
+        this.coloriSfondo = new ReplaceColorRecord[0];
     }
 
     /**
@@ -162,30 +146,6 @@ public class Stile {
     public Sprite getImmagineSfondoStile(GameLoop gameLoop){
         Sprite sprite = new Sprite(this.immagineSfondo, gameLoop);
         for(ReplaceColorRecord rc : this.coloriSfondo)
-            sprite.replaceColor(rc.getFromColor(), rc.getTargetColor(), rc.getTollerance());
-        return  sprite;
-    }
-
-    /**
-     * Restituisce l'immagine del bottom con lo stile impostato
-     * @param gameLoop GameLoop per il caricamento dell' immagine
-     * @return Restituisce lo sprite caricato
-     */
-    public Sprite getImmagineBottomStile(GameLoop gameLoop){
-        Sprite sprite = new Sprite(this.immagineBottom, gameLoop);
-        for(ReplaceColorRecord rc : this.coloriBottom)
-            sprite.replaceColor(rc.getFromColor(), rc.getTargetColor(), rc.getTollerance());
-        return  sprite;
-    }
-
-    /**
-     * Restituisce l'immagine della zona del punteggio con lo stile impostato
-     * @param gameLoop GameLoop per il caricamento dell' immagine
-     * @return Restituisce lo sprite caricato
-     */
-    public Sprite getImmagineZonaPunteggioStile(GameLoop gameLoop){
-        Sprite sprite = new Sprite(this.immagineZonaPunteggio, gameLoop);
-        for(ReplaceColorRecord rc : this.coloriZonaPunteggio)
             sprite.replaceColor(rc.getFromColor(), rc.getTargetColor(), rc.getTollerance());
         return  sprite;
     }
@@ -358,37 +318,5 @@ public class Stile {
 
     public void setColoriSfondo(ReplaceColorRecord[] coloriSfondo) {
         this.coloriSfondo = coloriSfondo;
-    }
-
-    public int getImmagineBottom() {
-        return immagineBottom;
-    }
-
-    public void setImmagineBottom(int immagineBottom) {
-        this.immagineBottom = immagineBottom;
-    }
-
-    public ReplaceColorRecord[] getColoriBottom() {
-        return coloriBottom;
-    }
-
-    public void setColoriBottom(ReplaceColorRecord[] coloriBottom) {
-        this.coloriBottom = coloriBottom;
-    }
-
-    public int getImmagineZonaPunteggio() {
-        return immagineZonaPunteggio;
-    }
-
-    public void setImmagineZonaPunteggio(int immagineZonaPunteggio) {
-        this.immagineZonaPunteggio = immagineZonaPunteggio;
-    }
-
-    public ReplaceColorRecord[] getColoriZonaPunteggio() {
-        return coloriZonaPunteggio;
-    }
-
-    public void setColoriZonaPunteggio(ReplaceColorRecord[] coloriZonaPunteggio) {
-        this.coloriZonaPunteggio = coloriZonaPunteggio;
     }
 }

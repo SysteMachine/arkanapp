@@ -4,17 +4,15 @@ import com.example.android.arkanoid.Util.ParamList;
 
 public abstract class Alterazione {
     protected int durata;                       //Durata dell'alterazione
-    protected float probabilitaSpawn;           //Probabilità di spawn
 
     protected long lastTimeStamp;               //Ultimo timeStamp per il controllo della durata
     protected boolean alterazioneAttiva;        //Flag di alterazione attiva
 
     protected String nomeAlterazione;           //Nome dell'alterazione
 
-    public Alterazione(int durata, float probabilitaSpawn, String nomeAlterazione) {
+    public Alterazione(int durata, String nomeAlterazione) {
         this.nomeAlterazione = nomeAlterazione;
         this.durata = durata;
-        this.probabilitaSpawn = probabilitaSpawn;
 
         this.lastTimeStamp = 0;
         this.alterazioneAttiva = false;
@@ -81,14 +79,6 @@ public abstract class Alterazione {
 
     public void setDurata(int durata) {
         this.durata = durata;
-    }
-
-    public float getProbabilitaSpawn() {
-        return probabilitaSpawn;
-    }
-
-    public void setProbabilitaSpawn(float probabilitaSpawn) {
-        this.probabilitaSpawn = probabilitaSpawn;
     }
 
     public long getLastTimeStamp() {
