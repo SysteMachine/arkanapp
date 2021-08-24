@@ -16,7 +16,6 @@ public class BallSpeeUp extends AbstractPowerUpMalus {
                 R.drawable.alterazione_ball_speed_up,
                 gameLoop
         );
-
         this.setName("ballSpeedUp");
     }
 }

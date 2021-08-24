@@ -11,6 +11,7 @@ import com.example.android.arkanoid.GameElements.BaseElements.AbstractPowerUpMal
 import com.example.android.arkanoid.GameElements.BaseElements.AbstractScene;
 import com.example.android.arkanoid.GameElements.BaseElements.Alterazione;
 import com.example.android.arkanoid.GameElements.BaseElements.GameStatus;
+import com.example.android.arkanoid.GameElements.BaseElements.PowerupMalusList;
 import com.example.android.arkanoid.GameElements.Brick;
 import com.example.android.arkanoid.GameElements.Map;
 import com.example.android.arkanoid.GameElements.Paddle;
@@ -38,7 +39,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected Map mappa;
 
     protected ArrayList<AbstractPowerUpMalus> powerUpMalus;
-    protected ArrayList<Alterazione> alterazioni;
+    protected ArrayList<AbstractPowerUpMalus> powerUpAttivi;
 
     protected float rotazionePalla;
 
@@ -50,22 +51,28 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     protected AnimatedSprite sIndicatoreVita;
     protected Vector2D posizioneIndicatoreVita;
-    protected Vector2D dimensioneIndicatoreVita;
+    protected float percentualeDimensioneIndicatore;
 
     protected Stile stile;
     protected GameStatus status;
+    protected PowerupMalusList powerupList;
+    protected float percentualeDimensionePowerup;
 
     protected boolean risorseCaricate;
 
-    public ModalitaClassica(Stile stile, GameStatus status) {
+    public ModalitaClassica(Stile stile, GameStatus status, PowerupMalusList powerupList) {
         super(0);
 
         this.stile = stile;
         this.status = status;
         this.risorseCaricate = false;
 
+        this.powerupList = powerupList;
         this.powerUpMalus = new ArrayList<AbstractPowerUpMalus>();
-        this.alterazioni = new ArrayList<Alterazione>();
+        this.powerUpAttivi = new ArrayList<AbstractPowerUpMalus>();
+
+        this.percentualeDimensioneIndicatore = 0.05f;
+        this.percentualeDimensionePowerup = 0.1f;
     }
 
     @Override
@@ -145,7 +152,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         if(this.sIndicatoreVita != null && this.status != null){
             int startX = (int)this.posizioneIndicatoreVita.getPosX();
             int startY = (int)this.posizioneIndicatoreVita.getPosY();
-            int step = (int)this.dimensioneIndicatoreVita.getPosX();
+            int step = this.sIndicatoreVita.getSingleWidht();
 
             for(int i = 0; i < this.status.getHealth(); i++){
                 this.sIndicatoreVita.drawSprite(
@@ -205,7 +212,9 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * @return Restituisce i parametri dell'alterazione
      */
     protected ParamList creaParametriAlterazioni(){
-        return null;
+        ParamList parametri = new ParamList();
+        parametri = this.creaParametriEntita();
+        return parametri;
     }
 
     /**
@@ -225,12 +234,31 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         }
     }
 
+    protected void disegnaPowerupAttivi(int screenWidht, Canvas canvas, Paint paint){
+        int startX = screenWidht;
+        int startY = 0;
+
+        for(AbstractPowerUpMalus apum : this.powerUpAttivi){
+            if(apum.getAlterazione().isAlterazioneAttiva()){
+                //Solo se l'alterazione è attiva viene disegnata
+                startX -= apum.getSize().getPosX() * 0.5f;
+                Sprite sprite = apum.getPowerUpMalusImage();
+                sprite.drawSprite(
+                        startX,
+                        startY + (int)(apum.getSize().getPosY() * 0.5f),
+                        canvas,
+                        paint
+                );
+            }
+        }
+    }
+
     /**
      * Logica di gestione delle alterazioni
      */
     protected void logicaAlterazioni(){
-        for(Alterazione alterazione : this.alterazioni){
-            alterazione.logica(this.status, this.creaParametriEntita());
+        for(AbstractPowerUpMalus apum : this.powerUpAttivi){
+            apum.getAlterazione().logica(this.status, this.creaParametriAlterazioni());
         }
     }
 
@@ -272,8 +300,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.sCrepe = new MultiSprite(R.drawable.crepebrick, this.owner, 10);
 
         this.sIndicatoreVita = new AnimatedSprite(R.drawable.indicatori_vita, this.owner, 4, 5);
-        this.dimensioneIndicatoreVita = new Vector2D(50, 50);
-        this.posizioneIndicatoreVita = new Vector2D(0 + (this.dimensioneIndicatoreVita.getPosX() * 0.5f), 20 + (this.dimensioneIndicatoreVita.getPosY() * 0.5f));
+        this.posizioneIndicatoreVita = new Vector2D(0 + (this.percentualeDimensioneIndicatore * screenWidht), 0 + (this.percentualeDimensioneIndicatore * screenWidht));
     }
 
     /**
@@ -300,7 +327,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.sSfondo.resizeImage(screenWidth, screenHeight);
         this.sCrepe.resizeImage(firstBrick.getSize());
 
-        this.sIndicatoreVita.resizeImage(this.dimensioneIndicatoreVita);
+        this.sIndicatoreVita.resizeImage((int)(this.percentualeDimensioneIndicatore * screenWidth), (int)(this.percentualeDimensioneIndicatore * screenWidth));
     }
 
     /**
@@ -345,6 +372,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
             this.disegnaPowerup(canvas, paint);
             this.disegnaIndicatoreVita(canvas, paint);
+            this.disegnaPowerupAttivi(screenWidth, canvas, paint);
         }else{
             //TODO schermata di caricamento
         }
@@ -359,8 +387,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
             //Cambio la size per gli elementi della scenaClassica
             this.palla.setOffsetCollisioneSuperiore((int)(this.palla.getOffsetCollisioneSuperiore() * pesoHeight));
-
-            this.dimensioneIndicatoreVita = this.dimensioneIndicatoreVita.prodottoPerVettore(scaleVector);
             this.posizioneIndicatoreVita = this.posizioneIndicatoreVita.prodottoPerVettore(scaleVector);
         }
         super.ownerSizeChange(newScreenWidth, newScreenHeight);
@@ -370,11 +396,20 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     @Override
     public void sendEvent(String idEvent, ParamList parametri) {
 
-        if(idEvent.equals(ModalitaClassica.EVENTO_BLOCCO_ROTTO) && Util.probabilita(10)){
-            Brick brick = parametri.get("brick");
-            BallSpeeUp ballSpeeUp = new BallSpeeUp(brick.getPosition(), new Vector2D(100, 100), this.owner);
-            this.powerUpMalus.add(ballSpeeUp);
-            this.addEntita(ballSpeeUp);
+        if(idEvent.equals(ModalitaClassica.EVENTO_BLOCCO_ROTTO)){
+            if(this.powerupList != null){
+                Brick brick = parametri.get("brick");
+                AbstractPowerUpMalus powerup = this.powerupList.getPowerup(
+                        brick.getPosition(),
+                        new Vector2D(this.lastScreenWidth * this.percentualeDimensionePowerup, this.lastScreenWidth * this.percentualeDimensionePowerup),
+                        this.owner
+                );
+                if(powerup != null){
+                    //Solo se il powerup è stato spawnato
+                    this.powerUpMalus.add(powerup);
+                    this.addEntita(powerup);
+                }
+            }
         }
 
         if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_POWERUP)){
@@ -385,11 +420,10 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
         if(idEvent.equals(ModalitaClassica.EVENTO_POWERUP)){
             AbstractPowerUpMalus powerupMalus = parametri.get("powerup");
-            Alterazione alterazione = powerupMalus.getAlterazione();
-            alterazione.attivaAlterazione(this.status, this.creaParametriEntita());
-            this.alterazioni.add(alterazione);
+            powerupMalus.getAlterazione().attivaAlterazione(this.status, this.creaParametriAlterazioni());
             this.powerUpMalus.remove(powerupMalus);
             this.removeEntita(powerupMalus);
+            this.powerUpAttivi.add(powerupMalus);
         }
     }
 

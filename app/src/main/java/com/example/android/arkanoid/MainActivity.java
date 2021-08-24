@@ -7,6 +7,9 @@ import android.os.Bundle;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.BaseElements.GameStatus;
+import com.example.android.arkanoid.GameElements.BaseElements.PowerupMalusList;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeeUp;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeedDown;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.BaseElements.Stile;
 import com.example.android.arkanoid.Util.Util;
@@ -27,7 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
         Stile stile = new Stile();
         GameStatus status = new GameStatus(3, 0);
-        ModalitaClassica modalitaClassica = new ModalitaClassica(stile, status);
+        PowerupMalusList powerupList = new PowerupMalusList();
+
+        powerupList.addPowerupMalus(BallSpeeUp.class, 20);
+        powerupList.addPowerupMalus(BallSpeedDown.class, 10);
+
+        ModalitaClassica modalitaClassica = new ModalitaClassica(stile, status, powerupList);
         this.gameLoop.addGameComponentWithSetup(modalitaClassica);
     }
 
