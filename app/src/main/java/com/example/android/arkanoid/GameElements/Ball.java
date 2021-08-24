@@ -157,8 +157,8 @@ public class Ball extends AbstractEntity {
 
             //Controllo collisione con schermo
             this.direction = this.controllaCollisioneSchermo(nextStep, screenWidth, screenHeight);
-            this.direction = this.controllaCollisionePaddle(nextStep, params.<AbstractScene>get(AbstractScene.SCENA).<Paddle>getFirstEntityByName("Paddle"));
-            this.direction = this.controllaCollisioneBrick(nextStep, params.<Map>get(ModalitaClassica.MAPPA), params.<AbstractScene>get(AbstractScene.SCENA));
+            this.direction = this.controllaCollisionePaddle(nextStep, params.<AbstractScene>get(AbstractScene.PARAMETRO_SCENA).<Paddle>getFirstEntityByName("Paddle"));
+            this.direction = this.controllaCollisioneBrick(nextStep, params.<Map>get(ModalitaClassica.PARAMETRO_MAPPA), params.<AbstractScene>get(AbstractScene.PARAMETRO_SCENA));
 
 
             //Cambia la posizione della palla con la nuova direzione

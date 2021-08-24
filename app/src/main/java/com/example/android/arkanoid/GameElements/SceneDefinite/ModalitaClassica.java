@@ -31,7 +31,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public final static String EVENTO_POWERUP = "powerup";
     public final static String EVENTO_RIMOZIONE_POWERUP = "rimozionePowerup";
 
-    public final static String MAPPA = "Mappa";
+    public final static String PARAMETRO_MAPPA = "Mappa";
 
     protected Ball palla;
     protected Paddle paddle;
@@ -83,7 +83,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     @Override
     protected ParamList creaParametriEntita() {
         ParamList listaParametri = super.creaParametriEntita();
-        listaParametri.add(ModalitaClassica.MAPPA, this.mappa);
+        listaParametri.add(ModalitaClassica.PARAMETRO_MAPPA, this.mappa);
         return listaParametri;
     }
 
@@ -198,6 +198,14 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             }
             this.mappa.azzeraContatori();
         }
+    }
+
+    /**
+     * Crea i parametri da passare alle alterazioni
+     * @return Restituisce i parametri dell'alterazione
+     */
+    protected ParamList creaParametriAlterazioni(){
+        return null;
     }
 
     /**

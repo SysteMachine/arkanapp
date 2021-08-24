@@ -44,7 +44,7 @@ public class Paddle extends AbstractEntity {
 
         //Controllo della collisione con lo schermo
         if( nextStep.getPosX() + (this.getSize().getPosX() * 0.5) < screenWidth && nextStep.getPosX() - (this.getSize().getPosX() * 0.5) > 0){
-            Ball palla = params.<AbstractScene>get(AbstractScene.SCENA).<Ball>getFirstEntityByName("Ball");
+            Ball palla = params.<AbstractScene>get(AbstractScene.PARAMETRO_SCENA).<Ball>getFirstEntityByName("Ball");
 
             Rect collisionePaddle = this.getBounds(nextStep.getPosX(), nextStep.getPosY());
             Rect collisionePalla = palla.getBounds();

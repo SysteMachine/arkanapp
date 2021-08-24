@@ -30,7 +30,7 @@ public class AbstractPowerUpMalus extends AbstractEntity implements PowerUpMalus
     @Override
     public void logica(float dt, int screenWidth, int screenHeight, ParamList params) {
         this.position = Vector2D.sommaVettoriale(this.position, this.direction.prodottoPerScalare(this.speed * dt));
-        AbstractScene scena = params.get(AbstractScene.SCENA);
+        AbstractScene scena = params.get(AbstractScene.PARAMETRO_SCENA);
         if(scena != null){
             Paddle paddle = scena.getFirstEntityByName("Paddle");
             ParamList esito = new ParamList();

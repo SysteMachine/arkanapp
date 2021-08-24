@@ -13,8 +13,8 @@ import java.util.LinkedList;
 
 public abstract class AbstractScene extends AbstractGameComponent {
     //Identificatori dei parametri
-    public static String ENTITA = "Entita";
-    public static String SCENA = "Scena";
+    public static String PARAMETRO_ENTITA = "Entita";
+    public static String PARAMETRO_SCENA = "Scena";
     //----------------------------
 
     protected int lastScreenWidth;
@@ -100,8 +100,8 @@ public abstract class AbstractScene extends AbstractGameComponent {
     protected ParamList creaParametriEntita(){
         ParamList parametri = new ParamList();
 
-        boolean esito = parametri.add(AbstractScene.ENTITA, this.entita.toArray(new AbstractEntity[this.entita.size()]));
-        esito = parametri.add(AbstractScene.SCENA, this);
+        boolean esito = parametri.add(AbstractScene.PARAMETRO_ENTITA, this.entita.toArray(new AbstractEntity[this.entita.size()]));
+        esito = parametri.add(AbstractScene.PARAMETRO_SCENA, this);
 
 
         return parametri;

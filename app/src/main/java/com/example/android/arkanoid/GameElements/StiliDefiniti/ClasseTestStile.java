@@ -1,4 +1,4 @@
-package com.example.android.arkanoid.GameElements.Stili;
+package com.example.android.arkanoid.GameElements.StiliDefiniti;
 
 import com.example.android.arkanoid.GameElements.BaseElements.Stile;
 
