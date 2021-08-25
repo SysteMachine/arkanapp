@@ -10,6 +10,14 @@ import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class Brick extends Entity {
+    private final int MAX_SHAKE = 5;               //Massimo scostamento dello shake
+
+    private long shakeStart;                        //Inizio dello shake
+    private long shakeTimeStamp;                    //Controllo del tempo per il cambio degli index
+    private Vector2D shakeOffset;                   //Offset di spostamento dello shake
+    private int shakeDuration;                      //Durata dello shake
+    private int msShake;                            //Ms di riferimento dello shake
+
     private final int maxHealth;                    //Vita massima del brick
     private int health;                             //Vita attuale del brick
 
@@ -28,11 +36,38 @@ public class Brick extends Entity {
         this.spriteCrepe = spriteCrepe;
         this.maxHealth = health;
         this.health = health;
+        this.shakeOffset = new Vector2D(0, 0);
     }
 
     @Override
     public void setup(int screenWidth, int screenHeight, ParamList params) {
         this.health = this.maxHealth;
+    }
+
+    /**
+     * Avvia lo shake del brick
+     * @param duration Durata dello shake
+     * @param fps Fps dello shake
+     */
+    public void shake(int duration, int fps){
+        this.shakeStart = System.currentTimeMillis();
+        this.msShake = 1000 / fps;
+        this.shakeTimeStamp = System.currentTimeMillis();
+        this.shakeDuration = duration;
+    }
+
+    @Override
+    public void logica(float dt, int screenWidth, int screenHeight, ParamList params) {
+        super.logica(dt, screenWidth, screenHeight, params);
+        if(System.currentTimeMillis() - this.shakeStart < this.shakeDuration){
+            //Se è attivo lo shake
+            if(System.currentTimeMillis() - this.shakeTimeStamp > this.msShake){
+                this.shakeTimeStamp = System.currentTimeMillis();
+                this.shakeOffset = new Vector2D(-this.MAX_SHAKE + ((float)Math.random() * this.MAX_SHAKE * 2), -this.MAX_SHAKE + ((float)Math.random() * this.MAX_SHAKE * 2));
+            }
+        }else{
+            this.shakeOffset = new Vector2D(0, 0);
+        }
     }
 
     /**
@@ -46,16 +81,26 @@ public class Brick extends Entity {
 
     @Override
     public void drawEntity(Canvas canvas, Paint paint) {
-        super.drawEntity(canvas, paint);
+        Vector2D posizioneAlterata = Vector2D.sommaVettoriale(this.position, this.shakeOffset);
 
-        if(this.spriteCrepe != null){
+        if(this.sprite != null && this.sprite.isAviable() && this.isVisible ){
+            //Se lo sprite esiste ed è visibile
+            this.sprite.drawSprite(
+                    (int)posizioneAlterata.getPosX(),
+                    (int)posizioneAlterata.getPosY(),
+                    canvas,
+                    paint
+            );
+        }
+
+        if(this.spriteCrepe != null && this.spriteCrepe.isAviable() && this.isVisible){
             float pesoVita = 1 - ( (float)this.getHealth() / (float)this.getMaxHealth() );
             int indexImmagine = (int)Math.ceil( (this.spriteCrepe.getnImages() - 1) * pesoVita );
             this.spriteCrepe.setCurrentFrame(indexImmagine);
 
             this.spriteCrepe.drawSprite(
-                    (int)this.getPosition().getPosX(),
-                    (int)this.getPosition().getPosY(),
+                    (int)posizioneAlterata.getPosX(),
+                    (int)posizioneAlterata.getPosY(),
                     canvas,
                     paint
             );

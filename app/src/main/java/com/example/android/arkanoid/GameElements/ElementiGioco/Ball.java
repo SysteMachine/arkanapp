@@ -145,6 +145,7 @@ public class Ball extends Entity {
 
                         //Decrementa il valore della vita del blocco
                         b.decrementaVita();
+                        b.shake(200, 60);
                         if(b.getHealth() == 0){
                             //Se il brick viene distrutto
                             ParamList paramList = new ParamList();
