@@ -1,6 +1,6 @@
 package com.example.android.arkanoid.GameElements.ElementiGioco;
 
-import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
@@ -51,8 +51,8 @@ public class Paddle extends Entity {
 
                 try{
                     Ball palla = params.<AbstractScene>get(AbstractScene.PARAMETRO_SCENA).<Ball>getFirstEntityByName("ball");
-                    Rect collisionePaddle = this.getBounds(nextStep.getPosX(), nextStep.getPosY());
-                    Rect collisionePalla = palla.getBounds();
+                    RectF collisionePaddle = this.getBounds(nextStep.getPosX(), nextStep.getPosY());
+                    RectF collisionePalla = palla.getBounds();
 
                     if(!collisionePaddle.intersect(collisionePalla))
                         //Se non collide con la palla

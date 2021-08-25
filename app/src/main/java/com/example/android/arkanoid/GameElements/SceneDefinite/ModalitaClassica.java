@@ -41,7 +41,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public final static String PARAMETRO_ALTERAZIONE_GAMELOOP = "gameLoop";
 
     private final int OFFSET_SUPERIORE_PALLA = 80;
-    private final int PARTICELLE_ROTTURA_BLOCCO = 10;
+    private final int PARTICELLE_ROTTURA_BLOCCO = 30;
 
     //-----------------------------------------------------------------------------------------------------------//
 
@@ -259,7 +259,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                             brick.getPosition(),
                             new Vector2D(5, 5),
                             Color.GRAY,
-                            1000
+                            1500
                     ));
                 }
                 this.removeEntita(brick);

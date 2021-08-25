@@ -1,6 +1,6 @@
 package com.example.android.arkanoid.GameElements.ElementiGioco;
 
-import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
@@ -10,6 +10,8 @@ import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class Ball extends Entity {
+    private final int DISTURBO_PADDLE = 20;     //Angolo massimo di disturbo dopo aver colpito il paddle
+
     private int angoloLancioMassimo;            //Angolo massimo di rotazione della palla nel momento del lancio
     private Vector2D startPosition;             //Posizione iniziale della palla
     private boolean isMoving;                   //Flag di controllo del movimento della palla
@@ -77,14 +79,27 @@ public class Ball extends Entity {
         Vector2D esito = this.direction;
 
         if(paddle != null){
-            Rect ballBounds = this.getBounds(posizione.getPosX(), posizione.getPosY());
-            Rect paddleBounds = paddle.getBounds();
+            RectF ballBounds = this.getBounds(posizione.getPosX(), posizione.getPosY());
+            RectF paddleBounds = paddle.getBounds();
 
             if(ballBounds.intersect(paddleBounds)){
-                float dirX = this.direction.getPosX();
-                float dirY = this.direction.getPosY() * -1;
+                ballBounds = this.getBounds();
+                paddleBounds = paddle.getBounds();
 
-                esito = new Vector2D(dirX, dirY);
+                if(
+                        (ballBounds.left > paddleBounds.left && ballBounds.left < paddleBounds.right) ||
+                        (ballBounds.right > paddleBounds.left && ballBounds.right < paddleBounds.right)
+                ){
+                    esito = esito.prodottoPerVettore(new Vector2D(1, -1));
+                    int angoloRotazione = (int)( -this.DISTURBO_PADDLE + (Math.random() * this.DISTURBO_PADDLE * 2) );
+                    esito = esito.ruotaVettore( angoloRotazione );
+                }
+                if(
+                        (ballBounds.top > paddleBounds.top && ballBounds.top < paddleBounds.bottom) ||
+                        (ballBounds.bottom > paddleBounds.top && ballBounds.bottom < paddleBounds.bottom)
+                ){
+                    esito = esito.prodottoPerVettore(new Vector2D(-1, 1));
+                }
             }
         }
 
@@ -106,17 +121,27 @@ public class Ball extends Entity {
                 Brick b = (Brick)ae;
                 if(b.getHealth() > 0){
                     //Se il brick non è stato ancora distrutto
-                    Rect collisioneBrick = b.getBounds();
-                    Rect collisionePalla = this.getBounds(posizione.getPosX(), posizione.getPosY());
+                    RectF collisioneBrick = b.getBounds();
+                    RectF collisionePalla = this.getBounds(posizione.getPosX(), posizione.getPosY());
 
                     if(collisioneBrick.intersect(collisionePalla)){
-                        //Se avviene la collisione
+                        //Bisogna ricalcolare i bounds perchè per qualche motivo diventano uguali, mi pesa il culo vedere la documentazione quindi vabien
+                        collisioneBrick = b.getBounds();
+                        collisionePalla = this.getBounds();
 
-                        //Cambiamo gli elementi della collisione
-                        if(posizione.getPosX() >= collisioneBrick.left && posizione.getPosX() <= collisioneBrick.right)
+                        //Collisione sulla parte larga
+                        if(
+                                (collisionePalla.left > collisioneBrick.left && collisionePalla.left < collisioneBrick.right) ||
+                                (collisionePalla.right > collisioneBrick.left && collisionePalla.right < collisioneBrick.right)
+                        ){
                             esito = esito.prodottoPerVettore(new Vector2D(1, -1));
-                        if(posizione.getPosY() >= collisioneBrick.top && posizione.getPosY() <= collisioneBrick.bottom)
+                        }
+                        if(
+                                (collisionePalla.top > collisioneBrick.top && collisionePalla.top < collisioneBrick.bottom) ||
+                                (collisionePalla.bottom > collisioneBrick.top && collisionePalla.bottom < collisioneBrick.bottom)
+                        ){
                             esito = esito.prodottoPerVettore(new Vector2D(-1, 1));
+                        }
 
                         //Decrementa il valore della vita del blocco
                         b.decrementaVita();

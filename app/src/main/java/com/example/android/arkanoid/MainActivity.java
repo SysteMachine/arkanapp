@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.PMList;
-import com.example.android.arkanoid.GameElements.ElementiGioco.Paddle;
 import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeedUp;
 import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeedDown;
 import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BrickHealthUp;

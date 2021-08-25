@@ -14,7 +14,7 @@ public class PaddleSpeedDown extends PM {
                 position,
                 size,
                 new Vector2D(300, 300),
-                new Sprite(R.drawable.alterazione_paddle_speed_up, gameLoop),
+                new Sprite(R.drawable.alterazione_paddle_down, gameLoop),
                 new AlterazioneVelocitaPaddle(15000, 0.6f)
         );
     }

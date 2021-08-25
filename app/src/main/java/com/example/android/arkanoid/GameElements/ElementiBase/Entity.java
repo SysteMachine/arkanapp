@@ -3,6 +3,7 @@ package com.example.android.arkanoid.GameElements.ElementiBase;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
@@ -87,8 +88,8 @@ public class Entity {
      * Restituisce la collisionBox dell'entità
      * @return Restituisce un rect di collisione
      */
-    public Rect getBounds(){
-       Rect esito = new Rect();
+    public RectF getBounds(){
+       RectF esito = new RectF();
 
        if(this.position != null)
            esito = this.getBounds(this.position.getPosX(), this.position.getPosY());
@@ -102,15 +103,15 @@ public class Entity {
      * @param startY Posizione di calcolo Y
      * @return Restituisce un rect di collisione
      */
-    public Rect getBounds(float startX, float startY){
-        Rect esito = new Rect();
+    public RectF getBounds(float startX, float startY){
+        RectF esito = new RectF();
 
         if(this.size != null){
-            esito = new Rect(
-                    (int)( startX - (this.size.getPosX() * 0.5) ),
-                    (int)( startY - (this.size.getPosY() * 0.5) ),
-                    (int)( startX + (this.size.getPosX() * 0.5) ),
-                    (int)( startY + (this.size.getPosY() * 0.5) )
+            esito = new RectF(
+                    startX - (this.size.getPosX() * 0.5f),
+                    startY - (this.size.getPosY() * 0.5f),
+                    startX + (this.size.getPosX() * 0.5f),
+                    startY + (this.size.getPosY() * 0.5f)
             );
         }
 
