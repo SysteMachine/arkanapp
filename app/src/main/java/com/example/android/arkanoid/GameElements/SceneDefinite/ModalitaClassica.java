@@ -42,7 +42,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     protected ArrayList<AbstractPM> powerUpAttivi;              //Lista dei powerup attivi
 
-    protected Sprite sSfondo;                                   //Immagine dello sfondo
     protected AnimatedSprite sIndicatoreVita;                   //Sprite per l'indicatore della vita
 
     protected float percentualePosizioneYIndicatori;
