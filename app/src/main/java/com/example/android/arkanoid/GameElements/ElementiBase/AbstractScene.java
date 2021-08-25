@@ -9,7 +9,9 @@ import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractScene extends AbstractGameComponent {
     //Identificatori dei parametri
@@ -20,11 +22,13 @@ public abstract class AbstractScene extends AbstractGameComponent {
     protected int lastScreenWidth;
     protected int lastScreenHeight;
 
-    protected LinkedList<Entity> entita;
+    protected List<Entity> bufferEntita;
+    protected List<Entity> entita;
 
     public AbstractScene(int zIndex) {
         super(zIndex);
-        this.entita = new LinkedList<>();
+        this.entita = new ArrayList<>();
+        this.bufferEntita = new ArrayList<>();
     }
 
     @Override
@@ -74,7 +78,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
     public boolean addEntita(Entity entita){
         boolean esito = false;
         if(!this.entita.contains(entita)){
-            esito = this.entita.add(entita);
+            esito = this.bufferEntita.add(entita);
         }
         return esito;
     }
@@ -84,7 +88,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * @param entita Entità da rimovere dalla scena
      */
     public void removeEntita(Entity entita){
-        this.entita.remove(entita);
+        entita.setCanBeDeleted(true);
     }
 
     /**
@@ -142,6 +146,20 @@ public abstract class AbstractScene extends AbstractGameComponent {
 
         this.lastScreenWidth = newScreenWidth;
         this.lastScreenHeight = newScreenHeight;
+    }
+
+    @Override
+    public void finalStep(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
+        //Rimuove le entità consumate
+        for(Iterator<Entity> it = this.entita.iterator(); it.hasNext();){
+            if(it.next().canBeDeleted)
+                it.remove();
+        }
+        //Aggiunge le nuove entità
+        for(Iterator<Entity> it = this.bufferEntita.iterator(); it.hasNext();){
+            this.entita.add(it.next());
+            it.remove();
+        }
     }
 
     /**

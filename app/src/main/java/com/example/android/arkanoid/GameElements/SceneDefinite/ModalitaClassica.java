@@ -1,6 +1,7 @@
 package com.example.android.arkanoid.GameElements.SceneDefinite;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.example.android.arkanoid.GameElements.ElementiGioco.IndicatoreVita;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Map;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Paddle;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
+import com.example.android.arkanoid.GameElements.ElementiGioco.Particella;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Sfondo;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.ParamList;
@@ -33,11 +35,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public final static String EVENTO_BLOCCO_ROTTO = "rotturaBlocco";
     public final static String EVENTO_POWERUP = "powerup";
     public final static String EVENTO_RIMOZIONE_POWERUP = "rimozionePowerup";
+    public final static String EVENTO_RIMOZIONE_PARTICELLA = "rimozioneParticella";
 
     public final static String PARAMETRO_ALTERAZIONE_STILE = "stile";
     public final static String PARAMETRO_ALTERAZIONE_GAMELOOP = "gameLoop";
 
     private final int OFFSET_SUPERIORE_PALLA = 80;
+    private final int PARTICELLE_ROTTURA_BLOCCO = 10;
 
     //-----------------------------------------------------------------------------------------------------------//
 
@@ -101,28 +105,30 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * Logica di gestione delle alterazioni
      */
     protected void logicaAlterazioni(){
-        float width = this.percentualeDimensioneIndicatori * this.lastScreenWidth;
-        float startX = this.lastScreenWidth - (width * 0.5f);
-        float startY = this.indicatoriVita[0].getPosition().getPosY();
+        if(this.risorseCaricate){
+            float width = this.percentualeDimensioneIndicatori * this.lastScreenWidth;
+            float startX = this.lastScreenWidth - (width * 0.5f);
+            float startY = this.indicatoriVita[0].getPosition().getPosY();
 
-        for(int i = 0; i < this.powerUpAttivi.size(); i++){
-            PM pm = this.powerUpAttivi.get(i);
-            AbstractAlterazione alterazione = pm.getAlterazione();
-            if(alterazione != null)
-                alterazione.logica(this.status, this.creaParametriAlterazioni());
-            //Posizioniamo gli indicatori
-            Entity e = this.getFirstEntityByName(pm.getName() + "Indicatore" + pm.getId());
-            if(e != null){
-                e.setPosition(new Vector2D(startX - (width * i), startY));
+            for(int i = 0; i < this.powerUpAttivi.size(); i++){
+                PM pm = this.powerUpAttivi.get(i);
+                AbstractAlterazione alterazione = pm.getAlterazione();
+                if(alterazione != null)
+                    alterazione.logica(this.status, this.creaParametriAlterazioni());
+                //Posizioniamo gli indicatori
+                Entity e = this.getFirstEntityByName(pm.getName() + "Indicatore" + pm.getId());
+                if(e != null){
+                    e.setPosition(new Vector2D(startX - (width * i), startY));
+                }
             }
-        }
 
-        //Rimuove i powerup consumati e il relativo indicatore
-        for(Iterator<PM> it = this.powerUpAttivi.iterator(); it.hasNext();){
-            PM next = it.next();
-            if(!next.getAlterazione().isAlterazioneAttiva()){
-                it.remove();
-                this.removeEntita(this.getFirstEntityByName(next.getName() + "Indicatore" + next.getId()));
+            //Rimuove i powerup consumati e il relativo indicatore
+            for(Iterator<PM> it = this.powerUpAttivi.iterator(); it.hasNext();){
+                PM next = it.next();
+                if(!next.getAlterazione().isAlterazioneAttiva()){
+                    it.remove();
+                    this.removeEntita(this.getFirstEntityByName(next.getName() + "Indicatore" + next.getId()));
+                }
             }
         }
     }
@@ -247,6 +253,15 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         if(idEvent.equals(ModalitaClassica.EVENTO_BLOCCO_ROTTO)){
             if(this.pmList != null){
                 Brick brick = parametri.get("brick");
+                for(int i = 0; i < this.PARTICELLE_ROTTURA_BLOCCO; i++){
+                    //Spawn delle particelle di rottura
+                    this.addEntita(new Particella(
+                            brick.getPosition(),
+                            new Vector2D(5, 5),
+                            Color.GRAY,
+                            1000
+                    ));
+                }
                 this.removeEntita(brick);
                 PM powerup = this.pmList.getPowerup(
                         brick.getPosition(),
@@ -256,6 +271,11 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 if(powerup != null)
                     this.addEntita(powerup);
             }
+        }
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_PARTICELLA)){
+            Entity e = parametri.get("particella");
+            this.removeEntita(e);
         }
 
         if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_POWERUP)){

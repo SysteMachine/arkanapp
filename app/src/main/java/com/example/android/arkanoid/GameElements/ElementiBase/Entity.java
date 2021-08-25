@@ -24,6 +24,8 @@ public class Entity {
     protected float rotazione;                          //Rotazione dell'entità
     protected boolean isVisible;                        //Se true l'entità sarà visibile
 
+    protected boolean canBeDeleted;                     //Flag che indica se l'entità può essere canvellata
+
     public Entity(String name, Vector2D position, Vector2D direction, Vector2D size, Vector2D speed, Sprite sprite){
         this.id = Entity.counterId ++;
         this.sprite = sprite;
@@ -35,6 +37,7 @@ public class Entity {
 
         this.isVisible = true;
         this.rotazione = 0;
+        this.canBeDeleted = false;
     }
 
     /**
@@ -178,6 +181,14 @@ public class Entity {
         this.rotazione = rotazione;
         if(this.sprite != null)
             this.sprite.setRotazione(rotazione);
+    }
+
+    public boolean isCanBeDeleted() {
+        return canBeDeleted;
+    }
+
+    public void setCanBeDeleted(boolean canBeDeleted) {
+        this.canBeDeleted = canBeDeleted;
     }
 
     public void setVisible(boolean visible) {
