@@ -3,13 +3,13 @@ package com.example.android.arkanoid.GameElements.ElementiGioco;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.example.android.arkanoid.GameElements.ElementiBase.AbstractEntity;
+import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-public class Brick extends AbstractEntity {
+public class Brick extends Entity {
     private final int maxHealth;                    //Vita massima del brick
     private int health;                             //Vita attuale del brick
 

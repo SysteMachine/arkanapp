@@ -10,21 +10,22 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.util.Objects;
 
-public abstract class AbstractEntity {
-    private static int counterId = 0;
+public class Entity {
+    private static int counterId = 0;                   //Contatore degli id dell'entity
 
-    protected int id;
-    protected String name;
-    protected final Sprite sprite;
-    protected Vector2D position;
-    protected Vector2D direction;
-    protected Vector2D size;
-    protected Vector2D speed;
+    protected int id;                                   //Id dell'entity
+    protected String name;                              //Nome dell'enetità
+    protected final Sprite sprite;                      //Sprite dell'entità
+    protected Vector2D position;                        //Posizione
+    protected Vector2D direction;                       //Direzione
+    protected Vector2D size;                            //Dimensione
+    protected Vector2D speed;                           //Velocità
 
-    private float rotazione;
+    protected float rotazione;                          //Rotazione dell'entità
+    protected boolean isVisible;                        //Se true l'entità sarà visibile
 
-    public AbstractEntity(String name, Vector2D position, Vector2D direction, Vector2D size, Vector2D speed, Sprite sprite){
-        this.id = AbstractEntity.counterId ++;
+    public Entity(String name, Vector2D position, Vector2D direction, Vector2D size, Vector2D speed, Sprite sprite){
+        this.id = Entity.counterId ++;
         this.sprite = sprite;
         this.setName(name);
         this.setPosition(position);
@@ -32,6 +33,7 @@ public abstract class AbstractEntity {
         this.setSize(size);
         this.setSpeed(speed);
 
+        this.isVisible = true;
         this.rotazione = 0;
     }
 
@@ -58,8 +60,8 @@ public abstract class AbstractEntity {
      * @param paint Paint di disegno
      */
     public void drawEntity(Canvas canvas, Paint paint){
-        if(this.sprite != null){
-            //Se lo sprite non
+        if(this.sprite != null && this.sprite.isAviable() && this.isVisible ){
+            //Se lo sprite esiste ed è visibile
             this.sprite.drawSprite(
                     (int)this.position.getPosX(),
                     (int)this.position.getPosY(),
@@ -149,6 +151,10 @@ public abstract class AbstractEntity {
         return size;
     }
 
+    public boolean isVisible() {
+        return isVisible;
+    }
+
     public void setSize(Vector2D size) {
         this.size = size;
         if(this.sprite != null){
@@ -174,13 +180,17 @@ public abstract class AbstractEntity {
             this.sprite.setRotazione(rotazione);
     }
 
+    public void setVisible(boolean visible) {
+        isVisible = visible;
+    }
+
     //Altro
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractEntity that = (AbstractEntity) o;
+        Entity that = (Entity) o;
         return id == that.id;
     }
 

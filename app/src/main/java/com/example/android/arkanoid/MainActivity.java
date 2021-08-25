@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         this.gameLoop.start();
 
         Stile stile = new Stile();
-        GameStatus status = new GameStatus(3, 0);
+        GameStatus status = new GameStatus(5, 0);
         PMList powerupList = new PMList();
 
         powerupList.addPowerupMalus(BallSpeedUp.class, 20);

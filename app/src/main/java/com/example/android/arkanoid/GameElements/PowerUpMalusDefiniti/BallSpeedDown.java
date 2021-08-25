@@ -2,12 +2,12 @@ package com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.AlterazioniDefinite.AlterazioneVelocitaPalla;
-import com.example.android.arkanoid.GameElements.ElementiBase.AbstractPM;
+import com.example.android.arkanoid.GameElements.ElementiBase.PM;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-public class BallSpeedDown extends AbstractPM {
+public class BallSpeedDown extends PM {
     public BallSpeedDown(Vector2D position, Vector2D size, GameLoop gameLoop) {
         super(
                 "ballSpeedDown",
