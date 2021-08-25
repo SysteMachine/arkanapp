@@ -71,6 +71,10 @@ public class Brick extends Entity {
         return health;
     }
 
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     @Override
     public void setSize(Vector2D size) {
         super.setSize(size);

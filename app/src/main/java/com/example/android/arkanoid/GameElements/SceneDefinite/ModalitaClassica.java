@@ -34,6 +34,9 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public final static String EVENTO_POWERUP = "powerup";
     public final static String EVENTO_RIMOZIONE_POWERUP = "rimozionePowerup";
 
+    public final static String PARAMETRO_ALTERAZIONE_STILE = "stile";
+    public final static String PARAMETRO_ALTERAZIONE_GAMELOOP = "gameLoop";
+
     private final int OFFSET_SUPERIORE_PALLA = 80;
 
     //-----------------------------------------------------------------------------------------------------------//
@@ -86,29 +89,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * @return Restituisce i parametri dell'alterazione
      */
     protected ParamList creaParametriAlterazioni(){
-        return this.creaParametriEntita();
-    }
+        ParamList pl = this.creaParametriEntita();
 
-    /*
-    protected void disegnaPowerupAttivi(int screenWidht, Canvas canvas, Paint paint){
-        int startX = screenWidht;
-        int startY = 0;
+        pl.add(ModalitaClassica.PARAMETRO_ALTERAZIONE_STILE, this.stile);
+        pl.add(ModalitaClassica.PARAMETRO_ALTERAZIONE_GAMELOOP, this.owner);
 
-        for(AbstractPM apum : this.powerUpAttivi){
-            if(apum.getAlterazione().isAlterazioneAttiva()){
-                //Solo se l'alterazione è attiva viene disegnata
-                startX -= apum.getSize().getPosX() * 0.5f;
-                Sprite sprite = apum.getPowerUpMalusImage();
-                sprite.drawSprite(
-                        startX,
-                        startY + (int)(apum.getSize().getPosY() * 0.5f),
-                        canvas,
-                        paint
-                );
-            }
-        }
+        return pl;
     }
-     */
 
     /**
      * Logica di gestione delle alterazioni

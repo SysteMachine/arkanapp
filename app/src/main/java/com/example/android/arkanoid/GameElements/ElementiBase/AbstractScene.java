@@ -71,7 +71,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * @param entita Entità da inserire all'interno della scena
      * @return Restituisce l'esito dell'inserimento
      */
-    protected boolean addEntita(Entity entita){
+    public boolean addEntita(Entity entita){
         boolean esito = false;
         if(!this.entita.contains(entita)){
             esito = this.entita.add(entita);
@@ -83,14 +83,14 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * Rimuove un entità dalla scena
      * @param entita Entità da rimovere dalla scena
      */
-    protected void removeEntita(Entity entita){
+    public void removeEntita(Entity entita){
         this.entita.remove(entita);
     }
 
     /**
      * Rimuove tutte le entità dalla scena
      */
-    protected void clearEntita(){
+    public void clearEntita(){
         this.entita.clear();
     }
 
