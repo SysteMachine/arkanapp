@@ -10,7 +10,7 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 public class StileAtzeco extends Stile {
 
     protected void setStilePalla(){
-        this.immaginePalla = R.drawable.stilefuturistico_ball;
+        this.immaginePalla = R.drawable.stileatzeco_palla;
         this.angoloDiLancioMassimoPalla = 40;
         this.velocitaInizialePalla = 800;
         this.velocitaRotazionePalla = 45;
@@ -21,7 +21,7 @@ public class StileAtzeco extends Stile {
     }
 
     protected void setStilePaddle(){
-        this.immaginePaddle = R.drawable.stilefuturistico_paddle;
+        this.immaginePaddle = R.drawable.stileatzeco_paddle;
         this.velocitaInizialePaddle = 1000;
         this.percentualeDimensionePaddle = new Vector2D(0.2f, 0.03f);
         this.percentualePosizionePaddle = new Vector2D(0.5f, 0.85f);
