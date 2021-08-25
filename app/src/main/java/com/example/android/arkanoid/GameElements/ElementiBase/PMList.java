@@ -15,7 +15,7 @@ public class PMList {
     }
 
 
-    public void addPowerupMalus(Class<? extends AbstractPM> classe, int probabilita){
+    public void addPowerupMalus(Class<? extends PM> classe, int probabilita){
         this.powerupList.add(
                 new PowerupMalusRecord(classe, probabilita)
         );
@@ -29,7 +29,7 @@ public class PMList {
      * @param <T> Tipo di restituzione del metodo
      * @return Restituisce un powerup
      */
-    public <T extends AbstractPM> T getPowerup(Vector2D position, Vector2D size, GameLoop gameLoop){
+    public <T extends PM> T getPowerup(Vector2D position, Vector2D size, GameLoop gameLoop){
         T esito = null;
 
         for(int i = 0; i < this.powerupList.size() && esito == null; i++){
@@ -46,16 +46,16 @@ public class PMList {
     }
 
     public class PowerupMalusRecord{
-        private final Class<? extends AbstractPM> classe;
+        private final Class<? extends PM> classe;
         private final int probabilitaSpawn;
 
-        public PowerupMalusRecord(Class<? extends AbstractPM> classe, int percentualeSpawn) {
+        public PowerupMalusRecord(Class<? extends PM> classe, int percentualeSpawn) {
             this.classe = classe;
             this.probabilitaSpawn = percentualeSpawn;
         }
 
         //Beam
-        public Class<? extends AbstractPM> getClasse() {
+        public Class<? extends PM> getClasse() {
             return classe;
         }
 

@@ -9,7 +9,9 @@ import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractScene extends AbstractGameComponent {
     //Identificatori dei parametri
@@ -20,11 +22,13 @@ public abstract class AbstractScene extends AbstractGameComponent {
     protected int lastScreenWidth;
     protected int lastScreenHeight;
 
-    protected LinkedList<AbstractEntity> entita;
+    protected List<Entity> bufferEntita;
+    protected List<Entity> entita;
 
     public AbstractScene(int zIndex) {
         super(zIndex);
-        this.entita = new LinkedList<>();
+        this.entita = new ArrayList<>();
+        this.bufferEntita = new ArrayList<>();
     }
 
     @Override
@@ -40,15 +44,15 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * @param name Nome dell'entità da trovare
      * @return Restituisce la lista delle entità che rispettano il nome inserito
      */
-    public AbstractEntity[] getEntityByName(String name){
-        ArrayList<AbstractEntity> trovati = new ArrayList<>();
-        for(AbstractEntity ae : this.entita){
+    public Entity[] getEntityByName(String name){
+        ArrayList<Entity> trovati = new ArrayList<>();
+        for(Entity ae : this.entita){
             if(ae.getName() != null && ae.getName().equals(name)){
                 trovati.add(ae);
             }
         }
 
-        return trovati.toArray(new AbstractEntity[trovati.size()]);
+        return trovati.toArray(new Entity[trovati.size()]);
     }
 
     /**
@@ -56,10 +60,10 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * @param name Nome dell'entità da trovare
      * @return Restituisce la lista delle entità che rispettano il nome inserito
      */
-    public <T extends AbstractEntity> T getFirstEntityByName(String name){
+    public <T extends Entity> T getFirstEntityByName(String name){
         T esito = null;
 
-        AbstractEntity[] ricerca = this.getEntityByName(name);
+        Entity[] ricerca = this.getEntityByName(name);
         if(ricerca.length >= 1)
             esito = (T)ricerca[0];
 
@@ -71,10 +75,10 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * @param entita Entità da inserire all'interno della scena
      * @return Restituisce l'esito dell'inserimento
      */
-    protected boolean addEntita(AbstractEntity entita){
+    public boolean addEntita(Entity entita){
         boolean esito = false;
         if(!this.entita.contains(entita)){
-            esito = this.entita.add(entita);
+            esito = this.bufferEntita.add(entita);
         }
         return esito;
     }
@@ -83,14 +87,14 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * Rimuove un entità dalla scena
      * @param entita Entità da rimovere dalla scena
      */
-    protected void removeEntita(AbstractEntity entita){
-        this.entita.remove(entita);
+    public void removeEntita(Entity entita){
+        entita.setCanBeDeleted(true);
     }
 
     /**
      * Rimuove tutte le entità dalla scena
      */
-    protected void clearEntita(){
+    public void clearEntita(){
         this.entita.clear();
     }
 
@@ -101,7 +105,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
     protected ParamList creaParametriEntita(){
         ParamList parametri = new ParamList();
 
-        parametri.add(AbstractScene.PARAMETRO_ENTITA, this.entita.toArray(new AbstractEntity[this.entita.size()]));
+        parametri.add(AbstractScene.PARAMETRO_ENTITA, this.entita.toArray(new Entity[this.entita.size()]));
         parametri.add(AbstractScene.PARAMETRO_SCENA, this);
 
         return parametri;
@@ -110,20 +114,20 @@ public abstract class AbstractScene extends AbstractGameComponent {
     @Override
     public void setup(int screenWidth, int screenHeight) {
         ParamList parametri = this.creaParametriEntita();
-        for(AbstractEntity ae : this.entita)
+        for(Entity ae : this.entita)
             ae.setup(screenWidth, screenHeight, parametri);
     }
 
     @Override
     public void update(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
         ParamList parametri = this.creaParametriEntita();
-        for(AbstractEntity ae : this.entita)
+        for(Entity ae : this.entita)
             ae.logica(dt, screenWidth, screenHeight, parametri);
     }
 
     @Override
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint){
-        for(AbstractEntity ae : this.entita){
+        for(Entity ae : this.entita){
             ae.drawEntity(canvas, paint);
         }
     }
@@ -133,7 +137,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
         float pesoWidht = (float)newScreenWidth / (float)this.lastScreenWidth;
         float pesoHeight = (float)newScreenHeight / (float)this.lastScreenHeight;
         Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
-        for(AbstractEntity ae : this.entita){
+        for(Entity ae : this.entita){
             //Quando c'è un ridimensionamento dello schermo cambia il dimensionamento delle entita in posizione, dimensione e velocita
             ae.setPosition(ae.getPosition().prodottoPerVettore(scaleVector));
             ae.setSize(ae.getSize().prodottoPerVettore(scaleVector));
@@ -142,6 +146,20 @@ public abstract class AbstractScene extends AbstractGameComponent {
 
         this.lastScreenWidth = newScreenWidth;
         this.lastScreenHeight = newScreenHeight;
+    }
+
+    @Override
+    public void finalStep(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
+        //Rimuove le entità consumate
+        for(Iterator<Entity> it = this.entita.iterator(); it.hasNext();){
+            if(it.next().canBeDeleted)
+                it.remove();
+        }
+        //Aggiunge le nuove entità
+        for(Iterator<Entity> it = this.bufferEntita.iterator(); it.hasNext();){
+            this.entita.add(it.next());
+            it.remove();
+        }
     }
 
     /**

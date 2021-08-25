@@ -228,6 +228,20 @@ public class GameLoop extends CustomTextureView implements Runnable {
         }
     }
 
+    /**
+     * Esegue l'operazione finale del game element
+     * @param dt Tempo trascorso tra il disegno di un frame ed un'altro
+     * @param screenWidth Larghezza della zona di disegno
+     * @param screenHeight Altezza della zona di disegno
+     * @param canvas Canvas di disegno
+     * @param paint Paint per il disegno
+     */
+    private void finalStep(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint){
+        for(AbstractGameComponent agc : this.elementi){
+            agc.finalStep(dt, screenWidth, screenHeight, canvas, paint);
+        }
+    }
+
     //Beam
 
     public boolean isRunning() {
@@ -276,8 +290,9 @@ public class GameLoop extends CustomTextureView implements Runnable {
                 //Aggiornamento degli elementi su schermo
                 try{
                     this.update(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
+                    this.finalStep(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                     this.render(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
-                }catch(ConcurrentModificationException e){}
+                }catch(ConcurrentModificationException e){e.printStackTrace();}
                 catch(Exception e){e.printStackTrace();}
             }
 

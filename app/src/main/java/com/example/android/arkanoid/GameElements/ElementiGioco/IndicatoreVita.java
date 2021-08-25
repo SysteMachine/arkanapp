@@ -4,10 +4,10 @@ import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-public class Sfondo extends Entity {
-    public Sfondo(Vector2D position, Vector2D size, Sprite sprite) {
+public class IndicatoreVita extends Entity {
+    public IndicatoreVita(Vector2D position, Vector2D size, Sprite sprite) {
         super(
-                "sfondo",
+                "indicatoreVita",
                 position,
                 new Vector2D(0, 0),
                 size,

@@ -2,13 +2,13 @@ package com.example.android.arkanoid.GameElements.ElementiGioco;
 
 import android.graphics.Rect;
 
-import com.example.android.arkanoid.GameElements.ElementiBase.AbstractEntity;
+import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-public class Paddle extends AbstractEntity {
+public class Paddle extends Entity {
     private final float TOLLERANZA = 25;                //Tolleranza della distanza nel raggiungimento della posizione target
 
     private Vector2D startPosition;                     //Posizione iniziale del paddle
@@ -78,6 +78,12 @@ public class Paddle extends AbstractEntity {
 
     public void setStartPosition(Vector2D startPosition) {
         this.startPosition = startPosition;
+    }
+
+    @Override
+    public void setPosition(Vector2D position) {
+        super.setPosition(position);
+        this.targetX = position.getPosX();
     }
 
     public void setTargetX(float targetX) {

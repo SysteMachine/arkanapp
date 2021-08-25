@@ -2,14 +2,14 @@ package com.example.android.arkanoid.GameElements.ElementiGioco;
 
 import android.graphics.Rect;
 
-import com.example.android.arkanoid.GameElements.ElementiBase.AbstractEntity;
+import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-public class Ball extends AbstractEntity {
+public class Ball extends Entity {
     private int angoloLancioMassimo;            //Angolo massimo di rotazione della palla nel momento del lancio
     private Vector2D startPosition;             //Posizione iniziale della palla
     private boolean isMoving;                   //Flag di controllo del movimento della palla
@@ -101,8 +101,8 @@ public class Ball extends AbstractEntity {
         Vector2D esito = this.direction;
 
         if(scena != null){
-            AbstractEntity[] brick = (AbstractEntity[])scena.getEntityByName("brick");
-            for(AbstractEntity ae: brick){
+            Entity[] brick = (Entity[])scena.getEntityByName("brick");
+            for(Entity ae: brick){
                 Brick b = (Brick)ae;
                 if(b.getHealth() > 0){
                     //Se il brick non è stato ancora distrutto

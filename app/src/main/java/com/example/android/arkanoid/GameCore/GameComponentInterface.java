@@ -37,4 +37,14 @@ public interface GameComponentInterface {
      * @param paint Paint per il disegno
      */
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint);
+
+    /**
+     * Finalizza le operazioni del gameComponent
+     * @param dt Tempo trascorso tra il disegno di un frame ed un'altro
+     * @param screenWidth Larghezza della zona di disegno
+     * @param screenHeight Altezza della zona di disegno
+     * @param canvas Canvas di disegno
+     * @param paint Paint per il disegno
+     */
+    public void finalStep(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint);
 }

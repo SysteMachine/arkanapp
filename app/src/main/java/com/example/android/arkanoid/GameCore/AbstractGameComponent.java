@@ -46,6 +46,9 @@ public abstract class AbstractGameComponent implements GameComponentInterface{
     @Override
     public abstract void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint);
 
+    @Override
+    public abstract void finalStep(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint);
+
     //Beam
     public int getzIndex() {
         return zIndex;
