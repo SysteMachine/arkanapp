@@ -38,7 +38,7 @@ public class Ball extends Entity {
     /**
      * Calcola la direzione iniziale della pallina
      */
-    private void calcolaDirezioneIniziale(){
+    public void calcolaDirezioneIniziale(){
         this.direction = new Vector2D(0, -1);
         this.direction = this.direction.ruotaVettore(-this.angoloLancioMassimo + (float)(Math.random() * this.angoloLancioMassimo * 2) );
     }

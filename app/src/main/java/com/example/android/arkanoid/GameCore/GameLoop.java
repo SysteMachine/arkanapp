@@ -7,7 +7,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.graphics.Typeface;
+import android.support.v4.content.res.ResourcesCompat;
 
+import com.example.android.arkanoid.R;
+
+import java.io.File;
+import java.net.URI;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
@@ -26,6 +32,8 @@ public class GameLoop extends CustomTextureView implements Runnable {
     private int canvasWidht;                                      //Larghezza della canvas
     private int canvasHeight;                                     //Altezza della canvas
 
+    private Typeface font;                                        //Font del gameloop
+
     public GameLoop(Context context, int fpsTarget, int canvasWidht, int canvasHeight) {
         super(context);
 
@@ -41,6 +49,8 @@ public class GameLoop extends CustomTextureView implements Runnable {
         this.canvasHeight = canvasHeight;
 
         bitmapCanvas = Bitmap.createBitmap(this.canvasWidht, this.canvasHeight, Bitmap.Config.ARGB_8888);
+
+        this.font = ResourcesCompat.getFont(this.getContext(), R.font.font);
     }
 
     /**
@@ -216,7 +226,7 @@ public class GameLoop extends CustomTextureView implements Runnable {
 
         if(this.showFPS){
             float FPS = 1000 / (dt * 1000);
-            String messaggioFps = "FPS: " + Math.round(FPS);
+            String messaggioFps = "" + Math.round(FPS);
 
             paint.setTextSize(16 * this.getResources().getDisplayMetrics().density);
 
@@ -224,7 +234,7 @@ public class GameLoop extends CustomTextureView implements Runnable {
             paint.getTextBounds(messaggioFps, 0, messaggioFps.length(), bounds);
 
             paint.setColor(Color.YELLOW);
-            canvas.drawText(messaggioFps, 0, 30, paint);
+            canvas.drawText(messaggioFps, 0, 40, paint);
         }
     }
 
@@ -289,6 +299,7 @@ public class GameLoop extends CustomTextureView implements Runnable {
             if(canvas != null){
                 //Aggiornamento degli elementi su schermo
                 try{
+                    paint.setTypeface(this.font);
                     this.update(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                     this.finalStep(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                     this.render(dt, this.canvasWidht, this.canvasHeight, canvas, paint);

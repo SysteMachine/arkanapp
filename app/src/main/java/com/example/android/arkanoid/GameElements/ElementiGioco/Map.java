@@ -42,7 +42,7 @@ public class Map {
         this.spriteCrepe = spriteCrepe;
 
         try{
-            this.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazione", int.class, int.class), this);
+            this.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneBase", int.class, int.class), this);
         }catch (Exception e){e.printStackTrace();}
     }
 
@@ -52,7 +52,7 @@ public class Map {
      * @param colonna Colonna del brik da posizionare
      * @return Restituisce true se il brick deve essere posizionato, altrimenti restituisce false
      */
-    private boolean metodoGenerazione(int riga, int colonna){
+    public boolean metodoGenerazioneBase(int riga, int colonna){
         boolean esito = false;
 
         if(Math.random() > 0.5)
@@ -131,6 +131,23 @@ public class Map {
             this.incrementaContatori();
         }
         return next;
+    }
+
+    /**
+     * Restituisce la somma della vita rimanente di tutti i blocchi
+     * @return Somma della vita restante di tutti i blocch
+     */
+    public int getTotalHealth(){
+        int somma = 0;
+
+        Brick brick = this.getNextBrick();
+        while(brick != null){
+            somma += brick.getHealth();
+            brick = this.getNextBrick();
+        }
+        this.azzeraContatori();
+
+        return somma;
     }
 
     //Beam
