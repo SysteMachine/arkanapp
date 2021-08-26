@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,6 +23,7 @@ import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Particella;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Sfondo;
 import com.example.android.arkanoid.R;
+import com.example.android.arkanoid.Util.AudioUtil;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
@@ -279,6 +279,10 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             );
             startPosX += width;
         }
+
+        //Caricamento dell'audio
+        AudioUtil.clear();
+        AudioUtil.loadAudio("background", R.raw.background1, this.owner.getContext());
     }
 
     /**
@@ -308,8 +312,9 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.inizializzaRisorse(screenWidth, screenHeight);
         this.addEntitaScena();
 
-        MediaPlayer mp = MediaPlayer.create(this.owner.getContext(), R.raw.audio_test1);
-        mp.start();
+        //Avvia l'audio di background
+        AudioUtil.getMediaPlayer("background").setLooping(true);
+        AudioUtil.getMediaPlayer("background").start();
 
         this.risorseCaricate = true;
     }

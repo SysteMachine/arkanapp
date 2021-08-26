@@ -35,14 +35,13 @@ public class Stile {
     protected ReplaceColorRecord[] coloriSfondo;
 
     protected int suonoBackground;
-    protected int suonoCollisionePalla;
-    protected int suonoRotturaBlocco;
 
     public Stile(){
         this.setStilePalla();
         this.setStilePaddle();
         this.setStileBrick();
         this.setStileSfondo();
+        this.setSuonoBackground(R.raw.background1);
     }
 
     /**
@@ -318,5 +317,13 @@ public class Stile {
 
     public void setColoriSfondo(ReplaceColorRecord[] coloriSfondo) {
         this.coloriSfondo = coloriSfondo;
+    }
+
+    public int getSuonoBackground() {
+        return suonoBackground;
+    }
+
+    public void setSuonoBackground(int suonoBackground) {
+        this.suonoBackground = suonoBackground;
     }
 }
