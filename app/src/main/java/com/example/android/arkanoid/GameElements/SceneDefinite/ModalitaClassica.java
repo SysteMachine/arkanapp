@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -306,6 +307,10 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.risorseCaricate = false;
         this.inizializzaRisorse(screenWidth, screenHeight);
         this.addEntitaScena();
+
+        MediaPlayer mp = MediaPlayer.create(this.owner.getContext(), R.raw.audio_test1);
+        mp.start();
+
         this.risorseCaricate = true;
     }
 
@@ -351,7 +356,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
                 //Cambia il punteggio
                 this.status.incrementaPunteggio( brick.getMaxHealth() * this.PUNTI_PER_COLPO );
-                System.out.println("Aggiunto: " + brick.getMaxHealth() * this.PUNTI_PER_COLPO + " il brick aveva vita: " + brick.getMaxHealth() + " adesso: " + this.status.getPunteggio());
 
                 //Distrugge il blocco
                 for(int i = 0; i < this.PARTICELLE_ROTTURA_BLOCCO; i++){
