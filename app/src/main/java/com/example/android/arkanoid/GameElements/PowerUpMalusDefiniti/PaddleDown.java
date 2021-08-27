@@ -14,7 +14,7 @@ public class PaddleDown extends PM {
                 position,
                 size,
                 new Vector2D(300, 300),
-                new Sprite(R.drawable.alterazione_paddle_up, gameLoop),
+                new Sprite(R.drawable.alterazione_paddle_down, gameLoop),
                 new AlterazioneLarghezzaPaddle(5000, 0.7f)
         );
     }
