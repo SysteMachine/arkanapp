@@ -30,6 +30,8 @@ import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -87,6 +89,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
         try{
             Class.forName("com.mysql.jdbc.Driver");
+
+            //Connection connection = DriverManager.
         }catch (Exception e){e.printStackTrace();}
 
         //--
@@ -353,6 +357,11 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
 
         //Cambio la size per gli elementi della scenaClassica
+        this.mappa.setPosX((int)(this.mappa.getPosX() * pesoWidht));
+        this.mappa.setPosY((int)(this.mappa.getPosY() * pesoHeight));
+        this.mappa.setMapWidth((int)(this.mappa.getMapWidth() * pesoWidht));
+        this.mappa.setMapHeight((int)(this.mappa.getMapHeight() * pesoHeight));
+
         this.palla.setOffsetCollisioneSuperiore((int)(this.palla.getOffsetCollisioneSuperiore() * pesoHeight));
         this.palla.setStartPosition(this.palla.getStartPosition().prodottoPerVettore(scaleVector));
         this.paddle.setStartPosition(this.paddle.getStartPosition().prodottoPerVettore(scaleVector));

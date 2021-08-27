@@ -11,13 +11,13 @@ public class Map {
     private final int nRighe;                               //Numero di colonne della mappa
     private final int nColonne;                             //Numero di righe della mappa
 
-    private final int posX;                                 //Posizione X della mappa
-    private final int posY;                                 //Posizione Y della mappa
-    private final int mapWidth;                             //Larghezza della mappa
-    private final int mapHeight;                            //Altezza della mappa
+    private int posX;                                       //Posizione X della mappa
+    private int posY;                                       //Posizione Y della mappa
+    private int mapWidth;                                   //Larghezza della mappa
+    private int mapHeight;                                  //Altezza della mappa
 
-    private final Sprite[] coloriBrick;                           //Colore dei brick
-    private final MultiSprite spriteCrepe;                        //Sprite delle crepe
+    private final Sprite[] coloriBrick;                     //Colore dei brick
+    private final MultiSprite spriteCrepe;                  //Sprite delle crepe
 
     private boolean aviable;                                //Flag di aviabilità della mappa
 
@@ -181,5 +181,21 @@ public class Map {
 
     public Brick[][] getElementiMappa() {
         return elementiMappa;
+    }
+
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
+    }
+
+    public void setMapWidth(int mapWidth) {
+        this.mapWidth = mapWidth;
+    }
+
+    public void setMapHeight(int mapHeight) {
+        this.mapHeight = mapHeight;
     }
 }
