@@ -24,16 +24,15 @@ import com.example.android.arkanoid.GameElements.ElementiGioco.Particella;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Sfondo;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.AudioUtil;
+import com.example.android.arkanoid.Util.DButil;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -61,7 +60,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected Sfondo sfondo;                                    //Sfondo della mappa
     protected IndicatoreVita[] indicatoriVita;                  //Indicatori della vita
 
-    protected ArrayList<PM> powerUpAttivi;              //Lista dei powerup attivi
+    protected ArrayList<PM> powerUpAttivi;                      //Lista dei powerup attivi
 
     protected float percentualeDimensionePowerup;               //Dimensione dei powerup sullo schermo
     protected float percentualeDimensioneIndicatori;            //Dimensione degli indicatori in alto
@@ -87,21 +86,10 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.percentualeDimensionePowerup = 0.1f;
         this.percentualeDimensioneFont = 0.03f;
 
-        //--
-
         try{
-            Class.forName("com.mysql.jdbc.Driver");
-
-            Connection connection = DriverManager.getConnection("jdbc:mysql://remotemysql.com", "QxCYEAOjLY", "K4ljk3pAhs");
-            Statement statement = connection.createStatement();
-
-            ResultSet rs = statement.executeQuery("SELECT * FROM user");
-            while(rs.next()){
-                System.out.println("Email: " + rs.getString("user_email"));
-            }
+            System.out.println(DButil.executeQuery("select * from user"));
         }catch (Exception e){e.printStackTrace();}
 
-        //--
     }
 
     @Override
