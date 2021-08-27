@@ -32,6 +32,8 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -90,7 +92,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         try{
             Class.forName("com.mysql.jdbc.Driver");
 
-            //Connection connection = DriverManager.
+            Connection connection = DriverManager.getConnection("jdbc:mysql://remotemysql.com", "QxCYEAOjLY", "K4ljk3pAhs");
+            Statement statement = connection.createStatement();
+
+            ResultSet rs = statement.executeQuery("SELECT * FROM user");
+            while(rs.next()){
+                System.out.println("Email: " + rs.getString("user_email"));
+            }
         }catch (Exception e){e.printStackTrace();}
 
         //--
@@ -200,6 +208,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                     }
                     this.mappa.azzeraContatori();
                 }catch (Exception e){e.printStackTrace();}
+
+                this.ripristinaPosizionePostMorte();
             }
         }
     }

@@ -36,6 +36,7 @@ public class AlterazioneNumeroPalle extends AbstractAlterazione {
                     (int)(pallaOriginale.getSize().getPosX() * 0.5f),
                     stile.getAngoloDiLancioMassimoPalla()
                 );
+                palle[i].getSprite().setAlpha(100);
                 ((Ball)palle[i]).startPalla();
                 scena.addEntita(palle[i]);
             }

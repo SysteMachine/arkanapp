@@ -16,9 +16,11 @@ public class Sprite {
     protected Bitmap immagine;              //Bitmap associato allo sprite
 
     protected float rotazione;              //Rotazione dello sprite
+    protected int alpha;                    //Valore alpha dello sprite
 
     public Sprite(int drawableId, GameLoop gameLoop){
         this.rotazione = 0;
+        this.alpha = 255;
 
         this.aviable = false;
         if(gameLoop != null){
@@ -154,44 +156,14 @@ public class Sprite {
      * Disegna lo sprite sulla canvas
      * @param posX Posizione di disegno X dello sprite (indica il punto centrale X)
      * @param posY Posizione di disegno Y dello sprite (indica il punto centrale Y)
-     * @param width Larghezza dello sprite
-     * @param height Altezza dello sprite
-     * @param canvas Canvas di disegno
-     * @param paint Oggetto Paint
-     */
-    public void drawSprite(int posX, int posY, int width, int height, Canvas canvas, Paint paint){
-        if(this.aviable && canvas != null && paint != null){
-            Bitmap immagine = this.immagine;                        //Copiamo la sorgente per poter eseguire modifiche
-            Vector2D pesi = new Vector2D(1, 1);          //Pesi per il ridimensionamento dell'immagine
-
-            if(this.rotazione % 360 != 0){
-                immagine = this.ruotaImmagine(this.rotazione);
-                pesi = new Vector2D(((float)immagine.getWidth()) / this.immagine.getWidth(), ((float)immagine.getHeight()) / this.immagine.getHeight());
-            }
-
-            canvas.drawBitmap(
-                    immagine,
-                    null,
-                    new Rect(
-                            (int)( posX - (width * pesi.getPosX() * 0.5) ),
-                            (int)(posY - (height * pesi.getPosY() * 0.5) ),
-                            (int)(posX + (width * pesi.getPosX() * 0.5) ),
-                            (int)(posY + (height * pesi.getPosY() * 0.5) )
-                    ),
-                    paint
-            );
-        }
-    }
-
-    /**
-     * Disegna lo sprite sulla canvas
-     * @param posX Posizione di disegno X dello sprite (indica il punto centrale X)
-     * @param posY Posizione di disegno Y dello sprite (indica il punto centrale Y)
      * @param canvas Canvas di disegno
      * @param paint Oggetto Paint
      */
     public void drawSprite(int posX, int posY, Canvas canvas, Paint paint){
         if(this.aviable && canvas != null && paint != null){
+            int lastAlpha = paint.getAlpha();
+            paint.setAlpha(this.getAlpha());
+
             Bitmap immagine = this.immagine;                        //Copiamo la sorgente per poter eseguire modifiche
 
             if(this.rotazione % 360 != 0){
@@ -204,6 +176,8 @@ public class Sprite {
                     posY - (int)( immagine.getHeight() * 0.5f ),
                     paint
             );
+
+            paint.setAlpha(lastAlpha);
         }
     }
 
@@ -214,6 +188,15 @@ public class Sprite {
 
     public void setRotazione(float rotazione) {
         this.rotazione = rotazione;
+    }
+
+    public int getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(int alpha) {
+        if(alpha >= 0 && alpha <= 255)
+            this.alpha = alpha;
     }
 
     public boolean isAviable() {

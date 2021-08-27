@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         powerupList.addPowerupMalus(BallSpeedUp.class, 10);
         powerupList.addPowerupMalus(BallSpeedDown.class, 5);
-        powerupList.addPowerupMalus(MultiBall.class, 2);
+        powerupList.addPowerupMalus(MultiBall.class, 100);
         powerupList.addPowerupMalus(BrickHealthUp.class, 20);
         powerupList.addPowerupMalus(PaddleUp.class, 10);
         powerupList.addPowerupMalus(PaddleDown.class, 5);

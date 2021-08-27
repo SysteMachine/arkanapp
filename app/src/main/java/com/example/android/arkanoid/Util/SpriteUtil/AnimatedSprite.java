@@ -32,12 +32,6 @@ public final class AnimatedSprite extends MultiSprite{
     }
 
     @Override
-    public void drawSprite(int posX, int posY, int width, int height, Canvas canvas, Paint paint) {
-        this.aggiornaFrame();
-        super.drawSprite(posX, posY, width, height, canvas, paint);
-    }
-
-    @Override
     public void drawSprite(int posX, int posY, Canvas canvas, Paint paint) {
         this.aggiornaFrame();
         super.drawSprite(posX, posY, canvas, paint);
