@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.android.arkanoid">
 
+    <uses-sdk android:targetSdkVersion="28">
+    </uses-sdk>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:icon="@drawable/redball"
