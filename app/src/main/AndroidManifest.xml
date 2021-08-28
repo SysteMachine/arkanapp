@@ -12,20 +12,21 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/redball"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".SplashScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_splash_screen"
-            android:theme="@style/AppTheme.Fullscreen"></activity>
-        <activity android:name=".MainActivity">
+            android:theme="@style/fullScreenStyle"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/fullScreenStyle"/>
     </application>
 
 </manifest>
