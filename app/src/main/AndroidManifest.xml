@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.android.arkanoid">
 
-    <uses-sdk android:targetSdkVersion="28"></uses-sdk>
+    <uses-sdk android:targetSdkVersion="28" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,19 +14,26 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".SplashScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/fullScreenStyle"
-            >
-
+            android:name=".login_activity"
+            android:theme="@style/fullScreenStyle">
+        </activity>
+        <activity
+            android:name=".splash_screen_activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/fullScreenStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
-            android:theme="@style/fullScreenStyle"/>
+            android:theme="@style/fullScreenStyle" />
+        <activity
+            android:name=".Controller.LoginController"
+            android:theme="@style/Theme.AppCompat" />
     </application>
 
 </manifest>

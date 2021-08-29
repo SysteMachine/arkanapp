@@ -4,22 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SplashScreenActivity">
+    tools:context=".splash_screen_activity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/fullScreenStyle_background">
+        android:background="@color/background">
 
         <TextView
             android:id="@+id/etichettaTitolo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/font"
-            android:shadowColor="#000000"
-            android:shadowRadius="10"
+            android:layout_width="342dp"
+            android:layout_height="49dp"
+            style="@style/labelStyle"
             android:text="@string/app_name"
-            android:textColor="@color/fullScreenStyle_fontColor"
             android:textSize="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -30,20 +27,21 @@
 
         <Button
             android:id="@+id/tapToStartButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/splash_screen_tabButtonMessage"
+            android:layout_width="355dp"
+            android:layout_height="52dp"
             android:background="@android:color/transparent"
-            android:textColor="@color/fullScreenStyle_fontColor"
+            android:fontFamily="@font/font"
             android:shadowColor="#000000"
             android:shadowRadius="10"
+            android:text="@string/splash_screen_tabButtonMessage"
+            android:textColor="@color/fontColor"
             android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etichettaTitolo"
-            app:layout_constraintVertical_bias="0.092" />
+            app:layout_constraintVertical_bias="0.561" />
 
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

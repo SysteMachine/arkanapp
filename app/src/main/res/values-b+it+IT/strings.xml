@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="splash_screen_tabButtonMessage">Premi per iniziare</string>
+    <string name="login_login">Accedi</string>
+    <string name="login_registrati">Registrati</string>
+    <string name="login_login_google">Accedi con google</string>
+
+    <string name="login_messaggio_errore_campi_vuoti">I campi sono vuoti</string>
+    <string name="login_messaggio_errore_account_non_trovato">Account non trovato</string>
+
+    <string name="singin_fragment_ripeti_password">Ripeti password:</string>
+    <string name="singin_fragment_registrazione">Registrati</string>
 </resources>

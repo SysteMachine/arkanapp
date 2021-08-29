@@ -24,15 +24,13 @@ import com.example.android.arkanoid.GameElements.ElementiGioco.Particella;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Sfondo;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.AudioUtil;
-import com.example.android.arkanoid.Util.DButil;
+import com.example.android.arkanoid.Util.DBUtil;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -87,7 +85,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.percentualeDimensioneFont = 0.03f;
 
         try{
-            System.out.println(DButil.executeQuery("select * from user"));
+            System.out.println(DBUtil.executeQuery("select * from user"));
         }catch (Exception e){e.printStackTrace();}
 
     }

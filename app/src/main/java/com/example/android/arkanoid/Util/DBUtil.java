@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class DButil {
+public class DBUtil {
     //Michele se mai userai nuovamente la classe ricorda di aggiungere nel manifest android:usesCleartextTraffic="true" in application By Michele del passato
     //StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     //StrictMode.setThreadPolicy(policy);
@@ -25,7 +25,7 @@ public class DButil {
 
         String paramsString = "query=" + query;
 
-        URL urlObject = new URL(DButil.CONNECTOR);
+        URL urlObject = new URL(DBUtil.CONNECTOR);
         HttpURLConnection con = (HttpURLConnection)urlObject.openConnection();
         con.setRequestMethod("POST");
         con.setConnectTimeout(10000);
@@ -51,5 +51,26 @@ public class DButil {
         }
 
         return esito;
+    }
+
+    /**
+     * Sostituisce una parola joolly all'interno di una query
+     * @param query Query da modificare
+     * @param jolly Parola jolly da sostituire
+     * @param value Valore con cui sostituire la parola jolly
+     * @return Restituisce la query modificata
+     */
+    public static String repalceJolly(String query, String jolly, Object value){
+        String newQuery = query;
+
+        String newPart = "";
+        if(value instanceof String)
+            newPart = "\"" + value + "\"";
+        else
+            newPart = "" + value;
+
+        newQuery = newQuery.replace(jolly, newPart);
+
+        return newQuery;
     }
 }
