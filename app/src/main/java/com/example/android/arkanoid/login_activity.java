@@ -4,14 +4,18 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.example.android.arkanoid.Controller.LoginController;
 
-public class login_activity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener {
+public class login_activity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
     private Button loginButton;
     private Button singinButton;
     private Fragment fragmentRegistrazione;
@@ -51,14 +55,10 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
         this.fragmentRegistrazione = new singin_fragment();
         this.getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.fragment_down_animation, R.anim.fragment_up_animation)
                 .add(R.id.fragmentRegistrazione, this.fragmentRegistrazione, null)
                 .addToBackStack(null)
                 .commit();
         this.getSupportFragmentManager().beginTransaction().hide(this.fragmentRegistrazione).commit();
-        //this.fragmentRegistrazione.getView().requestFocus();
-        //this.fragmentRegistrazione.getView().setOnFocusChangeListener(this);
-
 
         this.loginButton = this.findViewById(R.id.pulsanteLogin);
         if(this.loginButton != null)
@@ -67,6 +67,7 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
         if(this.singinButton != null)
             this.singinButton.setOnClickListener(this);
 
+        this.findViewById(R.id.mainFrame).setOnTouchListener(this);
     }
 
     @Override
@@ -95,16 +96,16 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
         if(v.equals(this.singinButton)){
             System.out.println("Singin");
             if(this.fragmentRegistrazione != null){
-                System.out.println("eccomi");
+                FrameLayout fl = this.findViewById(R.id.fragmentRegistrazione);
                 this.getSupportFragmentManager().beginTransaction().show(this.fragmentRegistrazione).commit();
+                this.findViewById(R.id.fragmentRegistrazione).requestFocus();
             }
         }
     }
 
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if(v.equals(this.fragmentRegistrazione.getView()) && !hasFocus){
-            this.getSupportFragmentManager().beginTransaction().hide(this.fragmentRegistrazione).commit();
-        }
+    public boolean onTouch(View v, MotionEvent event) {
+        getSupportFragmentManager().beginTransaction().hide(this.fragmentRegistrazione).commit();
+        return true;
     }
 }

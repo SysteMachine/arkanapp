@@ -83,11 +83,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.percentualeDimensioneIndicatori = 0.06f;
         this.percentualeDimensionePowerup = 0.1f;
         this.percentualeDimensioneFont = 0.03f;
-
-        try{
-            System.out.println(DBUtil.executeQuery("select * from user"));
-        }catch (Exception e){e.printStackTrace();}
-
     }
 
     @Override

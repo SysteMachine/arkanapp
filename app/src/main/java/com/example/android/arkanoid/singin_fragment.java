@@ -3,10 +3,11 @@ package com.example.android.arkanoid;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class singin_fragment extends Fragment implements View.OnFocusChangeListener {
+public class singin_fragment extends Fragment implements View.OnTouchListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -15,13 +16,13 @@ public class singin_fragment extends Fragment implements View.OnFocusChangeListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_singin_fragment, container, false);
-        view.requestFocus();
-        view.setOnFocusChangeListener(this);
+        view.setOnTouchListener(this);
         return view;
     }
 
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        System.out.println("Cambio il focus");
+    public boolean onTouch(View v, MotionEvent event) {
+        System.out.println("1");
+        return true;
     }
 }
