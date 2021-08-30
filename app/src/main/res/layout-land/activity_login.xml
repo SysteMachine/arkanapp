@@ -105,7 +105,7 @@
                 android:textSize="20sp" />
 
             <Button
-                android:id="@+id/pulsanteRegistrati"
+                android:id="@+id/pulsanteRegistrazione"
                 style="@style/buttonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

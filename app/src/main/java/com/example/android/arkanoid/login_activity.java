@@ -1,13 +1,12 @@
 package com.example.android.arkanoid;
 
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -16,6 +15,7 @@ import android.widget.TextView;
 import com.example.android.arkanoid.Controller.LoginController;
 
 public class login_activity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
+    private ConstraintLayout mainFrame;
     private Button loginButton;
     private Button singinButton;
     private Fragment fragmentRegistrazione;
@@ -57,17 +57,19 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                 .beginTransaction()
                 .add(R.id.fragmentRegistrazione, this.fragmentRegistrazione, null)
                 .addToBackStack(null)
+                .hide(this.fragmentRegistrazione)
                 .commit();
-        this.getSupportFragmentManager().beginTransaction().hide(this.fragmentRegistrazione).commit();
 
+        //Riferimento alle viste
         this.loginButton = this.findViewById(R.id.pulsanteLogin);
         if(this.loginButton != null)
             this.loginButton.setOnClickListener(this);
         this.singinButton = this.findViewById(R.id.pulsanteRegistrazione);
         if(this.singinButton != null)
             this.singinButton.setOnClickListener(this);
-
-        this.findViewById(R.id.mainFrame).setOnTouchListener(this);
+        this.mainFrame = this.findViewById(R.id.mainFrame);
+        if(this.mainFrame != null)
+            this.mainFrame.setOnTouchListener(this);
     }
 
     @Override
@@ -105,7 +107,12 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        getSupportFragmentManager().beginTransaction().hide(this.fragmentRegistrazione).commit();
+        if(this.fragmentRegistrazione != null){
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .hide(this.fragmentRegistrazione)
+                    .commit();
+        }
         return true;
     }
 }

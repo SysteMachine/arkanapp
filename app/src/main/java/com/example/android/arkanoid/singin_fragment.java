@@ -22,7 +22,6 @@ public class singin_fragment extends Fragment implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        System.out.println("1");
         return true;
     }
 }
