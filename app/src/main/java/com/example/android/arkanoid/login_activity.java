@@ -113,6 +113,8 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                     .hide(this.fragmentRegistrazione)
                     .commit();
         }
+
+        System.out.println("Eccomi");
         return true;
     }
 }

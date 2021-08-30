@@ -2,6 +2,7 @@
     <color name="background">#ffffff</color>
     <color name="fontColor">#ffff00</color>
     <color name="fontErrorColor">#C80000</color>
+    <color name="fontAviableColor">#4CAF50</color>
     <color name="inputFontColor">#323232</color>
     <color name="buttonBackgroundColor">#ffff00</color>
     <color name="buttonFontColor">#ffffff</color>
@@ -23,6 +24,8 @@
         <item name="android:fontFamily">@font/font</item>
         <item name="android:textColor">@color/inputFontColor</item>
         <item name="android:backgroundTint">@color/inputFontColor</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowRadius">10</item>
     </style>
 
     <style name="buttonStyle">

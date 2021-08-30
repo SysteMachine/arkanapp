@@ -13,26 +13,29 @@
         android:roundIcon="@drawable/redball"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
+        <service
+            android:name=".Servizi.ServizioRegistrazione"
+            android:exported="false"/>
         <activity
             android:name=".login_activity"
-            android:theme="@style/fullScreenStyle">
-        </activity>
-        <activity
-            android:name=".splash_screen_activity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/fullScreenStyle">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".Controller.LoginController"
             android:theme="@style/Theme.AppCompat" />
+        <activity
+            android:name=".splash_screen_activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/fullScreenStyle">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
     </application>
 
 </manifest>
