@@ -14,7 +14,6 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:name=".login_activity"
             android:theme="@style/fullScreenStyle">
         </activity>
