@@ -48,7 +48,6 @@ public class TestSensorActivity extends AppCompatActivity implements SensorEvent
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(this.timeStamp != -1){
-
             this.xView.setText("X: " + event.values[0]);
             this.yView.setText("Y: " + event.values[1]);
             this.zView.setText("Z: " + event.values[2]);
@@ -58,7 +57,7 @@ public class TestSensorActivity extends AppCompatActivity implements SensorEvent
 
             float zInc = event.values[2] * dt;
             this.tValue += zInc;
-            this.tView.setText("T: " + this.tValue);
+            this.tView.setText("T: " + (this.tValue * 180) / 3.14 + " - " + event.timestamp);
         }
 
         this.timeStamp = System.currentTimeMillis();
