@@ -59,9 +59,13 @@ public class GameLoop extends CustomTextureView implements Runnable {
      * @param height Altezza attuale dello schermo
      */
     private void calcolaNuovaDimensioneCanvas(int width, int height){
-        float peso = (float)this.canvasWidht / (float)width;
-        this.canvasWidht = width;
-        this.canvasHeight = height;
+        if(width <= height){
+            this.canvasWidht = width;
+            this.canvasHeight = (int)((float)this.canvasWidht * (16.0f / 9.0f));
+        }else{
+            this.canvasHeight = height;
+            this.canvasWidht = (int)((float)this.canvasHeight * (9.0f / 16.0f));
+        }
 
         this.bitmapCanvas = Bitmap.createScaledBitmap(this.bitmapCanvas, this.canvasWidht, this.canvasHeight, true);
     }
@@ -310,10 +314,12 @@ public class GameLoop extends CustomTextureView implements Runnable {
             //Disegno sullo schermo
             canvas = this.lockCanvas();
             if(canvas != null){
+                int posX = (int)((this.getWidth() * 0.5f) - (this.canvasWidht * 0.5f));
+                int posY = (int)((this.getHeight() * 0.5f) - (this.canvasHeight * 0.5f));
                 canvas.drawBitmap(
                         this.bitmapCanvas,
-                        0,
-                        0,
+                        posX,
+                        posY,
                         paint
                 );
                 this.unlockCanvasAndPost(canvas);

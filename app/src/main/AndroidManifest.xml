@@ -18,6 +18,7 @@
             android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation"
             android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".Controller.LoginController"

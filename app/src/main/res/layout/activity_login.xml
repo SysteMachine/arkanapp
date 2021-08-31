@@ -107,20 +107,20 @@
         app:layout_constraintVertical_bias="0.05" />
 
     <Button
-        android:id="@+id/pulsanteAccediConGoogle"
+        android:id="@+id/pulsanteAccediComeOspite"
         style="@style/buttonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/login_login_guest"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:text="@string/login_login_guest"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_bias="0.526"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pulsanteRegistrazione"
-        app:layout_constraintVertical_bias="0.06" />
+        app:layout_constraintVertical_bias="0.07" />
 
     <TextView
         android:id="@+id/messaggioErrore"
@@ -134,7 +134,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.140" />
+        app:layout_constraintVertical_bias="0.2" />
 
     <FrameLayout
         android:id="@+id/fragmentRegistrazione"

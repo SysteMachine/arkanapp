@@ -3,7 +3,7 @@
     <color name="fontColor">#ffff00</color>
     <color name="fontErrorColor">#C80000</color>
     <color name="fontAviableColor">#4CAF50</color>
-    <color name="inputFontColor">#323232</color>
+    <color name="inputFontColor">#ddd</color>
     <color name="buttonBackgroundColor">#ffff00</color>
     <color name="buttonFontColor">#ffffff</color>
 
