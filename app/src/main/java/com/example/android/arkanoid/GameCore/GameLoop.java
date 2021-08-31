@@ -2,12 +2,16 @@ package com.example.android.arkanoid.GameCore;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.Typeface;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 
 import com.example.android.arkanoid.R;
@@ -323,6 +327,7 @@ public class GameLoop extends CustomTextureView implements Runnable {
                         paint
                 );
                 this.unlockCanvasAndPost(canvas);
+
             }
             //---------------------
 

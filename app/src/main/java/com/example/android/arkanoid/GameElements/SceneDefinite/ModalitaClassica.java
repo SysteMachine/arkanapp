@@ -1,9 +1,14 @@
 package com.example.android.arkanoid.GameElements.SceneDefinite;
 
+import android.app.Service;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,17 +29,17 @@ import com.example.android.arkanoid.GameElements.ElementiGioco.Particella;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Sfondo;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.AudioUtil;
-import com.example.android.arkanoid.Util.DBUtil;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
-import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class ModalitaClassica extends AbstractScene implements View.OnTouchListener{
+public class ModalitaClassica extends AbstractScene implements View.OnTouchListener, SensorEventListener {
+    public final static String EVENTO_BLOCCO_COLPITO = "bloccoColpito";
     public final static String EVENTO_BLOCCO_ROTTO = "rotturaBlocco";
     public final static String EVENTO_POWERUP = "powerup";
     public final static String EVENTO_RIMOZIONE_POWERUP = "rimozionePowerup";
@@ -43,12 +48,12 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public final static String PARAMETRO_ALTERAZIONE_STILE = "stile";
     public final static String PARAMETRO_ALTERAZIONE_GAMELOOP = "gameLoop";
 
-    protected final int OFFSET_SUPERIORE_PALLA = 80;        //Limite superiore della palla
-    protected final int PARTICELLE_ROTTURA_BLOCCO = 30;     //Numero di particelle da spawnare alla distruzione del blocco
-    protected final float PERCENTUALE_DEATH_ZONE = 0.95f;   //Percentuale della deathzone
+    protected int OFFSET_SUPERIORE_PALLA = 80;        //Limite superiore della palla
+    protected int PARTICELLE_ROTTURA_BLOCCO = 30;     //Numero di particelle da spawnare alla distruzione del blocco
+    protected float PERCENTUALE_DEATH_ZONE = 0.95f;   //Percentuale della deathzone
 
-    protected final int PUNTI_PER_COLPO = 100;              //Punti per ogni colpo del blocco
-    protected final int PUNTI_PER_PARTITA = 1500;           //Punti per ogni partita completata
+    protected int PUNTI_PER_COLPO = 100;              //Punti per ogni colpo del blocco
+    protected int PUNTI_PER_PARTITA = 1500;           //Punti per ogni partita completata
 
     //-----------------------------------------------------------------------------------------------------------//
 
@@ -69,6 +74,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected PMList pmList;                                    //Lista dei parametri della modalita
     protected boolean risorseCaricate;                          //Flag di caricamento delle risorse
 
+    //Gestione dei sensori
+
+    protected SensorManager sensorManager;                      //Gestore dei sensori
+    protected Sensor giroscopio;                                //Sensore del giroscopio
+    protected float zValue;
+    protected float zeroValue;
+
     public ModalitaClassica(Stile stile, GameStatus status, PMList pmList) {
         super(0);
 
@@ -83,18 +95,48 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.percentualeDimensioneIndicatori = 0.06f;
         this.percentualeDimensionePowerup = 0.1f;
         this.percentualeDimensioneFont = 0.03f;
+
+        this.zeroValue = -1;
     }
 
     @Override
     protected void setGameLoop(GameLoop gameLoop) {
         super.setGameLoop(gameLoop);
         gameLoop.setOnTouchListener(this);
+        if(this.status != null && this.status.getModalitaControllo() == GameStatus.GYRO){
+            this.sensorManager = (SensorManager) gameLoop.getContext().getSystemService(Service.SENSOR_SERVICE);
+            this.giroscopio = this.sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            if(giroscopio == null) {
+                System.out.println("0");
+                this.status.setModalitaControllo(GameStatus.TOUCH);
+            }else
+                this.sensorManager.registerListener(this, this.giroscopio, SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     @Override
     protected void removeGameLoop() {
         super.removeGameLoop();
         this.owner.setOnTouchListener(null);
+    }
+
+    /**
+     * Metodo standard di generazione della mappa
+     * @param i Posizione della riga da generare
+     * @param j Posizione della colonna da generare
+     * @return Restituisce true se deve essere posizionato un blocco, altrimenti restituisce false
+     */
+    public boolean metodoGenerazioneMappa(int i, int j){
+        boolean esito = false;
+
+        if(this.mappa != null){
+            try{
+                Method metodoGenerazioneMappa = this.mappa.getClass().getDeclaredMethod("metodoGenerazioneBase", int.class, int.class);
+                esito = (boolean)metodoGenerazioneMappa.invoke(this.mappa, i, j);
+            }catch (Exception e){e.printStackTrace();}
+        }
+
+        return esito;
     }
 
     /**
@@ -148,47 +190,29 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     }
 
     /**
-     * Logica della partita
+     * Logica di terminazione della partita
+     * Controlla le azioni e le condizioni che portano alla conclusione della partita
      */
-    protected void logicaDiPartita(){
-        if(this.risorseCaricate){
-            if(this.palla != null){
-                //Controllo della vita della partita
-                if(this.palla.getPosition().getPosY() > (float)this.lastScreenHeight * this.PERCENTUALE_DEATH_ZONE){
-                    if(this.status.getHealth() - 1 >= 0)
-                        this.indicatoriVita[this.status.getHealth() - 1].setVisible(false);
+    protected void logicaTerminazionePartita(){
 
-                    this.status.setHealth(this.status.getHealth() - 1);
-                    if(this.status.getHealth() < 0){
-                        this.status.setHealth(0);
-                        //Termine della partita
-                    }
+    }
 
-                    this.ripristinaPosizionePostMorte();
-                }
-            }
+    /**
+     * Logica di eliminazione della vita
+     * Controlla le condizioni che portano alla rimozione di una vita al giocatore
+     */
+    protected void logicaEliminazioneVita(){
+        if(this.palla != null){
+            //Controllo della vita della partita
 
-            //Controllo della finePartita
-            if(this.mappa.getTotalHealth() == 0 /*&& this.status.getHealth() > 0*/){
-                //Se i brick presenti nella scena sono 0 il giocatore ha distrutto tutti i blocchi
-                if(this.status.getHealth() + 1 <= this.status.getMaxHealth()){
-                    //Incrementiamo di 1 la vita del giocatore per la prossima generazione della mappa
-                    this.status.setHealth(this.status.getHealth() + 1);
-                    this.indicatoriVita[this.status.getHealth() - 1].setVisible(true);
-                }
+            if(this.palla.getPosition().getPosY() > (float)this.lastScreenHeight * this.PERCENTUALE_DEATH_ZONE){
+                //Se la palla si trova nella zona dello schermo identificata dalla deathzone
+                if(this.status.getHealth() - 1 >= 0)
+                    this.indicatoriVita[this.status.getHealth() - 1].setVisible(false);
 
-                //Cambia il punteggio
-                this.status.incrementaPunteggio(this.PUNTI_PER_PARTITA);
-
-                try{
-                    this.mappa.generaMappa(this.mappa.getClass().getDeclaredMethod("metodoGenerazioneBase", int.class, int.class), this.mappa);
-                    Brick brick = this.mappa.getNextBrick();
-                    while(brick != null){
-                        this.addEntita(brick);
-                        brick = this.mappa.getNextBrick();
-                    }
-                    this.mappa.azzeraContatori();
-                }catch (Exception e){e.printStackTrace();}
+                this.status.setHealth(this.status.getHealth() - 1);
+                if(this.status.getHealth() < 0)
+                    this.status.setHealth(0);
 
                 this.ripristinaPosizionePostMorte();
             }
@@ -196,13 +220,60 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     }
 
     /**
+     * Logica di avanzamento al prossimo livello
+     * Controlla le condizioni che portano al caricamento del prossimo livello da giocare
+     */
+    protected void logicaAvanzamentoLivello(){
+        if(this.mappa.getTotalHealth() == 0 && this.status.getHealth() > 0){
+            //Se la vita totale dei blocchi presenti nella scena è 0 allora il giocatore ha terminato il livello
+
+            if(this.status.getHealth() + 1 <= this.status.getMaxHealth()){
+                //Incrementiamo di 1 la vita del giocatore per la prossima generazione della mappa
+                this.status.setHealth(this.status.getHealth() + 1);
+                this.indicatoriVita[this.status.getHealth() - 1].setVisible(true);
+            }
+
+            //Cambia il punteggio
+            this.status.incrementaPunteggio(this.PUNTI_PER_PARTITA);
+
+            try{
+                //Generiamo il prossimo livello della mappa
+                this.mappa.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneMappa", int.class, int.class), this);
+
+                //Aggiunge tutti i brick all'interno della scena, si presume che i precedenti siano stati eliminati quando si colpisce un blocco
+                Brick brick = this.mappa.getNextBrick();
+                while(brick != null){
+                    this.addEntita(brick);
+                    brick = this.mappa.getNextBrick();
+                }
+                this.mappa.azzeraContatori();
+            }catch (Exception e){e.printStackTrace();}
+
+            //Ripristina la posizione post mote
+            this.ripristinaPosizionePostMorte();
+        }
+    }
+
+    /**
+     * Logica della partita
+     */
+    protected void logicaDiPartita(){
+        if(this.risorseCaricate){
+           this.logicaEliminazioneVita();
+           this.logicaTerminazionePartita();
+           this.logicaAvanzamentoLivello();
+        }
+    }
+
+    /**
      * Logica di gestione delle alterazioni
+     * Rimozione delle alterazioni concluse e riposizionamento delle nuove alterazioni
      */
     protected void logicaAlterazioni(){
         if(this.risorseCaricate){
             float width = this.percentualeDimensioneIndicatori * this.lastScreenWidth;
-            float startX = this.lastScreenWidth - (width * 0.5f);
-            float startY = this.indicatoriVita[0].getPosition().getPosY();
+            float startX = this.lastScreenWidth - (width * 0.5f);               //La posizione X di start è quella estrema destra
+            float startY = this.indicatoriVita[0].getPosition().getPosY();      //La posizione Y è la stessa degli indicatori di vita, che mantengono in proporzione la posizione essendo entità gestite dalla scena
 
             //Rimuove i powerup consumati e il relativo indicatore
             for(Iterator<PM> it = this.powerUpAttivi.iterator(); it.hasNext();){
@@ -229,6 +300,15 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     }
 
     /**
+     * Logica di rotazione della palla
+     * @param dt Tempo trascorso tra gli ultimi frame
+     */
+    protected void logicaRotazionePalla(float dt){
+        if(this.risorseCaricate && this.palla != null && this.palla.isMoving())
+            this.palla.setRotazione(this.palla.getRotazione() + this.stile.getVelocitaRotazionePalla() * dt);
+    }
+
+    /**
      * Inizializza le risorse della scena
      * @param screenWidth Larghezza dello schermo
      * @param screenHeight Altezza dello schermo
@@ -250,17 +330,12 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 this.stile.getImmaginePaddleStile(this.owner)
         );
 
-        Sprite[] coloriBrick = new Sprite[this.stile.getColoriCasualiBrick().length];
-        for(int i = 0; i < coloriBrick.length; i++){
-            coloriBrick[i] = this.stile.getImmagineBrickStile(this.owner, i);
-        }
-
         this.mappa = new Map(
                 this.stile.getNumeroRigheMappa(),
                 this.stile.getNumeroColonneMappa(),
                 this.stile.getPercentualePosizioneMappa().prodottoPerVettore(new Vector2D(screenWidth, screenHeight)),
                 this.stile.getPercentualeDimensioneMappa().prodottoPerVettore(new Vector2D(screenWidth, screenHeight)),
-                coloriBrick,
+                this.stile.getImmagineBrickStile(this.owner),
                 new MultiSprite(R.drawable.crepebrick, this.owner, 10)
         );
 
@@ -270,11 +345,14 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 this.stile.getImmagineSfondoStile(this.owner)
         );
 
+        //Generazione degli indicatori della vita
         this.indicatoriVita = new IndicatoreVita[this.status.getHealth()];
         int width = (int)(this.percentualeDimensioneIndicatori * screenWidth);
-        int startPosX = (int)( width * 0.5f );
+        int startPosX = (int)( width * 0.5f );  //la posizione di start deve essere pari alla metà della larghezza calcolata, questo perchè lo sprite disegna partendo dal centro
         int startPosY = (int)( this.OFFSET_SUPERIORE_PALLA * 0.5f );
+
         for(int i = 0; i < this.indicatoriVita.length; i++){
+            //Creazione degli indicatori della vita e incremento della larghezza per posizionari affianco su una singola riga
             this.indicatoriVita[i] = new IndicatoreVita(
                     new Vector2D(startPosX, startPosY),
                     new Vector2D(width, width),
@@ -292,9 +370,11 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * Aggiunge le entità alla scena
      */
     protected void addEntitaScena(){
+        //Cancellazione di eventuali entita presenti e setup
         this.entita.clear();
         this.addEntita(this.sfondo);
 
+        //Aggiunta dei brick
         Brick brick = this.mappa.getNextBrick();
         while(brick != null){
             this.addEntita(brick);
@@ -302,9 +382,11 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         }
         this.mappa.azzeraContatori();
 
+        //Aggiunta della palla e paddle
         this.addEntita(this.palla);
         this.addEntita(this.paddle);
 
+        //Aggiunta degli indicatori della vita
         for(IndicatoreVita iv : this.indicatoriVita)
             this.addEntita(iv);
     }
@@ -325,20 +407,24 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     @Override
     public void update(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
         super.update(dt, screenWidth, screenHeight, canvas, paint);
-        if(this.palla != null && this.palla.isMoving())
-            this.palla.setRotazione(this.palla.getRotazione() + this.stile.getVelocitaRotazionePalla() * dt);
+        this.logicaRotazionePalla(dt);
         this.logicaAlterazioni();
         this.logicaDiPartita();
     }
 
     @Override
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
-        if(!this.risorseCaricate){
-
-        }else{
+        if(this.risorseCaricate){
             super.render(dt, screenWidth, screenHeight, canvas, paint);
             this.disegnaPunteggio(screenWidth, screenHeight, canvas, paint);
         }
+
+        paint.setTextSize(30);
+        canvas.drawText(
+                "PosZ: " + this.zValue,
+                50, 50,
+                paint
+        );
     }
 
     @Override
@@ -347,12 +433,13 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         float pesoHeight = (float) newScreenHeight / (float) this.lastScreenHeight;
         Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
 
-        //Cambio la size per gli elementi della scenaClassica
+        //Cambio la size per gli elementi della scenaClassica, questo perchè la mappa non è un entità, e alla prossima generazione genererebbe male
         this.mappa.setPosX((int)(this.mappa.getPosX() * pesoWidht));
         this.mappa.setPosY((int)(this.mappa.getPosY() * pesoHeight));
         this.mappa.setMapWidth((int)(this.mappa.getMapWidth() * pesoWidht));
         this.mappa.setMapHeight((int)(this.mappa.getMapHeight() * pesoHeight));
 
+        //Modifica alcuni parametri non gestidi automaticamente dalla scena
         this.palla.setOffsetCollisioneSuperiore((int)(this.palla.getOffsetCollisioneSuperiore() * pesoHeight));
         this.palla.setStartPosition(this.palla.getStartPosition().prodottoPerVettore(scaleVector));
         this.paddle.setStartPosition(this.paddle.getStartPosition().prodottoPerVettore(scaleVector));
@@ -360,19 +447,24 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         super.ownerSizeChange(newScreenWidth, newScreenHeight);
     }
 
-    @Override
-    public void sendEvent(String idEvent, ParamList parametri) {
+    /**
+     * Evento usato quando la palla colpisce un blocco
+     * @param paramList Lista dei parametri
+     */
+    protected void eventoColpoBlocco(ParamList paramList){
+        this.status.incrementaPunteggio(this.PUNTI_PER_COLPO);
+    }
 
-        if(idEvent.equals(ModalitaClassica.EVENTO_BLOCCO_ROTTO)){
-            if(this.pmList != null){
-                Brick brick = parametri.get("brick");
-
-                //Cambia il punteggio
-                this.status.incrementaPunteggio( brick.getMaxHealth() * this.PUNTI_PER_COLPO );
-
-                //Distrugge il blocco
+    /**
+     * Evento usato quando la palla rompe un blocco
+     * @param parametri Lista dei parametri
+     */
+    protected void eventoRotturaBlocco(ParamList parametri){
+        if(this.risorseCaricate){
+            Brick brick = parametri.get("brick");
+            if(brick != null){
+                //Distrugge il blocco e inserisce delle particelle
                 for(int i = 0; i < this.PARTICELLE_ROTTURA_BLOCCO; i++){
-                    //Spawn delle particelle di rottura
                     this.addEntita(new Particella(
                             brick.getPosition(),
                             new Vector2D(5, 5),
@@ -380,56 +472,118 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                             1500
                     ));
                 }
+
                 this.removeEntita(brick);
 
-                //Controlla lo spawn del powerup
-                PM powerup = this.pmList.getPowerup(
-                        brick.getPosition(),
-                        new Vector2D(this.lastScreenWidth * this.percentualeDimensionePowerup, this.lastScreenWidth * this.percentualeDimensionePowerup),
-                        this.owner
-                );
-                if(powerup != null)
-                    this.addEntita(powerup);
+                if(this.pmList != null){
+                    //Se la lista dei powerup non è vuota
+                    PM powerup = this.pmList.getPowerup(
+                            brick.getPosition(),
+                            new Vector2D(this.lastScreenWidth * this.percentualeDimensionePowerup, this.lastScreenWidth * this.percentualeDimensionePowerup),
+                            this.owner
+                    );
+
+                    //Aggiunge il powerup
+                    if(powerup != null)
+                        this.addEntita(powerup);
+                }
             }
-        }
 
-        if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_PARTICELLA)){
-            Entity e = parametri.get("particella");
+        }
+    }
+
+    /**
+     * Evento di rimozione di una particella
+     * @param parametri Parametri passati
+     */
+    protected void eventoRimozioneParticella(ParamList parametri){
+        Entity e = parametri.get("particella");
+        if(e != null)
             this.removeEntita(e);
-        }
+    }
 
-        if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_POWERUP)){
-            PM pm = parametri.get("powerup");
+    /**
+     * Evento di rimozione dell'entità fisica powerup
+     * @param parametri Parametri passati
+     */
+    protected void eventoRimozionePowerup(ParamList parametri){
+        PM pm = parametri.get("powerup");
+        if(pm != null)
             this.removeEntita(pm);
-        }
+    }
 
-        if(idEvent.equals(ModalitaClassica.EVENTO_POWERUP)){
-            //Rimuove l'entità dalla scena
-            PM pm = parametri.get("powerup");
+    /**
+     * Evento di raccolta del powerup
+     * @param parametri Parametri passati
+     */
+    protected void eventoPowerup(ParamList parametri){
+        //Rimuove l'entità dalla scena
+        PM pm = parametri.get("powerup");
+        if(pm != null){
             pm.getAlterazione().attivaAlterazione(this.status, this.creaParametriAlterazioni());
-            this.removeEntita(pm);
+            this.eventoRimozionePowerup(parametri); //Rimuoviamo l'entità fisica del powerup
 
             //Aggiunge l'immagine del powerup e l'indicatore
             this.powerUpAttivi.add(pm);
             float widthIndicatore = this.lastScreenWidth * this.percentualeDimensioneIndicatori;
-            this.addEntita(pm.getIndicatorePM(
-                new Vector2D(0, 0),
-                new Vector2D(widthIndicatore, widthIndicatore)
-            ));
+            this.addEntita(
+                    pm.getIndicatorePM(
+                        new Vector2D(widthIndicatore, widthIndicatore)
+                    )
+            );
         }
+    }
+
+    @Override
+    public void sendEvent(String idEvent, ParamList parametri) {
+        if(idEvent.equals(ModalitaClassica.EVENTO_BLOCCO_COLPITO))
+            this.eventoColpoBlocco(parametri);
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_BLOCCO_ROTTO))
+            this.eventoRotturaBlocco(parametri);
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_PARTICELLA))
+            this.eventoRimozioneParticella(parametri);
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_RIMOZIONE_POWERUP))
+            this.eventoRimozionePowerup(parametri);
+
+        if(idEvent.equals(ModalitaClassica.EVENTO_POWERUP))
+            this.eventoPowerup(parametri);
     }
 
     //Eventi
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(this.palla != null && !this.palla.isMoving())
+        if(this.palla != null && !this.palla.isMoving() && event.getAction() == MotionEvent.ACTION_UP)
             this.palla.startPalla();
 
-        if(this.paddle != null){
-            this.paddle.setTargetX(event.getX());
+        if(this.status != null && this.status.getModalitaControllo() == GameStatus.TOUCH){
+            if(this.paddle != null){
+                int startX = (v.getWidth() / 2) - (this.lastScreenWidth / 2);
+
+                if(event.getX() >= startX && event.getX() <= startX + this.lastScreenWidth){
+                    //Se il tocco si trova all'interno dello schermo
+                    this.paddle.setTargetX(event.getX() - startX);  //Allineamo la posizione in modo cha parta da 0 e finisca a size dello schermo
+                }
+            }
         }
 
         return true;
     }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if(this.status.getModalitaControllo() == GameStatus.GYRO){
+            if(this.zeroValue == -1)
+                this.zeroValue = event.values[2];
+
+            this.zValue = event.values[2] - this.zeroValue;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
 }

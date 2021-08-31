@@ -115,18 +115,27 @@ public class Stile {
     /**
      * Restituisce l'immagine del brick con lo stile impostato
      * @param gameLoop GameLoop per il caricamento dell' immagine
-     * @param idColore Id del colore casuale richiesto
-     * @return Restituisce lo sprite caricato
+     * @return Restituisce gli sprite per i brick in base ai colori casuali inseriti
      */
-    public Sprite getImmagineBrickStile(GameLoop gameLoop, int idColore){
-        Sprite sprite = new Sprite(this.immagineBrick, gameLoop);
-        int colore = 0;
-        if(idColore >= 0 && idColore < this.coloriCasualiBrick.length)
-            colore = idColore;
-        sprite.replaceColor(Color.WHITE, this.coloriCasualiBrick[colore], 200);
-        for(ReplaceColorRecord rc : this.coloriBrick)
-            sprite.replaceColor(rc.getFromColor(), rc.getTargetColor(), rc.getTollerance());
-        return  sprite;
+    public Sprite[] getImmagineBrickStile(GameLoop gameLoop){
+        Sprite[] esito = new Sprite[this.coloriCasualiBrick.length];
+
+        for(int i = 0; i < esito.length; i++){
+            //Per ogni colore casuale inserito
+            Sprite sprite = new Sprite(this.immagineBrick, gameLoop);
+
+            //Si preleva il colore e lo si sostituisce
+            int colore = this.coloriCasualiBrick[i];
+            sprite.replaceColor(Color.WHITE, colore, 200);
+
+            //Si sostituiscono i colori presi dai replaceColor
+            for(ReplaceColorRecord rc : this.coloriBrick)
+                sprite.replaceColor(rc.getFromColor(), rc.getTargetColor(), rc.getTollerance());
+
+            esito[i] = sprite;
+        }
+
+        return  esito;
     }
 
     /**

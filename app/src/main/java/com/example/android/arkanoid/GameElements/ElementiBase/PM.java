@@ -30,23 +30,23 @@ public class PM extends Entity {
             Paddle paddle = scena.getFirstEntityByName("paddle");
             ParamList esito = new ParamList();
             esito.add("powerup", this);
-            if(paddle != null && paddle.getBounds().intersect(this.getBounds()))
+            if(paddle != null && paddle.getBounds().intersect(this.getBounds()))    //Evento di collisione con il paddle per la raccolta del powerup
                 scena.sendEvent(ModalitaClassica.EVENTO_POWERUP, esito);
-            if(this.position.getPosY() - (this.size.getPosY() * 0.5f) > screenHeight)
+
+            if(this.position.getPosY() - (this.size.getPosY() * 0.5f) > screenHeight)   //Evento di fuoriuscita dallo schermo
                 scena.sendEvent(ModalitaClassica.EVENTO_RIMOZIONE_POWERUP, esito);
         }
     }
 
     /**
-     * Restituisce l'indicatore del PM
-     * @param position Posizione dell'indicatore
+     * Restituisce l'indicatore del PM, un'entità statica che viene usata come indicatore
      * @param size Dimensione dell'indicatore
      * @return Restituisce una Entità che identifica l'indicatore del PM
      */
-    public Entity getIndicatorePM(Vector2D position, Vector2D size){
+    public Entity getIndicatorePM(Vector2D size){
         return new Entity(
                 this.getName() + "Indicatore" + this.getId(),
-                position,
+                new Vector2D(0, 0),
                 new Vector2D(0, 0),
                 size,
                 new Vector2D(0, 0),

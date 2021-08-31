@@ -129,6 +129,7 @@ public class Ball extends Entity {
                         collisioneBrick = b.getBounds();
                         collisionePalla = this.getBounds();
 
+                        //data una superficia A-B la collisione avviene se almeno uno dei due è all'interno della superfice A'-B' del brick
                         //Collisione sulla parte larga
                         if(
                                 (collisionePalla.left > collisioneBrick.left && collisionePalla.left < collisioneBrick.right) ||
@@ -146,6 +147,8 @@ public class Ball extends Entity {
                         //Decrementa il valore della vita del blocco
                         b.decrementaVita();
                         b.shake(200, 60);
+                        scena.sendEvent(ModalitaClassica.EVENTO_BLOCCO_COLPITO, new ParamList());
+
                         if(b.getHealth() == 0){
                             //Se il brick viene distrutto
                             ParamList paramList = new ParamList();
