@@ -4,7 +4,7 @@
     <string name="splash_screen_tabButtonMessage">Tap to start</string>
     <string name="login_login">Login</string>
     <string name="login_registrati">Sing in</string>
-    <string name="login_login_google">Login with Google</string>
+    <string name="login_login_guest">Login as Guest</string>
 
     <string name="login_messaggio_errore_campi_vuoti">Fields can\'t be empty</string>
     <string name="login_messaggio_errore_account_non_trovato">Account missing</string>

@@ -35,47 +35,55 @@ public class LoginController extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         if(intent != null){
-            String email = intent.getStringExtra("LOGIN_EMAIL");
-            String password = intent.getStringExtra("LOGIN_PASSWORD");
+            String loginType = intent.getStringExtra("LOGIN_TYPE");
+            if(loginType != null && loginType.equals("ACCOUNT")){
+                String email = intent.getStringExtra("LOGIN_EMAIL");
+                String password = intent.getStringExtra("LOGIN_PASSWORD");
 
-            if(email != null && password != null){
-                String query = DBUtil.repalceJolly(this.QUERY_LOGIN, "EMAIL", email);
-                query = DBUtil.repalceJolly(query, "PASSWORD", password);
+                if(email != null && password != null){
+                    String query = DBUtil.repalceJolly(this.QUERY_LOGIN, "EMAIL", email);
+                    query = DBUtil.repalceJolly(query, "PASSWORD", password);
 
-                try{
-                    String esitoQuery = DBUtil.executeQuery(query);
-                    System.out.println(query);
-                    if(!esitoQuery.equals("ERROR")){
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(esitoQuery.getBytes())));
-                        int entryCount = 0;
-                        String targetRow = "";
-                        String row = "";
-                        while((row = reader.readLine()) != null){
-                            if(entryCount++ == 0)
-                                targetRow = row;
-                        }
+                    try{
+                        String esitoQuery = DBUtil.executeQuery(query);
+                        if(!esitoQuery.equals("ERROR")){
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(esitoQuery.getBytes())));
+                            int entryCount = 0;
+                            String targetRow = "";
+                            String row = "";
+                            while((row = reader.readLine()) != null){
+                                if(entryCount++ == 0)
+                                    targetRow = row;
+                            }
 
-                        if(entryCount == 1){
-                            JSONObject jObject = new JSONObject(targetRow);
-                            user_username = jObject.getString("user_username");
+                            if(entryCount == 1){
+                                JSONObject jObject = new JSONObject(targetRow);
+                                user_username = jObject.getString("user_username");
+                            }else
+                                error = true;
                         }else
                             error = true;
-                    }else
+                    }catch (Exception e){
                         error = true;
-                }catch (Exception e){
-                    error = true;
+                    }
                 }
+
             }
         }
 
         Intent newIntent = null;
-        if(error){
-            newIntent = new Intent(this, login_activity.class);
-            newIntent.putExtra("LOGIN_ERRORE", this.getResources().getString(R.string.login_messaggio_errore_account_non_trovato));
-        }else{
+        if(intent.getExtras().getString("LOGIN_TYPE").equals("GUEST")){
             newIntent = new Intent(this, MainActivity.class);
-            newIntent.putExtra("LOGIN_EMAIL", intent.getStringExtra("LOGIN_EMAIL"));
-            newIntent.putExtra("LOGIN_USERNAME", user_username);
+            newIntent.putExtra("LOGIN_TYPE", "GUEST");
+        }else{
+            if(error){
+                newIntent = new Intent(this, login_activity.class);
+                newIntent.putExtra("LOGIN_ERRORE", this.getResources().getString(R.string.login_messaggio_errore_account_non_trovato));
+            }else{
+                newIntent = new Intent(this, MainActivity.class);
+                newIntent.putExtra("LOGIN_EMAIL", intent.getStringExtra("LOGIN_EMAIL"));
+                newIntent.putExtra("LOGIN_USERNAME", user_username);
+            }
         }
         this.startActivity(newIntent);
 

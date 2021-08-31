@@ -22,6 +22,7 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
     private FrameLayout fragmentFrame;
     private Button loginButton;
     private Button singinButton;
+    private Button singinGuestButton;
     private Fragment fragmentRegistrazione;
 
     @Override
@@ -140,6 +141,9 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
         this.singinButton = this.findViewById(R.id.pulsanteRegistrazione);
         if(this.singinButton != null)
             this.singinButton.setOnClickListener(this);
+        this.singinGuestButton = this.findViewById(R.id.pulsanteAccediComeOspite);
+        if(this.singinGuestButton != null)
+            this.singinGuestButton.setOnClickListener(this);
         this.mainFrame = this.findViewById(R.id.mainFrame);
         if(this.mainFrame != null)
             this.mainFrame.setOnTouchListener(this);
@@ -158,6 +162,7 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                 if(!email.equals("") && !password.equals("")){
                     //Se i campi non sono vuoti richiamiamo il controller del login
                     Intent intent = new Intent(this, LoginController.class);
+                    intent.putExtra("LOGIN_TYPE", "ACCOUNT");
                     intent.putExtra("LOGIN_EMAIL", email);
                     intent.putExtra("LOGIN_PASSWORD", password);
 
@@ -170,6 +175,12 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
 
         if(v.equals(this.singinButton))
             this.cambiaVisibilitaFragment(1);
+
+        if(v.equals(this.singinGuestButton)){
+            Intent intent = new Intent(this, LoginController.class);
+            intent.putExtra("LOGIN_TYPE", "GUEST");
+            this.startActivity(intent);
+        }
 
     }
 

@@ -3,7 +3,7 @@
     <string name="splash_screen_tabButtonMessage">Premi per iniziare</string>
     <string name="login_login">Accedi</string>
     <string name="login_registrati">Registrati</string>
-    <string name="login_login_google">Accedi con google</string>
+    <string name="login_login_guest">ACcedi come ospite</string>
 
     <string name="login_messaggio_errore_campi_vuoti">I campi sono vuoti</string>
     <string name="login_messaggio_errore_account_non_trovato">Account non trovato</string>

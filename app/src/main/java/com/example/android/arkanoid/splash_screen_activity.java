@@ -27,7 +27,7 @@ public class splash_screen_activity extends AppCompatActivity implements View.On
 
         AudioUtil.loadAudio("splashScreen", R.raw.splashscreen, this);
         AudioUtil.getMediaPlayer("splashScreen").setLooping(true);
-        //AudioUtil.getMediaPlayer("splashScreen").start();
+        AudioUtil.getMediaPlayer("splashScreen").start();
 
         this.tapToStartButton = this.findViewById(R.id.tapToStartButton);
         if(this.tapToStartButton != null){
