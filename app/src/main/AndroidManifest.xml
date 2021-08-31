@@ -13,9 +13,6 @@
         android:roundIcon="@drawable/redball"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
-        <service
-            android:name=".Servizi.ServizioRegistrazione"
-            android:exported="false"/>
         <activity
             android:name=".login_activity"
             android:theme="@style/fullScreenStyle" />

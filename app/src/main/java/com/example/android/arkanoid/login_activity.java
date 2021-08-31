@@ -1,5 +1,8 @@
 package com.example.android.arkanoid;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
@@ -16,6 +19,7 @@ import com.example.android.arkanoid.Controller.LoginController;
 
 public class login_activity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
     private ConstraintLayout mainFrame;
+    private FrameLayout fragmentFrame;
     private Button loginButton;
     private Button singinButton;
     private Fragment fragmentRegistrazione;
@@ -30,10 +34,78 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
      * Scrive sulla view il messaggio di errore
      * @param messaggio Messaggio di errore da scrivere sulla view
      */
-    private void scriviMessaggioErrore(String messaggio){
+    public void scriviMessaggioErrore(String messaggio){
         TextView messaggioErroreView = this.findViewById(R.id.messaggioErrore);
         if(messaggioErroreView != null && messaggio != null){
             messaggioErroreView.setText(messaggio);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("FRAGMENT_VISIBLE", this.fragmentRegistrazione.isVisible());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        this.getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentRegistrazione, this.fragmentRegistrazione)
+                .addToBackStack(null)
+                .commit();
+        if(savedInstanceState.getBoolean("FRAGMENT_VISIBLE"))
+            this.getSupportFragmentManager()
+                    .beginTransaction()
+                    .show(this.fragmentRegistrazione)
+                    .commit();
+    }
+
+    /**
+     * Cambia la visibilità del fragment
+     * @param visibilita 1 il fragment è visibile, altrimenti è nascosto
+     */
+    public void cambiaVisibilitaFragment(int visibilita){
+        if(this.fragmentRegistrazione != null && this.fragmentFrame != null){
+            if(visibilita == 0){
+                class AL implements Animator.AnimatorListener{
+                    login_activity la;
+                    public AL(login_activity la){
+                        this.la = la;
+                    }
+
+                    @Override
+                    public void onAnimationStart(Animator animation) {}
+                    @Override
+                    public void onAnimationCancel(Animator animation) {}
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {}
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        this.la.getSupportFragmentManager()
+                                .beginTransaction()
+                                .hide(this.la.fragmentRegistrazione)
+                                .commit();
+                    }
+                }
+
+                AnimatorSet as = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.singin_close_animation);
+                as.setTarget(this.fragmentFrame);
+                as.addListener(new AL(this));
+                as.start();
+
+
+            }else{
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .show(this.fragmentRegistrazione)
+                        .commit();
+
+                AnimatorSet as = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.singin_open_animation);
+                as.setTarget(this.fragmentFrame);
+                as.start();
+            }
         }
     }
 
@@ -59,6 +131,7 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                 .addToBackStack(null)
                 .hide(this.fragmentRegistrazione)
                 .commit();
+        this.fragmentFrame = this.findViewById(R.id.fragmentRegistrazione);
 
         //Riferimento alle viste
         this.loginButton = this.findViewById(R.id.pulsanteLogin);
@@ -95,26 +168,15 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
             }
         }
 
-        if(v.equals(this.singinButton)){
-            System.out.println("Singin");
-            if(this.fragmentRegistrazione != null){
-                FrameLayout fl = this.findViewById(R.id.fragmentRegistrazione);
-                this.getSupportFragmentManager().beginTransaction().show(this.fragmentRegistrazione).commit();
-                this.findViewById(R.id.fragmentRegistrazione).requestFocus();
-            }
-        }
+        if(v.equals(this.singinButton))
+            this.cambiaVisibilitaFragment(1);
+
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(this.fragmentRegistrazione != null){
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .hide(this.fragmentRegistrazione)
-                    .commit();
-        }
-
-        System.out.println("Eccomi");
+        if( event.getAction() == MotionEvent.ACTION_UP)
+            this.cambiaVisibilitaFragment(0);
         return true;
     }
 }

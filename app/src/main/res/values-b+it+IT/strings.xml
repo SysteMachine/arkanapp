@@ -10,4 +10,5 @@
 
     <string name="singin_fragment_ripeti_password">Ripeti password:</string>
     <string name="singin_fragment_registrazione">Registrati</string>
+    <string name="singin_fragment_errore_registrazione">Errore di registrazione</string>
 </resources>
