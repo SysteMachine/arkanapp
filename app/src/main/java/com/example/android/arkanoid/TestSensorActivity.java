@@ -58,6 +58,9 @@ public class TestSensorActivity extends AppCompatActivity implements SensorEvent
             float zInc = event.values[2] * dt;
             this.tValue += zInc;
             double degreeValue =(this.tValue * 180) / Math.PI;
+
+            this.tValue = (float)( this.tValue - Math.floor( this.tValue / (2 * Math.PI) ) * (2 * Math.PI) );
+
             this.tView.setText("T: " + degreeValue % 360 + " - " + event.timestamp);
         }
 

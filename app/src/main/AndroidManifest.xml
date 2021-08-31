@@ -16,10 +16,6 @@
         <activity
             android:name=".TestSensorActivity"
             android:theme="@style/Theme.AppCompat">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".login_activity"
@@ -35,6 +31,10 @@
             android:name=".splash_screen_activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/fullScreenStyle">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

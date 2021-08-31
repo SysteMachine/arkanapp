@@ -48,12 +48,14 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     public final static String PARAMETRO_ALTERAZIONE_STILE = "stile";
     public final static String PARAMETRO_ALTERAZIONE_GAMELOOP = "gameLoop";
 
-    protected int OFFSET_SUPERIORE_PALLA = 80;        //Limite superiore della palla
-    protected int PARTICELLE_ROTTURA_BLOCCO = 30;     //Numero di particelle da spawnare alla distruzione del blocco
-    protected float PERCENTUALE_DEATH_ZONE = 0.95f;   //Percentuale della deathzone
+    protected int INTERVALLO_MOVIMENTO_GIROSCOPIO_MASSIMO = 30; //Grado massimo per lo spostamento del paddle
 
-    protected int PUNTI_PER_COLPO = 100;              //Punti per ogni colpo del blocco
-    protected int PUNTI_PER_PARTITA = 1500;           //Punti per ogni partita completata
+    protected int OFFSET_SUPERIORE_PALLA = 80;                  //Limite superiore della palla
+    protected int PARTICELLE_ROTTURA_BLOCCO = 30;               //Numero di particelle da spawnare alla distruzione del blocco
+    protected float PERCENTUALE_DEATH_ZONE = 0.95f;             //Percentuale della deathzone
+
+    protected int PUNTI_PER_COLPO = 100;                        //Punti per ogni colpo del blocco
+    protected int PUNTI_PER_PARTITA = 1500;                     //Punti per ogni partita completata
 
     //-----------------------------------------------------------------------------------------------------------//
 
@@ -75,11 +77,12 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected boolean risorseCaricate;                          //Flag di caricamento delle risorse
 
     //Gestione dei sensori
-
-    protected SensorManager sensorManager;                      //Gestore dei sensori
-    protected Sensor giroscopio;                                //Sensore del giroscopio
-    protected float zValue;
-    protected float zeroValue;
+    protected float rotazioneAsseZ;                             //Rotazione sull'asseZ del disposititvo
+    protected long sensoreTimeStamp;                            //Ultimo timeStamp del sensore
+    protected float puntoZeroAsseZ;                             //Punto considerato come 0 nella rotazione
+    protected int incrementoRotazioneAngolo;                    //Incremento della rotazione quando viene cambiato l'orientamento dello schermo
+    protected float angoloRelativo;                             //Angolo relativo per il posizionamento del paddle ad esempio i valori che vanno da 0 a 30 o da 360 a 320 sono considerati come intervalli da 40 a -40
+    protected int ultimoOrientamentoConosciuto;                 //Ultimo orientamento in cui si trovava il dispositivo
 
     public ModalitaClassica(Stile stile, GameStatus status, PMList pmList) {
         super(0);
@@ -95,8 +98,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         this.percentualeDimensioneIndicatori = 0.06f;
         this.percentualeDimensionePowerup = 0.1f;
         this.percentualeDimensioneFont = 0.03f;
-
-        this.zeroValue = -1;
     }
 
     @Override
@@ -104,20 +105,30 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         super.setGameLoop(gameLoop);
         gameLoop.setOnTouchListener(this);
         if(this.status != null && this.status.getModalitaControllo() == GameStatus.GYRO){
-            this.sensorManager = (SensorManager) gameLoop.getContext().getSystemService(Service.SENSOR_SERVICE);
-            this.giroscopio = this.sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            SensorManager sensorManager = (SensorManager) gameLoop.getContext().getSystemService(Service.SENSOR_SERVICE);
+            Sensor giroscopio = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
             if(giroscopio == null) {
-                System.out.println("0");
                 this.status.setModalitaControllo(GameStatus.TOUCH);
-            }else
-                this.sensorManager.registerListener(this, this.giroscopio, SensorManager.SENSOR_DELAY_GAME);
+            }else {
+                this.rotazioneAsseZ = 0;
+                this.sensoreTimeStamp = -1;
+                this.puntoZeroAsseZ = 0;
+                this.incrementoRotazioneAngolo = 0;
+                this.angoloRelativo = 0;
+                this.ultimoOrientamentoConosciuto = gameLoop.getResources().getConfiguration().orientation;
+                sensorManager.registerListener(this, giroscopio, SensorManager.SENSOR_DELAY_GAME);
+            }
         }
     }
 
     @Override
     protected void removeGameLoop() {
-        super.removeGameLoop();
         this.owner.setOnTouchListener(null);
+        if(this.status.getModalitaControllo() == GameStatus.GYRO){
+            SensorManager sensorManager = (SensorManager) this.owner.getContext().getSystemService(Service.SENSOR_SERVICE);
+            sensorManager.unregisterListener(this);
+        }
+        super.removeGameLoop();
     }
 
     /**
@@ -418,13 +429,6 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             super.render(dt, screenWidth, screenHeight, canvas, paint);
             this.disegnaPunteggio(screenWidth, screenHeight, canvas, paint);
         }
-
-        paint.setTextSize(30);
-        canvas.drawText(
-                "PosZ: " + this.zValue,
-                50, 50,
-                paint
-        );
     }
 
     @Override
@@ -575,11 +579,43 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(this.status.getModalitaControllo() == GameStatus.GYRO){
-            if(this.zeroValue == -1)
-                this.zeroValue = event.values[2];
+        if(this.status.getModalitaControllo() == GameStatus.GYRO && event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
+            //Cambio del valore sul giroscopio
+            if(this.sensoreTimeStamp != -1){
+                //Se è stato osservato una volta il cambiamento del sensore
+                float dt = (System.currentTimeMillis() - this.sensoreTimeStamp) / 1000.0f;
+                float velocitaZ = event.values[2];
 
-            this.zValue = event.values[2] - this.zeroValue;
+                float spostamento = (velocitaZ * dt * 180) / (float)Math.PI;
+
+                float ultimaRotazione = this.rotazioneAsseZ;
+                this.rotazioneAsseZ += spostamento;
+                if(this.owner.getResources().getConfiguration().orientation != this.ultimoOrientamentoConosciuto){
+                    //Se lo schermo ha cambiato orientamento dall'ultima volta, cambiamo l'angolo di rotazione di +-90 in base alla rotazione
+                    //Questo valore è usato per capire dove localizzare il punto 0 della misurazione
+                    if(ultimaRotazione > this.rotazioneAsseZ)
+                        this.incrementoRotazioneAngolo -= 90;
+                    else if(ultimaRotazione < this.rotazioneAsseZ)
+                        this.incrementoRotazioneAngolo += 90;
+
+                    this.ultimoOrientamentoConosciuto = this.owner.getResources().getConfiguration().orientation;
+                }
+
+                //Calcolo dell'angolo relativo, in modo tale che in base all'orientamento se il dispositivo è in posizione di riposo, l'angolo risulti 0
+                //TODO: attenzione, si rompe tutto se si ritorna in landscape quando si ruota il telefono oltre i 180°, speriamo che non capit, ma al massimo inseriamo il reset della posizione
+                this.angoloRelativo = this.rotazioneAsseZ - (this.incrementoRotazioneAngolo + this.puntoZeroAsseZ);
+
+                //Calcolo della posizione della paddle
+                int larghezzaMezzi = this.lastScreenWidth / 2;
+                float peso = this.angoloRelativo / this.INTERVALLO_MOVIMENTO_GIROSCOPIO_MASSIMO;    //Con questo ci viene restituito un valore che va da 0 a 1(Se facciamo modifiche sotto)
+                if(Math.abs(peso) > 1)
+                    peso = peso / Math.abs(peso);   //Portiamo a 1 il peso mantenendo il segno
+
+                float posizionePaddle = larghezzaMezzi - (peso * larghezzaMezzi);
+                this.paddle.setTargetX(posizionePaddle);
+            }
+
+            this.sensoreTimeStamp = System.currentTimeMillis();
         }
     }
 
