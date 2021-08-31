@@ -6,21 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".login_activity"
-    android:background="@color/background">
+    android:background="@drawable/splashscreen_background">
 
-    <TextView
-        android:id="@+id/etichettaTitolo"
-        android:layout_width="340dp"
-        android:layout_height="50dp"
-        style="@style/labelStyle"
-        android:text="@string/app_name"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.06" />
+    <ImageView
+        android:id="@+id/arkanoid_scritta_land"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/arkanoid_scritta"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="-4dp"
+        />
 
     <TextView
         android:id="@+id/etichettaEmail"
@@ -33,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etichettaTitolo"
+        app:layout_constraintTop_toBottomOf="@+id/arkanoid_scritta_land"
         app:layout_constraintVertical_bias="0.101" />
 
     <EditText
@@ -148,7 +143,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etichettaTitolo"
+        app:layout_constraintTop_toBottomOf="@+id/arkanoid_scritta_land"
         app:layout_constraintVertical_bias="0.0" />
 
     <FrameLayout

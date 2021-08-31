@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.android.arkanoid.Util.AudioUtil;
 
@@ -28,6 +29,12 @@ public class splash_screen_activity extends AppCompatActivity implements View.On
         AudioUtil.loadAudio("splashScreen", R.raw.splashscreen, this);
         AudioUtil.getMediaPlayer("splashScreen").setLooping(true);
         AudioUtil.getMediaPlayer("splashScreen").start();
+
+
+        ImageView splashscreen = (ImageView)findViewById(R.id.splashscreen);
+        Animation aniSlide = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.splashscreen_animation);
+        splashscreen.startAnimation(aniSlide);
+
 
         this.tapToStartButton = this.findViewById(R.id.tapToStartButton);
         if(this.tapToStartButton != null){

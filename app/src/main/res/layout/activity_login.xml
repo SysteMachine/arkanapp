@@ -1,27 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainFrame"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@drawable/splashscreen_background"
     tools:context=".login_activity">
 
-    <TextView
-        android:id="@+id/etichettaTitolo"
-        style="@style/labelStyle"
-        android:layout_width="340dp"
-        android:layout_height="50dp"
-        android:textSize="40sp"
-        android:text="@string/app_name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.06" />
+    <ImageView
+        android:id="@+id/arkanoid_scritta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arkanoid_scritta"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="-4dp"  />
 
     <TextView
         android:id="@+id/etichettaEmail"
@@ -29,12 +22,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email:"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etichettaTitolo"
+        app:layout_constraintTop_toBottomOf="@+id/arkanoid_scritta"
         app:layout_constraintVertical_bias="0.101" />
 
     <EditText
@@ -46,7 +39,7 @@
         android:layout_marginRight="10dp"
         android:ems="10"
         android:inputType="textEmailAddress"
-        android:textSize="15sp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etichettaEmail"
@@ -58,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Password:"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -75,7 +68,7 @@
         android:layout_marginRight="10dp"
         android:ems="10"
         android:inputType="textPassword"
-        android:textSize="15sp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etichettaPassword"
@@ -89,7 +82,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:text="@string/login_login"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -105,7 +98,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:text="@string/login_registrati"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -114,18 +107,17 @@
         app:layout_constraintVertical_bias="0.05" />
 
     <Button
-        android:id="@+id/pulsanteAccediComeOspite"
+        android:id="@+id/pulsanteAccediConGoogle"
         style="@style/buttonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/login_login_guest"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:text="@string/login_login_guest"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0
-"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pulsanteRegistrazione"
         app:layout_constraintVertical_bias="0.06" />
@@ -137,7 +129,7 @@
         android:layout_height="wrap_content"
         android:text="Errore"
         android:textColor="@color/fontErrorColor"
-        android:textSize="15sp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
