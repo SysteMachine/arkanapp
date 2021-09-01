@@ -11,6 +11,7 @@ public class StileFuturistico extends Stile {
     public StileFuturistico(){}
 
     protected void setStilePalla(){
+        super.setStilePalla();
         this.immaginePalla = R.drawable.stilefuturistico_ball;
         this.angoloDiLancioMassimoPalla = 40;
         this.velocitaInizialePalla = 800;
@@ -22,6 +23,7 @@ public class StileFuturistico extends Stile {
     }
 
     protected void setStilePaddle(){
+        super.setStilePaddle();
         this.immaginePaddle = R.drawable.stilefuturistico_paddle;
         this.velocitaInizialePaddle = 1000;
         this.percentualeDimensionePaddle = new Vector2D(0.2f, 0.03f);
@@ -30,6 +32,7 @@ public class StileFuturistico extends Stile {
     }
 
     protected void setStileBrick(){
+        super.setStileBrick();
         this.immagineBrick = R.drawable.stilefuturistico_brick;
         this.numeroColonneMappa = 8;
         this.numeroRigheMappa = 6;
@@ -44,6 +47,7 @@ public class StileFuturistico extends Stile {
     }
 
     protected void setStileSfondo(){
+        super.setStileSfondo();
         this.immagineSfondo = R.drawable.stilefuturistico_background;
         this.coloriSfondo = new ReplaceColorRecord[0];
     }
