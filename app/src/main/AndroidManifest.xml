@@ -14,10 +14,6 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".TestSensorActivity"
-            android:theme="@style/Theme.AppCompat">
-        </activity>
-        <activity
             android:name=".login_activity"
             android:theme="@style/fullScreenStyle" />
         <activity
