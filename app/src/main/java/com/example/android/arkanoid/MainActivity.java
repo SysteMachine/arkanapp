@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             this.gameLoop.setShowFPS(true);
             this.gameLoop.start();
 
-            Stile stile = new StileAtzeco();
+            Stile stile = new Stile();
             this.status = new GameStatus(5, 0, GameStatus.TOUCH);
             PMList powerupList = new PMList();
 

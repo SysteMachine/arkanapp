@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.example.android.arkanoid.Controller.LoginController;
+import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
 
 public class login_activity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
     private ConstraintLayout mainFrame;
@@ -29,6 +30,17 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_login);
+
+        RecordSalvataggio rs = new RecordSalvataggio(this);
+        System.out.println("Stampa1: " + rs.toString());
+        if(rs.isLogin()){
+            Intent newIntent = new Intent(this, main_menu_activity.class);
+            newIntent.putExtra("LOGIN_TYPE", "ACCOUNT");
+            newIntent.putExtra("LOGIN_EMAIL", rs.getEmail());
+            newIntent.putExtra("LOGIN_USERNAME", rs.getNomeUtente());
+
+            this.startActivity(newIntent);
+        }
     }
 
     /**

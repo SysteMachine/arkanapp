@@ -12,4 +12,10 @@
     <string name="singin_fragment_ripeti_password">Repeat password:</string>
     <string name="singin_fragment_registrazione">Sing-in</string>
     <string name="singin_fragment_errore_registrazione">Sing-in error</string>
+
+    <string name="main_menu_activity_gioca">Play</string>
+    <string name="main_menu_activity_impostazioni">Settings</string>
+    <string name="main_menu_activity_creazioni">Creations</string>
+    <string name="main_menu_activity_classifica">Rank</string>
+
 </resources>

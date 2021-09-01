@@ -1,6 +1,6 @@
 package com.example.android.arkanoid.Controller;
 
-import com.example.android.arkanoid.MainActivity;
+import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.login_activity;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.android.arkanoid.Util.DBUtil;
+import com.example.android.arkanoid.main_menu_activity;
 
 import org.json.JSONObject;
 
@@ -73,16 +74,23 @@ public class LoginController extends AppCompatActivity {
 
         Intent newIntent = null;
         if(intent.getExtras().getString("LOGIN_TYPE").equals("GUEST")){
-            newIntent = new Intent(this, MainActivity.class);
+            newIntent = new Intent(this, main_menu_activity.class);
             newIntent.putExtra("LOGIN_TYPE", "GUEST");
         }else{
             if(error){
                 newIntent = new Intent(this, login_activity.class);
                 newIntent.putExtra("LOGIN_ERRORE", this.getResources().getString(R.string.login_messaggio_errore_account_non_trovato));
             }else{
-                newIntent = new Intent(this, MainActivity.class);
+                newIntent = new Intent(this, main_menu_activity.class);
+                newIntent.putExtra("LOGIN_TYPE", "ACCOUNT");
                 newIntent.putExtra("LOGIN_EMAIL", intent.getStringExtra("LOGIN_EMAIL"));
                 newIntent.putExtra("LOGIN_USERNAME", user_username);
+
+                //Salviamo le informazioni su file
+                RecordSalvataggio rs = new RecordSalvataggio(this);
+                rs.setEmail(intent.getStringExtra("LOGIN_EMAIL"));
+                rs.setNomeUtente(user_username);
+                rs.setLogin(true);
             }
         }
         this.startActivity(newIntent);
