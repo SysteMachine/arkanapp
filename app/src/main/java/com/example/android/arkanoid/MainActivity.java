@@ -18,6 +18,7 @@ import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.PaddleSpee
 import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.PaddleUp;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
+import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 
 public class MainActivity extends AppCompatActivity {
     private static GameLoop gameLoop;
@@ -38,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
             this.gameLoop.setShowFPS(true);
             this.gameLoop.start();
 
-            Stile stile = new Stile();
-            this.status = new GameStatus(5, 0, GameStatus.GYRO);
+            Stile stile = new StileAtzeco();
+            this.status = new GameStatus(5, 0, GameStatus.TOUCH);
             PMList powerupList = new PMList();
 
             powerupList.addPowerupMalus(BallSpeedUp.class, 10);

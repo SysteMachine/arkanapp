@@ -119,7 +119,7 @@ public class Ball extends Entity {
             Entity[] brick = (Entity[])scena.getEntityByName("brick");
             for(Entity ae: brick){
                 Brick b = (Brick)ae;
-                if(b.getHealth() > 0){
+                if(b.getHealth() != 0){
                     //Se il brick non è stato ancora distrutto
                     RectF collisioneBrick = b.getBounds();
                     RectF collisionePalla = this.getBounds(posizione.getPosX(), posizione.getPosY());

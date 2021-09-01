@@ -346,9 +346,12 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 this.stile.getNumeroColonneMappa(),
                 this.stile.getPercentualePosizioneMappa().prodottoPerVettore(new Vector2D(screenWidth, screenHeight)),
                 this.stile.getPercentualeDimensioneMappa().prodottoPerVettore(new Vector2D(screenWidth, screenHeight)),
+                this.stile.getVitaInizialeBlocco(),
                 this.stile.getImmagineBrickStile(this.owner),
+                this.stile.getImmagineBrickIndistruttibileStile(this.owner),
                 new MultiSprite(R.drawable.crepebrick, this.owner, 10)
         );
+        this.mappa.inserisciOstacoli(4);
 
         this.sfondo = new Sfondo(
                 new Vector2D(screenWidth * 0.5f, screenHeight * 0.5f),
@@ -579,14 +582,14 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(this.status.getModalitaControllo() == GameStatus.GYRO && event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
+        if(this.status.getModalitaControllo() == GameStatus.GYRO && event.sensor.getType() == Sensor.TYPE_GYROSCOPE && this.owner != null){
             //Cambio del valore sul giroscopio
             if(this.sensoreTimeStamp != -1){
                 //Se è stato osservato una volta il cambiamento del sensore
                 float dt = (System.currentTimeMillis() - this.sensoreTimeStamp) / 1000.0f;
                 float velocitaZ = event.values[2];
 
-                float spostamento = (velocitaZ * dt * 180) / (float)Math.PI;
+                float spostamento = (velocitaZ * dt * 180) / (float)Math.PI;    //Calcolato in gradi, velocitaZ + dt è in radianti
 
                 float ultimaRotazione = this.rotazioneAsseZ;
                 this.rotazioneAsseZ += spostamento;

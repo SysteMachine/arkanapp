@@ -10,6 +10,8 @@ import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class Brick extends Entity {
+    public static int INF_HEALTH = -1;              //Vita infinita del blocco
+
     private final int MAX_SHAKE = 5;               //Massimo scostamento dello shake
 
     private long shakeStart;                        //Inizio dello shake
@@ -50,10 +52,13 @@ public class Brick extends Entity {
      * @param fps Fps dello shake
      */
     public void shake(int duration, int fps){
-        this.shakeStart = System.currentTimeMillis();
-        this.msShake = 1000 / fps;
-        this.shakeTimeStamp = System.currentTimeMillis();
-        this.shakeDuration = duration;
+        if(this.health != Brick.INF_HEALTH){
+            //Se il blocco è distruttibile allora si esegue l'animazione di shake
+            this.shakeStart = System.currentTimeMillis();
+            this.msShake = 1000 / fps;
+            this.shakeTimeStamp = System.currentTimeMillis();
+            this.shakeDuration = duration;
+        }
     }
 
     @Override
@@ -74,9 +79,11 @@ public class Brick extends Entity {
      * Decrementa la vita del brick
      */
     public void decrementaVita(){
-        this.health --;
-        if(this.health < 0)
-            this.health = 0;
+        if(this.health != Brick.INF_HEALTH){
+            this.health --;
+            if(this.health < 0)
+                this.health = 0;
+        }
     }
 
     @Override

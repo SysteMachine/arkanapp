@@ -24,10 +24,14 @@ public class Stile {
     protected ReplaceColorRecord[] coloriPaddle;
 
     protected int immagineBrick;
+    protected int immagineBrickIndistruttibile;
+    protected int vitaInizialeBlocco;
+    protected int numeroBlocchiIndistruttibili;
     protected int numeroColonneMappa;
     protected int numeroRigheMappa;
     protected Vector2D percentualePosizioneMappa;
     protected Vector2D percentualeDimensioneMappa;
+    protected int coloreBrickIndistruttibile;
     protected ReplaceColorRecord[] coloriBrick;
     protected int[] coloriCasualiBrick;
 
@@ -100,6 +104,8 @@ public class Stile {
      */
     protected void setStileBrick(){
         this.immagineBrick = R.drawable.stilebase_brick;
+        this.vitaInizialeBlocco = 1;
+        this.numeroBlocchiIndistruttibili = 0;
         this.numeroColonneMappa = 8;
         this.numeroRigheMappa = 6;
         this.percentualePosizioneMappa = new Vector2D(0, 0.15f);
@@ -110,6 +116,10 @@ public class Stile {
         this.coloriCasualiBrick[1] = Color.YELLOW;
         this.coloriCasualiBrick[2] = Color.rgb(255, 165, 0);
         this.coloriCasualiBrick[3] = Color.RED;
+
+        //Brick indistruttibile
+        this.immagineBrickIndistruttibile = R.drawable.stilebase_brick_indistruttibile;
+        this.coloreBrickIndistruttibile = Color.LTGRAY;
     }
 
     /**
@@ -136,6 +146,17 @@ public class Stile {
         }
 
         return  esito;
+    }
+
+    /**
+     * Restituisce l'immagine del brick indistruttibile con lo stile impostato
+     * @param gameLoop GameLoop per il caricamento dell'immagine
+     * @return Restituisce lo sprite per il brick indistruttibile
+     */
+    public Sprite getImmagineBrickIndistruttibileStile(GameLoop gameLoop){
+        Sprite esito = new Sprite(this.immagineBrickIndistruttibile, gameLoop);
+        esito.replaceColor(Color.WHITE, this.coloreBrickIndistruttibile, 200);
+        return esito;
     }
 
     /**
@@ -262,6 +283,38 @@ public class Stile {
 
     public void setImmagineBrick(int immagineBrick) {
         this.immagineBrick = immagineBrick;
+    }
+
+    public int getImmagineBrickIndistruttibile() {
+        return immagineBrickIndistruttibile;
+    }
+
+    public void setImmagineBrickIndistruttibile(int immagineBrickIndistruttibile) {
+        this.immagineBrickIndistruttibile = immagineBrickIndistruttibile;
+    }
+
+    public int getColoreBrickIndistruttibile() {
+        return coloreBrickIndistruttibile;
+    }
+
+    public void setColoreBrickIndistruttibile(int coloreBrickIndistruttibile) {
+        this.coloreBrickIndistruttibile = coloreBrickIndistruttibile;
+    }
+
+    public int getVitaInizialeBlocco() {
+        return vitaInizialeBlocco;
+    }
+
+    public void setVitaInizialeBlocco(int vitaInizialeBlocco) {
+        this.vitaInizialeBlocco = vitaInizialeBlocco;
+    }
+
+    public int getNumeroBlocchiIndistruttibili() {
+        return numeroBlocchiIndistruttibili;
+    }
+
+    public void setNumeroBlocchiIndistruttibili(int numeroBlocchiIndistruttibili) {
+        this.numeroBlocchiIndistruttibili = numeroBlocchiIndistruttibili;
     }
 
     public int getNumeroColonneMappa() {

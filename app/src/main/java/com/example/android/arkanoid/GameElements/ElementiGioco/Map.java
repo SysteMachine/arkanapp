@@ -11,12 +11,15 @@ public class Map {
     private final int nRighe;                               //Numero di colonne della mappa
     private final int nColonne;                             //Numero di righe della mappa
 
+    private int vitaBlocchi;                                //Vita massima da associare ai blocchi
+
     private int posX;                                       //Posizione X della mappa
     private int posY;                                       //Posizione Y della mappa
     private int mapWidth;                                   //Larghezza della mappa
     private int mapHeight;                                  //Altezza della mappa
 
     private final Sprite[] coloriBrick;                     //Colore dei brick
+    private final Sprite bickIndistruttibile;               //Sprite del brick indistruttibile
     private final MultiSprite spriteCrepe;                  //Sprite delle crepe
 
     private boolean aviable;                                //Flag di aviabilità della mappa
@@ -26,7 +29,7 @@ public class Map {
     private int rigaCorrente;                               //Riga corrente per restituire il prossimo elemento
     private int colonnaCorrente;                            //Colonna corrente per restituire il prossimo elemento
 
-    public Map(int nRighe, int nColonne, Vector2D position, Vector2D size, Sprite[] coloriBrick, MultiSprite spriteCrepe){
+    public Map(int nRighe, int nColonne, Vector2D position, Vector2D size, int vitaBlocchi, Sprite[] coloriBrick, Sprite brickIndistruttibile, MultiSprite spriteCrepe){
         this.nRighe = nRighe;
         this.nColonne = nColonne;
 
@@ -40,6 +43,11 @@ public class Map {
 
         this.coloriBrick = coloriBrick;
         this.spriteCrepe = spriteCrepe;
+        this.bickIndistruttibile = brickIndistruttibile;
+
+        this.setVitaBlocchi(vitaBlocchi);
+
+        this.aviable = false;
 
         try{
             this.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneBase", int.class, int.class), this);
@@ -88,7 +96,7 @@ public class Map {
                                 new Vector2D(brickWidth, brickHeight),
                                 this.coloriBrick[(i + j) % this.coloriBrick.length],
                                 this.spriteCrepe,
-                                1 + (int)(Math.random() * (Map.MAX_HEALTH_BRICK - 1) )
+                                this.vitaBlocchi
                         );
                         this.elementiMappa[i][j] = brick;   //Impostiamo il valore
                     }catch (Exception e){e.printStackTrace();}
@@ -99,6 +107,53 @@ public class Map {
         }
 
         this.aviable = true;
+    }
+
+    /**
+     * Inserisce all'interno della mappa un numero di blocchi indistruttibili
+     * @param nOstacoli Numero di ostacoli da inserire
+     */
+    public void inserisciOstacoli(int nOstacoli){
+        int nGenerati = 0;
+
+        //Calcolo delle dimensioni dei blocchi e delle posizioni di partenza
+        int brickWidth = this.mapWidth / this.nColonne;
+        int brickHeight = this.mapHeight / this.nRighe;
+        float startX = this.posX + (brickWidth * 0.5f);
+        float startY = this.posY + (brickHeight * 0.5f);
+
+        while(nGenerati < nOstacoli && nGenerati < this.getnRighe() * this.getnColonne()){
+            //LA generazione continua fino a quando non sono stati generati tutti gli ostacoli o fino a quando c'è spazio
+            int i = (int)Math.floor(Math.random() * this.nRighe);
+            int j = (int)Math.floor(Math.random() * this.nColonne);
+
+            Brick elemento = this.elementiMappa[i][j];
+            if(elemento != null){
+                //Se l'elemento esiste e non è invincibile lo sostituisce
+                if(elemento.getHealth() != Brick.INF_HEALTH){
+                    this.elementiMappa[i][j] = new Brick(
+                                                    elemento.getPosition(),
+                                                    elemento.getSize(),
+                                                    this.bickIndistruttibile,
+                                                    this.spriteCrepe,
+                                                    Brick.INF_HEALTH);
+                    nGenerati++;
+                }
+
+            }else{
+                //Crea il blocco nella posizione vuota
+                float posX = startX + (brickWidth * j);
+                float posY = startY + (brickHeight * i);
+
+                this.elementiMappa[i][j] = new Brick(
+                                                new Vector2D(posX, posY),
+                                                new Vector2D(brickWidth, brickHeight),
+                                                this.bickIndistruttibile,
+                                                this.spriteCrepe,
+                                                Brick.INF_HEALTH);
+                nGenerati++;
+            }
+        }
     }
 
     /**
@@ -142,8 +197,10 @@ public class Map {
 
         Brick brick = this.getNextBrick();
         while(brick != null){
-            somma += brick.getHealth();
-            brick = this.getNextBrick();
+            if(brick.getHealth() != Brick.INF_HEALTH){
+                somma += brick.getHealth();
+                brick = this.getNextBrick();
+            }
         }
         this.azzeraContatori();
 
@@ -151,6 +208,17 @@ public class Map {
     }
 
     //Beam
+    public int getVitaBlocchi() {
+        return vitaBlocchi;
+    }
+
+    public void setVitaBlocchi(int vita) {
+        if(vita > 0 && vita <= Map.MAX_HEALTH_BRICK)
+            this.vitaBlocchi = vita;
+        else
+            this.vitaBlocchi = 1;
+    }
+
     public boolean isAviable() {
         return aviable;
     }
