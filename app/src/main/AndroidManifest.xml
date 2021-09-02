@@ -20,7 +20,7 @@
             android:name=".login_activity"
             android:theme="@style/fullScreenStyle" />
         <activity
-            android:name=".MainActivity"
+            android:name=".modalita_activity"
             android:configChanges="orientation"
             android:theme="@style/fullScreenStyle" />
         <activity

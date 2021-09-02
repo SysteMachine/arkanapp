@@ -20,7 +20,7 @@ import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 
-public class MainActivity extends AppCompatActivity {
+public class modalita_activity extends AppCompatActivity {
     private static GameLoop gameLoop;
     private static ModalitaClassica modalitaClassica;
     private static GameStatus status;
