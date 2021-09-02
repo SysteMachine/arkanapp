@@ -31,12 +31,12 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_login);
+
         this.frameContrasto = findViewById(R.id.frameContrasto);
         if(this.frameContrasto != null)
             this.frameContrasto.setOnTouchListener(this);
 
         RecordSalvataggio rs = new RecordSalvataggio(this);
-        System.out.println("Stampa1: " + rs.toString());
         if(rs.isLogin()){
             Intent newIntent = new Intent(this, main_menu_activity.class);
             newIntent.putExtra("LOGIN_TYPE", "ACCOUNT");
