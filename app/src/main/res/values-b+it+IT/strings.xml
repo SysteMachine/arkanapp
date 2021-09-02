@@ -16,4 +16,6 @@
     <string name="main_menu_activity_impostazioni">Impostazioni</string>
     <string name="main_menu_activity_creazioni">Creazioni</string>
     <string name="main_menu_activity_classifica">Classifica</string>
+
+    <string name="fragment_selezione_modalita_modalita_classica">Modalità classica</string>
 </resources>

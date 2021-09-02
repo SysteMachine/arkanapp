@@ -18,4 +18,6 @@
     <string name="main_menu_activity_creazioni">Creations</string>
     <string name="main_menu_activity_classifica">Rank</string>
 
+    <string name="fragment_selezione_modalita_modalita_classica">Classic mode</string>
+
 </resources>

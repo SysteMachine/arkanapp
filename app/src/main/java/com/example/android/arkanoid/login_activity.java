@@ -103,7 +103,7 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                     }
                 }
 
-                AnimatorSet as = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.singin_close_animation);
+                AnimatorSet as = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.close_animation);
                 as.setTarget(this.fragmentFrame);
                 as.addListener(new AL(this));
                 as.start();
@@ -115,7 +115,7 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                         .show(this.fragmentRegistrazione)
                         .commit();
 
-                AnimatorSet as = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.singin_open_animation);
+                AnimatorSet as = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.open_animation);
                 as.setTarget(this.fragmentFrame);
                 as.start();
             }
