@@ -25,11 +25,15 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
     private Button singinButton;
     private Button singinGuestButton;
     private Fragment fragmentRegistrazione;
+    private FrameLayout frameContrasto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_login);
+        this.frameContrasto = findViewById(R.id.frameContrasto);
+        if(this.frameContrasto != null)
+            this.frameContrasto.setOnTouchListener(this);
 
         RecordSalvataggio rs = new RecordSalvataggio(this);
         System.out.println("Stampa1: " + rs.toString());
@@ -68,11 +72,16 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                 .replace(R.id.fragmentRegistrazione, this.fragmentRegistrazione)
                 .addToBackStack(null)
                 .commit();
-        if(savedInstanceState.getBoolean("FRAGMENT_VISIBLE"))
+        if(savedInstanceState.getBoolean("FRAGMENT_VISIBLE")) {
             this.getSupportFragmentManager()
                     .beginTransaction()
                     .show(this.fragmentRegistrazione)
                     .commit();
+
+            //Rendiamo visibile il frame di contrasto
+            if(this.frameContrasto != null)
+                this.frameContrasto.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -107,6 +116,8 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                 as.setTarget(this.fragmentFrame);
                 as.addListener(new AL(this));
                 as.start();
+                if(this.frameContrasto != null)
+                    this.frameContrasto.setVisibility(View.GONE);
 
 
             }else{
@@ -118,6 +129,8 @@ public class login_activity extends AppCompatActivity implements View.OnClickLis
                 AnimatorSet as = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.open_animation);
                 as.setTarget(this.fragmentFrame);
                 as.start();
+                if(this.frameContrasto != null)
+                    this.frameContrasto.setVisibility(View.VISIBLE);
             }
         }
     }

@@ -148,6 +148,19 @@
         app:layout_constraintVertical_bias="0.016" />
 
     <FrameLayout
+        android:id="@+id/frameContrasto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        android:background="#000000"
+        android:translationZ="100dp"
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="10dp"
+        tools:layout_editor_absoluteY="366dp">
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/fragmentRegistrazione"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -157,5 +170,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>
