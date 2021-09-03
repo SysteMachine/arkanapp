@@ -16,8 +16,16 @@
     <string name="main_menu_activity_gioca">Play</string>
     <string name="main_menu_activity_impostazioni">Settings</string>
     <string name="main_menu_activity_creazioni">Creations</string>
-    <string name="main_menu_activity_classifica">Rank</string>
+    <string name="main_menu_activity_classifica">Leaderboard</string>
 
     <string name="fragment_selezione_modalita_modalita_classica">Classic mode</string>
+
+    <string name="modalita_activity_seleziona_difficolta">Difficulty</string>
+    <string name="modalita_activity_seleziona_difficolta_semplice">Easy</string>
+    <string name="modalita_activity_seleziona_difficolta_normale">Normal</string>
+    <string name="modalita_activity_seleziona_difficolta_difficile">Hard</string>
+    <string name="modalita_activity_seleziona_controllo">Control mode</string>
+    <string name="modalita_activity_seleziona_controllo_touch">Touch</string>
+    <string name="modalita_activity_seleziona_controllo_gyro">Gyro</string>
 
 </resources>
