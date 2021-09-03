@@ -42,6 +42,7 @@ public class Stile {
 
     protected float incrementoVelocitaPallaLivello;              //Percentuale d'incremento della velocità della palla ad ogni livello
     protected float decrementoVelocitaPaddleLivello;             //Percentuale di decremento della velocità della paddle ad ogni livello
+    protected float tassoIncrementoVitaBlocchi;                  //Percentuale di vita incrementata ai blocchi ad ogni livello superato
 
     public Stile(){
         this.setInformazioniGameplay();
@@ -56,8 +57,9 @@ public class Stile {
      * Inizializza le informazioni per il gameplay
      */
     protected void setInformazioniGameplay(){
-        this.incrementoVelocitaPallaLivello = 0.03f;
-        this.decrementoVelocitaPaddleLivello = 0.01f;
+        this.incrementoVelocitaPallaLivello = 1.03f;
+        this.decrementoVelocitaPaddleLivello = 0.99f;
+        this.tassoIncrementoVitaBlocchi = 0.5f;
     }
 
     /**
@@ -206,6 +208,14 @@ public class Stile {
 
     public void setDecrementoVelocitaPaddleLivello(float decrementoVelocitaPaddleLivello) {
         this.decrementoVelocitaPaddleLivello = decrementoVelocitaPaddleLivello;
+    }
+
+    public float getTassoIncrementoVitaBlocchi() {
+        return tassoIncrementoVitaBlocchi;
+    }
+
+    public void setTassoIncrementoVitaBlocchi(float tassoIncrementoVitaBlocchi) {
+        this.tassoIncrementoVitaBlocchi = tassoIncrementoVitaBlocchi;
     }
 
     public int getImmaginePalla() {

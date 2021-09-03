@@ -52,7 +52,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
     protected int OFFSET_SUPERIORE_PALLA = 80;                  //Limite superiore della palla
     protected int PARTICELLE_ROTTURA_BLOCCO = 30;               //Numero di particelle da spawnare alla distruzione del blocco
-    protected float PERCENTUALE_DEATH_ZONE = 0.95f;             //Percentuale della deathzone
+    protected float PERCENTUALE_DEATH_ZONE = 0.95f;             //Percentuale della deathzone in base all'altezza dello schermo, al 95% comincia
 
     protected int PUNTI_PER_COLPO = 100;                        //Punti per ogni colpo del blocco
     protected int PUNTI_PER_PARTITA = 1500;                     //Punti per ogni partita completata
@@ -247,9 +247,16 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
             //Cambia il punteggio
             this.status.incrementaPunteggio(this.PUNTI_PER_PARTITA);
 
+            //Incrementiamo o decrementiamo la velocità dell componenti
+            this.paddle.setSpeed(this.paddle.getSpeed().prodottoPerScalare(this.stile.getDecrementoVelocitaPaddleLivello()));
+            this.palla.setSpeed(this.palla.getSpeed().prodottoPerScalare(this.stile.getIncrementoVelocitaPallaLivello()));
+
+            this.mappa.setVitaBlocchi(this.mappa.getVitaBlocchi() + this.stile.getTassoIncrementoVitaBlocchi());
+
             try{
                 //Generiamo il prossimo livello della mappa
                 this.mappa.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneMappa", int.class, int.class), this);
+                this.mappa.inserisciOstacoli(this.stile.getNumeroBlocchiIndistruttibili());
 
                 //Aggiunge tutti i brick all'interno della scena, si presume che i precedenti siano stati eliminati quando si colpisce un blocco
                 Brick brick = this.mappa.getNextBrick();
@@ -351,7 +358,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
                 this.stile.getImmagineBrickIndistruttibileStile(this.owner),
                 new MultiSprite(R.drawable.crepebrick, this.owner, 10)
         );
-        this.mappa.inserisciOstacoli(4);
+        this.mappa.inserisciOstacoli(stile.getNumeroBlocchiIndistruttibili());
 
         this.sfondo = new Sfondo(
                 new Vector2D(screenWidth * 0.5f, screenHeight * 0.5f),
@@ -527,7 +534,7 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
         //Rimuove l'entità dalla scena
         PM pm = parametri.get("powerup");
         if(pm != null){
-            pm.getAlterazione().attivaAlterazione(this.status, this.creaParametriAlterazioni());
+            pm.getAlterazione().attivaAlterazione(this.status, this.creaParametriAlterazioni());    //Attiviamo l'alterazione
             this.eventoRimozionePowerup(parametri); //Rimuoviamo l'entità fisica del powerup
 
             //Aggiunge l'immagine del powerup e l'indicatore

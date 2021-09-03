@@ -11,7 +11,7 @@ public class Map {
     private final int nRighe;                               //Numero di colonne della mappa
     private final int nColonne;                             //Numero di righe della mappa
 
-    private int vitaBlocchi;                                //Vita massima da associare ai blocchi
+    private float vitaBlocchi;                              //Vita massima da associare ai blocchi
 
     private int posX;                                       //Posizione X della mappa
     private int posY;                                       //Posizione Y della mappa
@@ -96,7 +96,7 @@ public class Map {
                                 new Vector2D(brickWidth, brickHeight),
                                 this.coloriBrick[(i + j) % this.coloriBrick.length],
                                 this.spriteCrepe,
-                                this.vitaBlocchi
+                                (int)Math.floor(this.vitaBlocchi)
                         );
                         this.elementiMappa[i][j] = brick;   //Impostiamo il valore
                     }catch (Exception e){e.printStackTrace();}
@@ -208,11 +208,11 @@ public class Map {
     }
 
     //Beam
-    public int getVitaBlocchi() {
+    public float getVitaBlocchi() {
         return vitaBlocchi;
     }
 
-    public void setVitaBlocchi(int vita) {
+    public void setVitaBlocchi(float vita) {
         if(vita > 0 && vita <= Map.MAX_HEALTH_BRICK)
             this.vitaBlocchi = vita;
         else

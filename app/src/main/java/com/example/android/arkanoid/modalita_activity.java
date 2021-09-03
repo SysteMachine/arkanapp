@@ -1,50 +1,94 @@
 package com.example.android.arkanoid;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
+import com.example.android.arkanoid.GameElements.ElementiBase.PMList;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeedDown;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BallSpeedUp;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.BrickHealthUp;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.MultiBall;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.PaddleDown;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.PaddleSpeedDown;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.PaddleSpeedUp;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.PaddleUp;
+import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
 
-public class modalita_activity extends AppCompatActivity implements View.OnClickListener {
+import java.lang.reflect.Constructor;
+
+public class modalita_activity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
     public static final int CODICE_MODALITA_CLASSICA = 0;                           //Codice per avviare la modalità classica
 
     private final float[] MOLTIPLICATORI_PER_DIFFICOLTA = {0.8f, 1, 1.2f};          //Moltiplicatori per le difficoltà
 
     //----------------------------------------------------------//
 
+    //Campi statici per il mantenimento dello stato della partita
+    private static GameLoop gameLoop;                  //GameLoop
+    private static ModalitaClassica modalita;          //Modalita caricata
+    //----------------------------------------------------------//
+
     private ToggleButton easyButton;
     private ToggleButton normalButton;
     private ToggleButton hardButton;
-    private static int difficultyButtonIndex;
-
+    private int difficultyButtonIndex;
     private ToggleButton touchButton;
     private ToggleButton gyroButton;
-    private static int controlButtonIndex;
-
-    private static int codiceModalita;
+    private int controlButtonIndex;
+    private int codiceModalita;
     private TextView labelModalita;
-
     private Button startButton;
+
+    private FrameLayout containerModalita;      //Container della modalità eseguita
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modalita);
+
+        this.caricaRiferimentoView();
+
+        if(savedInstanceState != null){
+            this.difficultyButtonIndex = savedInstanceState.getInt("DIFFICULTY_BUTTON_INDEX", 0);
+            this.controlButtonIndex = savedInstanceState.getInt("CONTROL_BUTTON_INDEX", 0);
+            this.codiceModalita = savedInstanceState.getInt("MODE", 0);
+            if(modalita_activity.gameLoop != null && this.containerModalita != null){
+                System.out.println("Ciao");
+                this.containerModalita.setVisibility(View.VISIBLE);
+                this.containerModalita.addView(modalita_activity.gameLoop);
+            }
+
+        }else{
+            this.difficultyButtonIndex = 0;
+            this.controlButtonIndex = 0;
+            if(this.getIntent() != null)
+                this.codiceModalita = this.getIntent().getIntExtra("MODE", 0);
+            else this.codiceModalita = 0;
+        }
+
+        //Inizializza l'aspetto grafico
+        this.impostaNomeModalita(this.codiceModalita);
+        this.illuminaPulsanteDifficolta(this.difficultyButtonIndex);
+        this.illuminaPulsanteControllo(this.controlButtonIndex);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
+    /**
+     * Carica il riferimento alle view presenti all'interno dell'activity
+     */
+    protected void caricaRiferimentoView(){
+        //Pulsanti della difficoltà
         this.easyButton = this.findViewById(R.id.difficoltaFacileButton);
         if(this.easyButton != null)
             this.easyButton.setOnClickListener(this);
@@ -55,8 +99,7 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
         if(this.hardButton != null)
             this.hardButton.setOnClickListener(this);
 
-        this.difficultyButtonIndex = 0;
-
+        //Pulsanti per il controllo
         this.touchButton = this.findViewById(R.id.touchButton);
         if(this.touchButton != null)
             this.touchButton.setOnClickListener(this);
@@ -64,22 +107,48 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
         if(this.gyroButton != null)
             this.gyroButton.setOnClickListener(this);
 
-        this.controlButtonIndex = 0;
-
+        //Pulsante di start
         this.startButton = this.findViewById(R.id.startButton);
         if(this.startButton != null)
             this.startButton.setOnClickListener(this);
 
-        this.illuminaPulsanteControllo(this.controlButtonIndex);
-        this.illuminaPulsanteDifficolta(this.difficultyButtonIndex);
-
+        //Label per la modalita
         this.labelModalita = this.findViewById(R.id.nomeModalitaLabel);
 
-        Intent intent = this.getIntent();
-        if(intent != null){
-            this.codiceModalita = intent.getIntExtra("MODE", 0);
+        //Container delle modalita
+        this.containerModalita = this.findViewById(R.id.containerModalita);
+        this.containerModalita.setVisibility(View.GONE);
+        if(this.containerModalita != null)
+            this.containerModalita.setOnTouchListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(modalita_activity.gameLoop != null)
+            modalita_activity.gameLoop.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(modalita_activity.gameLoop != null){
+            if(modalita_activity.gameLoop.isRunning())
+                modalita_activity.gameLoop.stop();
+
+            if(this.containerModalita != null) {
+                this.containerModalita.removeView(modalita_activity.gameLoop);
+                System.out.println("Rimossa");
+            }
         }
-        this.impostaNomeModalita(this.codiceModalita);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("MODE", this.codiceModalita);
+        outState.putInt("DIFFICULTY_BUTTON_INDEX", this.difficultyButtonIndex);
+        outState.putInt("CONTROL_BUTTON_INDEX", this.controlButtonIndex);
     }
 
     /**
@@ -150,6 +219,9 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
                 case modalita_activity.CODICE_MODALITA_CLASSICA:
                     this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_classica));
                     break;
+                default:
+                    this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_classica));
+                    break;
             }
         }
     }
@@ -179,6 +251,7 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
 
         base.setIncrementoVelocitaPallaLivello(base.getIncrementoVelocitaPallaLivello() * moltiplicatore);
         base.setDecrementoVelocitaPaddleLivello(base.getDecrementoVelocitaPaddleLivello() * moltiplicatore);
+        base.setNumeroBlocchiIndistruttibili(this.difficultyButtonIndex * 2);
 
         return base;
     }
@@ -192,27 +265,107 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
         int punteggio = 0;
         int modalitaInput = this.controlButtonIndex == 0 ? GameStatus.TOUCH : GameStatus.GYRO;
 
-        GameStatus gameStatus = new GameStatus(health, punteggio, modalitaInput);
+        return new GameStatus(health, punteggio, modalitaInput);
+    }
 
-        return gameStatus;
+    /**
+     * Genera la lista dei powerup e dei malus
+     * @return Restituisce la lista di powerup e malus
+     */
+    protected PMList generaPM(){
+        PMList powerupList = new PMList();
+
+        powerupList.addPowerupMalus(BallSpeedUp.class, 10);
+        powerupList.addPowerupMalus(BallSpeedDown.class, 5);
+        powerupList.addPowerupMalus(MultiBall.class, 2);
+        powerupList.addPowerupMalus(BrickHealthUp.class, 20);
+        powerupList.addPowerupMalus(PaddleUp.class, 10);
+        powerupList.addPowerupMalus(PaddleDown.class, 5);
+        powerupList.addPowerupMalus(PaddleSpeedUp.class, 10);
+        powerupList.addPowerupMalus(PaddleSpeedDown.class, 5);
+
+        return powerupList;
+    }
+
+    /**
+     * Restituisce la classe della modalità che deve essere caricata
+     * @return Restituisce la classe della modalità oppure null
+     */
+    protected Class<? extends ModalitaClassica> getModalita(){
+        Class<? extends ModalitaClassica> esito = null;
+
+        switch (this.codiceModalita){
+            case 0:
+                esito = ModalitaClassica.class;
+                break;
+            default:
+                esito = ModalitaClassica.class;
+                break;
+        }
+
+        return esito;
+    }
+
+    /**
+     * Operazione di caricamento della modalità
+     */
+    protected void caricaModalita(){
+        Stile stile = this.generaStile();
+        GameStatus status = this.generaGameStatus();
+        PMList pmList = this.generaPM();
+        Class<? extends  ModalitaClassica> classe = this.getModalita();
+
+        if(classe != null){
+            try{
+                Constructor<? extends ModalitaClassica> costruttore = classe.getConstructor(Stile.class, GameStatus.class, PMList.class);
+                modalita_activity.modalita = costruttore.newInstance(stile, status, pmList);
+                modalita_activity.gameLoop = new GameLoop(this, 60, 720, 1280);
+
+                if(this.containerModalita != null){
+                    //Aggiungiamo nella vista il gameLoop ed inseriamo la modalita
+                    this.containerModalita.setVisibility(View.VISIBLE);
+                    this.containerModalita.addView(modalita_activity.gameLoop);
+
+                    modalita_activity.gameLoop.start();
+                    modalita_activity.gameLoop.addGameComponentWithSetup(modalita_activity.modalita);
+                }
+            }catch (Exception e){e.printStackTrace();}
+        }
     }
 
     @Override
     public void onClick(View v) {
-        if(v.equals(this.easyButton))
+        if(v.equals(this.easyButton)){
             this.difficultyButtonIndex = 0;
-        if(v.equals(this.normalButton))
+            this.illuminaPulsanteDifficolta(this.difficultyButtonIndex);
+        }
+
+        if(v.equals(this.normalButton)){
             this.difficultyButtonIndex = 1;
-        if(v.equals(this.hardButton))
+            this.illuminaPulsanteDifficolta(this.difficultyButtonIndex);
+        }
+
+        if(v.equals(this.hardButton)){
             this.difficultyButtonIndex = 2;
+            this.illuminaPulsanteDifficolta(this.difficultyButtonIndex);
+        }
 
-        this.illuminaPulsanteDifficolta(this.difficultyButtonIndex);
-
-        if(v.equals(this.touchButton))
+        if(v.equals(this.touchButton)){
             this.controlButtonIndex = 0;
-        if(v.equals(this.gyroButton))
-            this.controlButtonIndex = 1;
+            this.illuminaPulsanteControllo(this.controlButtonIndex);
+        }
 
-        this.illuminaPulsanteControllo(this.controlButtonIndex);
+        if(v.equals(this.gyroButton)) {
+            this.controlButtonIndex = 1;
+            this.illuminaPulsanteControllo(this.controlButtonIndex);
+        }
+
+        if(v.equals(this.startButton))
+            this.caricaModalita();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return true;
     }
 }
