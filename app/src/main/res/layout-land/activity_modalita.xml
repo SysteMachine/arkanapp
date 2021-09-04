@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splashscreen_background"
-    tools:context=".modalita_activity">
+    tools:context=".modalita_activity"
+    android:background="@drawable/splashscreen_background">
 
     <TextView
         android:id="@+id/nomeModalitaLabel"
@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nomeModalitaLabel"
-        app:layout_constraintVertical_bias="0.25" />
+        app:layout_constraintVertical_bias="0.095" />
 
     <TableRow
         android:id="@+id/tableRow1"
@@ -174,10 +174,10 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.842"
+        app:layout_constraintHorizontal_bias="0.473"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tableRow2"
-        app:layout_constraintVertical_bias="0.62" />
+        app:layout_constraintVertical_bias="0.434" />
 
     <FrameLayout
         android:id="@+id/containerModalita"
@@ -185,6 +185,5 @@
         android:layout_height="match_parent"
         android:translationZ="100dp">
     </FrameLayout>
-
 
 </android.support.constraint.ConstraintLayout>

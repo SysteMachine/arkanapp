@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.android.arkanoid.R;
+import com.example.android.arkanoid.main_menu_activity;
 import com.example.android.arkanoid.modalita_activity;
 
 public class selezione_modalita_fragment extends Fragment implements View.OnTouchListener, View.OnClickListener {
@@ -43,9 +44,12 @@ public class selezione_modalita_fragment extends Fragment implements View.OnTouc
         Intent intent = null;
         if(v.equals(this.modalitaClassicaButton)){
             intent = new Intent(this.getContext(), modalita_activity.class);
+            intent.putExtra("MODE", modalita_activity.CODICE_MODALITA_CLASSICA);
         }
 
-        if(intent != null)
+        if(intent != null) {
+            ((main_menu_activity)this.getActivity()).hideFragment();
             this.startActivity(intent);
+        }
     }
 }

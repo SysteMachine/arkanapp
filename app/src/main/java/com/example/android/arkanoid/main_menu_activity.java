@@ -63,6 +63,12 @@ public class main_menu_activity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.hideFragment();
+    }
+
     /**
      * Mostra il fragment
      * @param fragmentClass Classe del fragment da instanziare
