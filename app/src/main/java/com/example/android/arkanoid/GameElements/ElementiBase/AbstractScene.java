@@ -137,11 +137,17 @@ public abstract class AbstractScene extends AbstractGameComponent {
         float pesoWidht = (float)newScreenWidth / (float)this.lastScreenWidth;
         float pesoHeight = (float)newScreenHeight / (float)this.lastScreenHeight;
         Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
-        for(Entity ae : this.entita){
-            //Quando c'è un ridimensionamento dello schermo cambia il dimensionamento delle entita in posizione, dimensione e velocita
-            ae.setPosition(ae.getPosition().prodottoPerVettore(scaleVector));
-            ae.setSize(ae.getSize().prodottoPerVettore(scaleVector));
-            ae.setSpeed(ae.getSpeed().prodottoPerVettore(scaleVector));
+        try{
+            for(Entity ae : this.entita){
+                //Quando c'è un ridimensionamento dello schermo cambia il dimensionamento delle entita in posizione, dimensione e velocita
+                ae.setPosition(ae.getPosition().prodottoPerVettore(scaleVector));
+                ae.setSize(ae.getSize().prodottoPerVettore(scaleVector));
+                ae.setSpeed(ae.getSpeed().prodottoPerVettore(scaleVector));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            //TODO trovare un modo per risolvere il problema
+            //Se viene modificato l'roentamento e c'è una cancellazione sussiste un eccezione
         }
 
         this.lastScreenWidth = newScreenWidth;

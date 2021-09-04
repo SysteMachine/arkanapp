@@ -18,7 +18,13 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 
 public class LoginController extends AppCompatActivity {
-    private final String QUERY_LOGIN = "SELECT user_username FROM user WHERE user_email LIKE EMAIL AND user_password LIKE PASSWORD";
+    public static final String ACCOUNT_LOGIN_TYPE = "LOGIN_TYPE";
+    public static final String ACCOUNT_LOGIN_EMAIL = "LOGIN_EMAIL";
+    public static final String ACCOUNT_LOGIN_PASSWORD = "LOGIN_PASSWORD";
+    public static final String TYPE_ACCOUNT = "ACCOUNT";
+    public static final String TYPE_GUEST = "GUEST";
+
+    private final String QUERY_LOGIN = "SELECT user_username FROM user WHERE user_email LIKE EMAIL AND user_password LIKE Password(PASSWORD)";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,73 +33,88 @@ public class LoginController extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
     }
 
+    /**
+     * Esegue la query e restituisce l'username dell'account
+     * @param email Email dell'account
+     * @param password Password dell'account
+     * @return Restituisce l'username dell'acoount se la query va a buon fine, altrimenti restituisce null
+     */
+    private String eseguiQuery(String email, String password){
+        String esito = null;
+
+        try{
+            String query = DBUtil.repalceJolly(this.QUERY_LOGIN, "EMAIL", email);
+            query = DBUtil.repalceJolly(query, "PASSWORD", password);
+
+            String esitoQuery = DBUtil.executeQuery(query);
+            if(!esitoQuery.equals("ERROR")){
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(esitoQuery.getBytes())));
+                int entryCount = 0;
+                String targetRow = null;
+                String row;
+                while((row = reader.readLine()) != null){
+                    if(entryCount++ == 0)
+                        targetRow = row;
+                }
+
+                if(entryCount == 1){
+                    JSONObject jObject = new JSONObject(targetRow);
+                    esito = jObject.getString("user_username");
+                }
+            }
+        }catch (Exception e){e.printStackTrace();}
+
+        return esito;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
 
-        boolean error = false;      //Flag per il controllo di errori
-        String user_username = "";  //Username del giocatore
-
+        String username = null;  //Username del giocatore
         Intent intent = this.getIntent();
+        Intent nuovaIntent = new Intent();
+
         if(intent != null){
-            String loginType = intent.getStringExtra("LOGIN_TYPE");
-            if(loginType != null && loginType.equals("ACCOUNT")){
-                String email = intent.getStringExtra("LOGIN_EMAIL");
-                String password = intent.getStringExtra("LOGIN_PASSWORD");
+            String loginType = intent.getStringExtra(LoginController.ACCOUNT_LOGIN_TYPE);
+            if(loginType.equals( LoginController.TYPE_ACCOUNT )){
+                //Login account
+                String email = intent.getStringExtra(LoginController.ACCOUNT_LOGIN_EMAIL);
+                String password = intent.getStringExtra(LoginController.ACCOUNT_LOGIN_PASSWORD);
 
-                if(email != null && password != null){
-                    String query = DBUtil.repalceJolly(this.QUERY_LOGIN, "EMAIL", email);
-                    query = DBUtil.repalceJolly(query, "PASSWORD", password);
+                if(email != null && password != null)
+                    username = this.eseguiQuery(email, password);
 
-                    try{
-                        String esitoQuery = DBUtil.executeQuery(query);
-                        if(!esitoQuery.equals("ERROR")){
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(esitoQuery.getBytes())));
-                            int entryCount = 0;
-                            String targetRow = "";
-                            String row = "";
-                            while((row = reader.readLine()) != null){
-                                if(entryCount++ == 0)
-                                    targetRow = row;
-                            }
+                if(username != null){
+                    nuovaIntent.setClass(this, main_menu_activity.class);
 
-                            if(entryCount == 1){
-                                JSONObject jObject = new JSONObject(targetRow);
-                                user_username = jObject.getString("user_username");
-                            }else
-                                error = true;
-                        }else
-                            error = true;
-                    }catch (Exception e){
-                        error = true;
-                    }
+                    RecordSalvataggio salvataggio = new RecordSalvataggio(this);
+                    salvataggio.setLogin(true);
+                    salvataggio.setEmail(email);
+                    salvataggio.setPassword(password);
+                    salvataggio.setNomeUtente(username);
+                }else{
+                    nuovaIntent.putExtra(login_activity.ERROR_MESSAGE, this.getResources().getString(R.string.login_messaggio_errore_account_non_trovato));
+                    nuovaIntent.setClass(this, login_activity.class);
+                    RecordSalvataggio salvataggio = new RecordSalvataggio(this);
+                    salvataggio.setLogin(false);
+                    salvataggio.setEmail("");
+                    salvataggio.setNomeUtente("");
+                    salvataggio.setPassword("");
                 }
-
-            }
-        }
-
-        Intent newIntent = null;
-        if(intent.getExtras().getString("LOGIN_TYPE").equals("GUEST")){
-            newIntent = new Intent(this, main_menu_activity.class);
-            newIntent.putExtra("LOGIN_TYPE", "GUEST");
-        }else{
-            if(error){
-                newIntent = new Intent(this, login_activity.class);
-                newIntent.putExtra("LOGIN_ERRORE", this.getResources().getString(R.string.login_messaggio_errore_account_non_trovato));
             }else{
-                newIntent = new Intent(this, main_menu_activity.class);
-                newIntent.putExtra("LOGIN_TYPE", "ACCOUNT");
-                newIntent.putExtra("LOGIN_EMAIL", intent.getStringExtra("LOGIN_EMAIL"));
-                newIntent.putExtra("LOGIN_USERNAME", user_username);
+                //Login guest
+                nuovaIntent.setClass(this, main_menu_activity.class);
 
-                //Salviamo le informazioni su file
-                RecordSalvataggio rs = new RecordSalvataggio(this);
-                rs.setEmail(intent.getStringExtra("LOGIN_EMAIL"));
-                rs.setNomeUtente(user_username);
-                rs.setLogin(true);
+                RecordSalvataggio salvataggio = new RecordSalvataggio(this);
+                salvataggio.setLogin(false);
+                salvataggio.setEmail("");
+                salvataggio.setNomeUtente("");
+                salvataggio.setPassword("");
             }
-        }
-        this.startActivity(newIntent);
 
+            this.startActivity(nuovaIntent);
+
+        }
     }
 }

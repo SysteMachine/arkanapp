@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/round_background"
-    tools:context=".singin_fragment">
+    tools:context=".FragmentMenu.singin_fragment">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

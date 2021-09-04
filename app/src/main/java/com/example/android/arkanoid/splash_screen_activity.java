@@ -26,9 +26,9 @@ public class splash_screen_activity extends AppCompatActivity implements View.On
 
         System.out.println("start");
 
-        AudioUtil.loadAudio("splashScreen", R.raw.splashscreen, this);
-        AudioUtil.getMediaPlayer("splashScreen").setLooping(true);
-        AudioUtil.getMediaPlayer("splashScreen").start();
+        AudioUtil.loadAudio("background_music", R.raw.background_music, this);
+        AudioUtil.getMediaPlayer("background_music").setLooping(true);
+        AudioUtil.getMediaPlayer("background_music").start();
 
 
         ImageView splashscreen = (ImageView)findViewById(R.id.splashscreen);
@@ -53,5 +53,9 @@ public class splash_screen_activity extends AppCompatActivity implements View.On
             Intent intent = new Intent(this, login_activity.class);
             this.startActivity(intent);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }

@@ -3,6 +3,7 @@ package com.example.android.arkanoid.DataStructure;
 import android.content.Context;
 
 import java.io.FileNotFoundException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -13,6 +14,7 @@ public class RecordSalvataggio implements Serializable{
     private boolean login;
     private String email;
     private String nomeUtente;
+    private String password;
 
     private transient Context context;
 
@@ -27,6 +29,7 @@ public class RecordSalvataggio implements Serializable{
         this.login = false;
         this.email = "";
         this.nomeUtente = "";
+        this.password = "";
     }
 
     /**
@@ -54,7 +57,9 @@ public class RecordSalvataggio implements Serializable{
             this.nomeUtente = record.nomeUtente;
             this.login = record.login;
             this.email = record.email;
+            this.password = record.password;
         }catch (FileNotFoundException e){}
+        catch (InvalidClassException e){this.saveFile(); e.printStackTrace();}
         catch (Exception e){e.printStackTrace();}
     }
 
@@ -85,12 +90,23 @@ public class RecordSalvataggio implements Serializable{
         this.saveFile();
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+        this.saveFile();
+    }
+
     @Override
     public String toString() {
         return "RecordSalvataggio{" +
-                "login=" + login +
+                "FILE_NAME='" + FILE_NAME + '\'' +
+                ", login=" + login +
                 ", email='" + email + '\'' +
                 ", nomeUtente='" + nomeUtente + '\'' +
+                ", password='" + password + '\'' +
                 '}';
     }
 }

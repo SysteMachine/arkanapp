@@ -2,11 +2,13 @@ package com.example.android.arkanoid.Util;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.provider.MediaStore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AudioUtil {
+    private static int globalAudio = 100;
     private static HashMap<String, MediaPlayer> audio = new HashMap<>();
     private static ArrayList<String> chiavi = new ArrayList<>();
 
@@ -61,5 +63,25 @@ public class AudioUtil {
         AudioUtil.fermaIMediaPlayer();
         AudioUtil.audio.clear();
         AudioUtil.chiavi.clear();
+    }
+
+    /**
+     * Imposta il valore dell'audio globale
+     * @param globalAudio Valore dell'audio globale
+     */
+    public static void setGlobalAudio(int globalAudio){
+        AudioUtil.globalAudio = globalAudio;
+        for(String c : AudioUtil.chiavi){
+            MediaPlayer mp = AudioUtil.audio.get(c);
+            mp.setVolume(AudioUtil.getGlobalAudio() / 100.0f, AudioUtil.getGlobalAudio() / 100.0f);
+        }
+    }
+
+    /**
+     * Restituisce il valore dell'audio globale
+     * @return
+     */
+    public static int getGlobalAudio(){
+        return AudioUtil.globalAudio;
     }
 }

@@ -183,7 +183,27 @@
         android:id="@+id/containerModalita"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:translationZ="100dp">
-    </FrameLayout>
+        android:translationZ="100dp" />
+
+    <FrameLayout
+        android:id="@+id/frameContrasto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:alpha="0.5"
+        android:visibility="gone"
+        android:translationZ="200dp" />
+
+    <FrameLayout
+        android:id="@+id/containerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:translationZ="300dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/containerModalita"
+        app:layout_constraintStart_toStartOf="@+id/containerModalita"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

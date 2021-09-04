@@ -1,4 +1,4 @@
-package com.example.android.arkanoid;
+package com.example.android.arkanoid.FragmentMenu;
 
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -11,13 +11,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.DBUtil;
+import com.example.android.arkanoid.login_activity;
 
 import org.json.JSONObject;
 
 public class singin_fragment extends Fragment implements View.OnTouchListener, View.OnClickListener, Runnable {
     private final String QUERY_CONTROLLO_EMAIL = "SELECT COUNT(*) AS N FROM user WHERE user_email LIKE EMAIL";
-    private final String QUERY_REGISTRAZIONE = "INSERT INTO user (user_email, user_username, user_password) VALUES (EMAIL, USERNAME, PASSWORD)";
+    private final String QUERY_REGISTRAZIONE = "INSERT INTO user (user_email, user_username, user_password) VALUES (EMAIL, USERNAME, Password(PASSWORD))";
 
     private Button pulsanteRegistrazione;
     private EditText emailField;
@@ -58,7 +60,19 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_singin_fragment, container, false);
-        view.setOnTouchListener(this);
+        if(view != null) {
+            view.setOnTouchListener(this);
+
+            //Caricamento degli elementi
+            this.pulsanteRegistrazione = view.findViewById(R.id.pulsanteRegistrazione);
+            if(this.pulsanteRegistrazione != null)
+                this.pulsanteRegistrazione.setOnClickListener(this);
+
+            this.emailField = view.findViewById(R.id.inputEmail);
+            this.usernameField = view.findViewById(R.id.inputUsername);
+            this.passwordField = view.findViewById(R.id.inputPassword);
+            this.rPasswordField = view.findViewById(R.id.inputRipetiPassword);
+        }
         return view;
     }
 
@@ -79,7 +93,7 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
                         if(nElementi == 0)
                             esito = true;
                     }
-                }catch (Exception e){}
+                }catch (Exception e){e.printStackTrace();}
             }
 
         }
@@ -121,21 +135,7 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        this.pulsanteRegistrazione = view.findViewById(R.id.pulsanteRegistrazione);
-        if(this.pulsanteRegistrazione != null)
-            this.pulsanteRegistrazione.setOnClickListener(this);
-
-        this.emailField = view.findViewById(R.id.inputEmail);
-        this.usernameField = view.findViewById(R.id.inputUsername);
-        this.passwordField = view.findViewById(R.id.inputPassword);
-        this.rPasswordField = view.findViewById(R.id.inputRipetiPassword);
-    }
-
-    @Override
     public boolean onTouch(View v, MotionEvent event) {
-        //Solo per impedire l'interazione con l'activity sottostante
         return true;
     }
 
@@ -157,7 +157,7 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
 
             try{
                 String esitoQuery = DBUtil.executeQuery(query);
-                if(!esitoQuery.equals("ERROR") && !esitoQuery.equals("1"))
+                if(!esitoQuery.equals("ERROR"))
                     esito = true;
             }catch (Exception e){e.printStackTrace();}
         }
@@ -169,14 +169,12 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
     public void onClick(View v) {
         if(canSingin){
             boolean esitoRegistrazione = this.registra();
-            if(!esitoRegistrazione)
-                ((login_activity)this.getActivity()).scriviMessaggioErrore(this.getResources().getString(R.string.singin_fragment_errore_registrazione));
+            if(this.getActivity() != null) {
+                if(!esitoRegistrazione)
+                    ((login_activity) this.getActivity()).scriviMessaggioErrore(this.getResources().getString(R.string.singin_fragment_errore_registrazione));
 
-            this.emailField.setText("");
-            this.passwordField.setText("");
-            this.rPasswordField.setText("");
-            this.usernameField.setText("");
-            ((login_activity)this.getActivity()).cambiaVisibilitaFragment(0);
+                ((login_activity) this.getActivity()).hideFragment(true);
+            }
         }
     }
 
@@ -196,17 +194,18 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
                 boolean controlloPassword = this.controllaValiditaPassword();
 
                 if(this.passwordField != null && this.rPasswordField != null){
-                    if(controlloPassword)
+                    if(controlloPassword) {
                         this.passwordField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.inputFontColor));
-                    else
+                        this.rPasswordField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.inputFontColor));
+                    }else {
                         this.passwordField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontErrorColor));
+                        this.rPasswordField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontErrorColor));
+                    }
                 }
 
                 //Impostiamo il flag per l'abilitazione del tasto di registrazione
                 controlloElementi = controlloEmail && controlloPassword && controlloUsername;
-            }catch (Exception e){
-                //Eccezzione causata dal rapido modificarsi degli elementi
-            }
+            }catch (Exception e){}
 
             this.canSingin = controlloElementi;
         }

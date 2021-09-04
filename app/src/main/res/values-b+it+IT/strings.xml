@@ -6,7 +6,9 @@
     <string name="login_login_guest">Accedi come ospite</string>
 
     <string name="login_messaggio_errore_campi_vuoti">I campi sono vuoti</string>
-    <string name="login_messaggio_errore_account_non_trovato">Account non trovato</string>
+    <string name="login_messaggio_errore_account_non_trovato">Errore nel login</string>
+
+    <string name="logout_messaggio_conferma">"Disconnesso"</string>
 
     <string name="singin_fragment_ripeti_password">Ripeti password:</string>
     <string name="singin_fragment_registrazione">Registrati</string>
@@ -26,4 +28,7 @@
     <string name="modalita_activity_seleziona_controllo">Controlli</string>
     <string name="modalita_activity_seleziona_controllo_touch">Touch</string>
     <string name="modalita_activity_seleziona_controllo_gyro">Giroscopio</string>
+
+    <string name="pausa_fragment_riprendi">Riprendi</string>
+    <string name="pausa_fragment_esci">Esci</string>
 </resources>

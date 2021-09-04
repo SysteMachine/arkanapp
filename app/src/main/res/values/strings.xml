@@ -7,7 +7,9 @@
     <string name="login_login_guest">Login as Guest</string>
 
     <string name="login_messaggio_errore_campi_vuoti">Fields can\'t be empty</string>
-    <string name="login_messaggio_errore_account_non_trovato">Account missing</string>
+    <string name="login_messaggio_errore_account_non_trovato">Login error</string>
+
+    <string name="logout_messaggio_conferma">"Disconnected"</string>
 
     <string name="singin_fragment_ripeti_password">Repeat password:</string>
     <string name="singin_fragment_registrazione">Sing-in</string>
@@ -27,5 +29,8 @@
     <string name="modalita_activity_seleziona_controllo">Control mode</string>
     <string name="modalita_activity_seleziona_controllo_touch">Touch</string>
     <string name="modalita_activity_seleziona_controllo_gyro">Gyro</string>
+
+    <string name="pausa_fragment_riprendi">Resoume</string>
+    <string name="pausa_fragment_esci">Quit</string>
 
 </resources>

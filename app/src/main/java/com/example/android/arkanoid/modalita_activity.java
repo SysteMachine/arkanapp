@@ -1,14 +1,17 @@
 package com.example.android.arkanoid;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.example.android.arkanoid.ActivityUtil.MultiFragmentActivity;
+import com.example.android.arkanoid.FragmentMenu.pausa_fragment;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.PMList;
@@ -25,12 +28,12 @@ import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
+import com.example.android.arkanoid.Util.AudioUtil;
 
 import java.lang.reflect.Constructor;
 
-public class modalita_activity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
+public class modalita_activity extends MultiFragmentActivity implements View.OnClickListener{
     public static final int CODICE_MODALITA_CLASSICA = 0;                           //Codice per avviare la modalità classica
-
     private final float[] MOLTIPLICATORI_PER_DIFFICOLTA = {0.8f, 1, 1.2f};          //Moltiplicatori per le difficoltà
 
     //----------------------------------------------------------//
@@ -53,24 +56,30 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
 
     private FrameLayout containerModalita;      //Container della modalità eseguita
 
+    private boolean inPause;                    //Flag per il controllo della pause
+    private boolean inGame;                     //Flag per il controllo del game
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modalita);
-
-        this.caricaRiferimentoView();
-
+        this.loadEssentials(savedInstanceState);
         if(savedInstanceState != null){
+            //Ripristiniamo lo stato della vista
             this.difficultyButtonIndex = savedInstanceState.getInt("DIFFICULTY_BUTTON_INDEX", 0);
             this.controlButtonIndex = savedInstanceState.getInt("CONTROL_BUTTON_INDEX", 0);
             this.codiceModalita = savedInstanceState.getInt("MODE", 0);
-            if(modalita_activity.gameLoop != null && this.containerModalita != null){
-                System.out.println("Ciao");
+            this.inGame = savedInstanceState.getBoolean("IN_GAME");
+            this.inPause = savedInstanceState.getBoolean("IN_PAUSE");
+            if(this.inGame && this.containerModalita != null){
                 this.containerModalita.setVisibility(View.VISIBLE);
-                this.containerModalita.addView(modalita_activity.gameLoop);
-            }
+                this.aggiungiGameLoop();
 
+                if(this.inPause)
+                    this.mostraMenuPausa();
+            }
         }else{
+            //Inizializzazione della vista
             this.difficultyButtonIndex = 0;
             this.controlButtonIndex = 0;
             if(this.getIntent() != null)
@@ -120,26 +129,39 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
         this.containerModalita.setVisibility(View.GONE);
         if(this.containerModalita != null)
             this.containerModalita.setOnTouchListener(this);
+
+
+    }
+
+    @Override
+    protected void loadEssentials(Bundle savedInstanceState) {
+        //Viene caricato il fragment layout e il frame di contrasto
+        this.caricaRiferimentoView();
+        this.loadFragmentLayout(R.id.containerFragment);
+        this.loadFrameContrasto(R.id.frameContrasto);
+        super.loadEssentials(savedInstanceState);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(modalita_activity.gameLoop != null)
+        if(this.inGame) {
             modalita_activity.gameLoop.start();
+            if(this.containerModalita != null) {
+                //Reinseriamo il gameLoop e rendiamo visibile il container della modalità
+                this.containerModalita.setVisibility(View.VISIBLE);
+                this.aggiungiGameLoop();
+            }
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(modalita_activity.gameLoop != null){
-            if(modalita_activity.gameLoop.isRunning())
+        if(this.inGame){
+            //Se la partita è stata avviata ferma il gameloop
+            if(this.inGame)
                 modalita_activity.gameLoop.stop();
-
-            if(this.containerModalita != null) {
-                this.containerModalita.removeView(modalita_activity.gameLoop);
-                System.out.println("Rimossa");
-            }
         }
     }
 
@@ -149,6 +171,8 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
         outState.putInt("MODE", this.codiceModalita);
         outState.putInt("DIFFICULTY_BUTTON_INDEX", this.difficultyButtonIndex);
         outState.putInt("CONTROL_BUTTON_INDEX", this.controlButtonIndex);
+        outState.putBoolean("IN_PAUSE", this.inPause);
+        outState.putBoolean("IN_GAME", this.inGame);
     }
 
     /**
@@ -328,9 +352,59 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
 
                     modalita_activity.gameLoop.start();
                     modalita_activity.gameLoop.addGameComponentWithSetup(modalita_activity.modalita);
+                    this.inGame = true;
                 }
             }catch (Exception e){e.printStackTrace();}
         }
+    }
+
+    /**
+     * Aggiunge il gameLoop al container della modalita
+     */
+    protected void aggiungiGameLoop(){
+        if(modalita_activity.gameLoop != null){
+            if(modalita_activity.gameLoop.getParent() != null){
+                ((ViewGroup)modalita_activity.gameLoop.getParent()).removeView(modalita_activity.gameLoop);
+            }
+            if(this.containerModalita != null)
+                this.containerModalita.addView(modalita_activity.gameLoop);
+        }
+    }
+
+    /**
+     * Mostra il menu di pausa
+     */
+    protected void mostraMenuPausa(){
+        if(this.inGame && !this.inPause){
+            this.showFragment(pausa_fragment.class, true);
+            this.inPause = true;
+            modalita_activity.gameLoop.setUpdateRunning(false);
+        }
+    }
+
+    /**
+     * Nasconde il menu di pasua
+     */
+    public void nascondiMenuPausa(){
+        if(this.inPause && this.inGame){
+            this.hideFragment(true);
+            this.inPause = false;
+            modalita_activity.gameLoop.setUpdateRunning(true);
+        }
+    }
+
+    /**
+     * Torna al menu principale
+     */
+    public void tornaAlMenu(){
+        Intent intent = new Intent(this, main_menu_activity.class);
+        //Ripristina lo stato dell'audio
+        AudioUtil.setGlobalAudio(100);
+        AudioUtil.clear();
+        AudioUtil.loadAudio("background_music", R.raw.background_music, this);
+        AudioUtil.getMediaPlayer("background_music").setLooping(true);
+        AudioUtil.getMediaPlayer("background_music").start();
+        this.startActivity(intent);
     }
 
     @Override
@@ -365,7 +439,21 @@ public class modalita_activity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return true;
+    protected void onFrameContrastoTouched(View v, MotionEvent e) {
+        super.onFrameContrastoTouched(v, e);
+        if(this.inPause)
+            this.nascondiMenuPausa();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(this.inGame){
+            if(!this.inPause)
+                this.mostraMenuPausa();
+            else this.nascondiMenuPausa();
+        }else{
+            Intent intent = new Intent(this, main_menu_activity.class);
+            this.startActivity(intent);
+        }
     }
 }

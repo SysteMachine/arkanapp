@@ -2,22 +2,16 @@ package com.example.android.arkanoid.GameCore;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.Typeface;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 
 import com.example.android.arkanoid.R;
 
-import java.io.File;
-import java.net.URI;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
@@ -25,6 +19,7 @@ import java.util.LinkedList;
 //GameLoop
 public class GameLoop extends CustomTextureView implements Runnable {
     private boolean running;                                     //Flag di rendering del thread
+    private boolean updateRunning;                               //Flag che indica se il gameLoop esegue l'update delle componenti
     private Thread gameThread;                                   //Thread di rendering
 
     private final LinkedList<AbstractGameComponent> elementi;     //Elementi all'interno del gameLoop
@@ -45,6 +40,7 @@ public class GameLoop extends CustomTextureView implements Runnable {
 
         this.fpsTarget = fpsTarget;
         this.running = false;
+        this.updateRunning = true;
         this.showFPS = false;
 
         this.elementi = new LinkedList<>();
@@ -290,6 +286,14 @@ public class GameLoop extends CustomTextureView implements Runnable {
         return canvasHeight;
     }
 
+    public boolean isUpdateRunning() {
+        return updateRunning;
+    }
+
+    public void setUpdateRunning(boolean updateRunning) {
+        this.updateRunning = updateRunning;
+    }
+
     //Override
     @Override
     public void run() {
@@ -308,7 +312,8 @@ public class GameLoop extends CustomTextureView implements Runnable {
                 //Aggiornamento degli elementi su schermo
                 try{
                     paint.setTypeface(this.font);
-                    this.update(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
+                    if(this.updateRunning)
+                        this.update(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                     this.finalStep(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                     this.render(dt, this.canvasWidht, this.canvasHeight, canvas, paint);
                 }catch(ConcurrentModificationException e){e.printStackTrace();}

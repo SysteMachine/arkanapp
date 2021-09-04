@@ -1,4 +1,4 @@
-package com.example.android.arkanoid.Util;
+package com.example.android.arkanoid.ActivityUtil;
 
 import android.animation.Animator;
 
