@@ -2,7 +2,6 @@ package com.example.android.arkanoid.GameElements.ElementiBase;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 import com.example.android.arkanoid.Util.ParamList;

@@ -5,13 +5,6 @@ import android.graphics.Paint;
 
 public interface GameComponentInterface {
     /**
-     * Metodo chiamato ogni volta che il possoessore del gameComponent cambia la risoluzione
-     * @param newScreenWidth Nuova larghezza dello schermo
-     * @param newScreenHeight Nuova altezza dello schermo
-     */
-    public void ownerSizeChange(int newScreenWidth, int newScreenHeight);
-
-    /**
      * Effettua il setup delle informazioni del gameComponent
      * @param screenWidth Larghezza della zona di disegno
      * @param screenHeight Altezza della zona di disegno

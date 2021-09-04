@@ -351,7 +351,8 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
                     this.containerModalita.addView(modalita_activity.gameLoop);
 
                     modalita_activity.gameLoop.start();
-                    modalita_activity.gameLoop.addGameComponentWithSetup(modalita_activity.modalita);
+                    modalita_activity.gameLoop.setShowFPS(true);
+                    modalita_activity.gameLoop.addGameComponent(modalita_activity.modalita);
                     this.inGame = true;
                 }
             }catch (Exception e){e.printStackTrace();}

@@ -4,13 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.example.android.arkanoid.GameCore.AbstractGameComponent;
-import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.Util.ParamList;
-import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractScene extends AbstractGameComponent {
@@ -19,9 +16,6 @@ public abstract class AbstractScene extends AbstractGameComponent {
     public static String PARAMETRO_SCENA = "Scena";
     //----------------------------
 
-    protected int lastScreenWidth;
-    protected int lastScreenHeight;
-
     protected List<Entity> bufferEntita;
     protected List<Entity> entita;
 
@@ -29,14 +23,6 @@ public abstract class AbstractScene extends AbstractGameComponent {
         super(zIndex);
         this.entita = new ArrayList<>();
         this.bufferEntita = new ArrayList<>();
-    }
-
-    @Override
-    protected void setGameLoop(GameLoop gameLoop) {
-        //Inizializza le dimensioni dello schermo
-        this.lastScreenWidth = gameLoop.getCanvasWidht();
-        this.lastScreenHeight = gameLoop.getCanvasHeight();
-        super.setGameLoop(gameLoop);
     }
 
     /**
@@ -64,8 +50,9 @@ public abstract class AbstractScene extends AbstractGameComponent {
         T esito = null;
 
         Entity[] ricerca = this.getEntityByName(name);
-        if(ricerca.length >= 1)
-            esito = (T)ricerca[0];
+        if(ricerca.length >= 1) {
+            esito = (T) ricerca[0];
+        }
 
         return esito;
     }
@@ -78,6 +65,7 @@ public abstract class AbstractScene extends AbstractGameComponent {
     public boolean addEntita(Entity entita){
         boolean esito = false;
         if(!this.entita.contains(entita)){
+            //L'entità viene aggiunto all'interno dell'buffer al fine di evitare eccezzioni
             esito = this.bufferEntita.add(entita);
         }
         return esito;
@@ -95,7 +83,8 @@ public abstract class AbstractScene extends AbstractGameComponent {
      * Rimuove tutte le entità dalla scena
      */
     public void clearEntita(){
-        this.entita.clear();
+        for(Entity e : this.entita)
+            this.removeEntita(e);
     }
 
     /**
@@ -133,30 +122,8 @@ public abstract class AbstractScene extends AbstractGameComponent {
     }
 
     @Override
-    public void ownerSizeChange(int newScreenWidth, int newScreenHeight) {
-        float pesoWidht = (float)newScreenWidth / (float)this.lastScreenWidth;
-        float pesoHeight = (float)newScreenHeight / (float)this.lastScreenHeight;
-        Vector2D scaleVector = new Vector2D(pesoWidht, pesoHeight);
-        try{
-            for(Entity ae : this.entita){
-                //Quando c'è un ridimensionamento dello schermo cambia il dimensionamento delle entita in posizione, dimensione e velocita
-                ae.setPosition(ae.getPosition().prodottoPerVettore(scaleVector));
-                ae.setSize(ae.getSize().prodottoPerVettore(scaleVector));
-                ae.setSpeed(ae.getSpeed().prodottoPerVettore(scaleVector));
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            //TODO trovare un modo per risolvere il problema
-            //Se viene modificato l'roentamento e c'è una cancellazione sussiste un eccezione
-        }
-
-        this.lastScreenWidth = newScreenWidth;
-        this.lastScreenHeight = newScreenHeight;
-    }
-
-    @Override
     public void finalStep(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
-        //Rimuove le entità consumate
+        //Rimuove le entità da cancellare
         for(Iterator<Entity> it = this.entita.iterator(); it.hasNext();){
             if(it.next().canBeDeleted)
                 it.remove();
