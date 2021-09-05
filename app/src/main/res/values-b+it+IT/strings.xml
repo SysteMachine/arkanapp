@@ -31,4 +31,12 @@
 
     <string name="pausa_fragment_riprendi">Riprendi</string>
     <string name="pausa_fragment_esci">Esci</string>
+
+    <plurals name="fragment_game_over_punteggio">
+        <item quantity="one">punto</item>
+        <item quantity="other">punti</item>
+    </plurals>
+    <string name="fragment_game_over_nuova_partita">Gioca ancora</string>
+    <string name="fragment_game_over_pubblica_risultato">Condividi risultati</string>
+    <string name="fragment_game_over_torna_menu">Menù principale</string>
 </resources>

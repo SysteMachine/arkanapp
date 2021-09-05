@@ -36,6 +36,8 @@ public class Brick extends Entity {
         );
 
         this.spriteCrepe = spriteCrepe;
+        if(this.spriteCrepe != null)
+            this.spriteCrepe.resizeImage(size);
         this.maxHealth = health;
         this.health = health;
         this.shakeOffset = new Vector2D(0, 0);

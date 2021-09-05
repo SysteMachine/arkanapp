@@ -33,4 +33,12 @@
     <string name="pausa_fragment_riprendi">Resoume</string>
     <string name="pausa_fragment_esci">Quit</string>
 
+    <plurals name="fragment_game_over_punteggio">
+        <item quantity="one">point</item>
+        <item quantity="other">points</item>
+    </plurals>
+    <string name="fragment_game_over_nuova_partita">Play again</string>
+    <string name="fragment_game_over_pubblica_risultato">Share results</string>
+    <string name="fragment_game_over_torna_menu">Main menu</string>
+
 </resources>

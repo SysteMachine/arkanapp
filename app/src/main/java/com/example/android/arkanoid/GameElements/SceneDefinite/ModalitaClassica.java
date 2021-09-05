@@ -15,6 +15,7 @@ import android.view.View;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractAlterazione;
 import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
+import com.example.android.arkanoid.GameElements.ElementiBase.GameOverInterface;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Ball;
 import com.example.android.arkanoid.GameElements.ElementiBase.PM;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
@@ -33,6 +34,7 @@ import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
+import com.example.android.arkanoid.modalita_activity;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -75,6 +77,8 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
     protected GameStatus status;                                //Status della modalita
     protected PMList pmList;                                    //Lista dei parametri della modalita
     protected boolean risorseCaricate;                          //Flag di caricamento delle risorse
+
+    protected GameOverInterface gameOverInterface;              //INterfaccia di gameOver
 
     //Gestione dei sensori
     protected float rotazioneAsseZ;                             //Rotazione sull'asseZ del disposititvo
@@ -214,7 +218,11 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
      * Controlla le azioni e le condizioni che portano alla conclusione della partita
      */
     protected void logicaTerminazionePartita(){
-
+        if(this.status != null && this.status.getHealth() == 0){
+            if(this.gameOverInterface != null){
+                this.gameOverInterface.gameOver(this.status);
+            }
+        }
     }
 
     /**
@@ -600,6 +608,14 @@ public class ModalitaClassica extends AbstractScene implements View.OnTouchListe
 
             this.sensoreTimeStamp = System.currentTimeMillis();
         }
+    }
+
+    /**
+     * Imposta il gameOverInterface
+     * @param goi GameOverInterface
+     */
+    public void setGameOverInterface(GameOverInterface goi){
+        this.gameOverInterface = goi;
     }
 
     @Override

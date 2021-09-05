@@ -1,5 +1,6 @@
 package com.example.android.arkanoid;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -11,8 +12,10 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.android.arkanoid.ActivityUtil.MultiFragmentActivity;
+import com.example.android.arkanoid.FragmentMenu.game_over_fragment;
 import com.example.android.arkanoid.FragmentMenu.pausa_fragment;
 import com.example.android.arkanoid.GameCore.GameLoop;
+import com.example.android.arkanoid.GameElements.ElementiBase.GameOverInterface;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.PMList;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
@@ -32,7 +35,7 @@ import com.example.android.arkanoid.Util.AudioUtil;
 
 import java.lang.reflect.Constructor;
 
-public class modalita_activity extends MultiFragmentActivity implements View.OnClickListener{
+public class modalita_activity extends MultiFragmentActivity implements View.OnClickListener, GameOverInterface {
     public static final int CODICE_MODALITA_CLASSICA = 0;                           //Codice per avviare la modalità classica
     private final float[] MOLTIPLICATORI_PER_DIFFICOLTA = {0.8f, 1, 1.2f};          //Moltiplicatori per le difficoltà
 
@@ -58,6 +61,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
 
     private boolean inPause;                    //Flag per il controllo della pause
     private boolean inGame;                     //Flag per il controllo del game
+    private boolean gameOver;                   //Flag per il controllo del gameOver
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
             this.codiceModalita = savedInstanceState.getInt("MODE", 0);
             this.inGame = savedInstanceState.getBoolean("IN_GAME");
             this.inPause = savedInstanceState.getBoolean("IN_PAUSE");
+            this.gameOver = savedInstanceState.getBoolean("GAME_OVER");
             if(this.inGame && this.containerModalita != null){
                 this.containerModalita.setVisibility(View.VISIBLE);
                 this.aggiungiGameLoop();
@@ -85,6 +90,9 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
             if(this.getIntent() != null)
                 this.codiceModalita = this.getIntent().getIntExtra("MODE", 0);
             else this.codiceModalita = 0;
+            this.inGame = false;
+            this.inPause = false;
+            this.gameOver = false;
         }
 
         //Inizializza l'aspetto grafico
@@ -173,6 +181,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
         outState.putInt("CONTROL_BUTTON_INDEX", this.controlButtonIndex);
         outState.putBoolean("IN_PAUSE", this.inPause);
         outState.putBoolean("IN_GAME", this.inGame);
+        outState.putBoolean("GAME_OVER", this.gameOver);
     }
 
     /**
@@ -333,7 +342,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     /**
      * Operazione di caricamento della modalità
      */
-    protected void caricaModalita(){
+    public void caricaModalita(){
         Stile stile = this.generaStile();
         GameStatus status = this.generaGameStatus();
         PMList pmList = this.generaPM();
@@ -343,6 +352,9 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
             try{
                 Constructor<? extends ModalitaClassica> costruttore = classe.getConstructor(Stile.class, GameStatus.class, PMList.class);
                 modalita_activity.modalita = costruttore.newInstance(stile, status, pmList);
+                modalita_activity.modalita.setGameOverInterface(this);
+                if(modalita_activity.gameLoop != null)
+                    modalita_activity.gameLoop.stop();
                 modalita_activity.gameLoop = new GameLoop(this, 60, 720, 1280);
 
                 if(this.containerModalita != null){
@@ -369,6 +381,28 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
             }
             if(this.containerModalita != null)
                 this.containerModalita.addView(modalita_activity.gameLoop);
+        }
+    }
+
+    /**
+     * Mostra il menu di GameOVer
+     */
+    protected void mostraMenuGameOver(){
+        if(this.inGame && !this.gameOver){
+            this.showFragment(game_over_fragment.class, true);
+            this.gameOver = true;
+            modalita_activity.gameLoop.setUpdateRunning(false);
+        }
+    }
+
+    /**
+     * Nasconde il menu di GameOver
+     */
+    public void nascondiMenuGameOver(){
+        if(this.inGame && this.gameOver){
+            this.hideFragment(true);
+            this.gameOver = false;
+            modalita_activity.gameLoop.setUpdateRunning(false);
         }
     }
 
@@ -441,7 +475,6 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
 
     @Override
     protected void onFrameContrastoTouched(View v, MotionEvent e) {
-        super.onFrameContrastoTouched(v, e);
         if(this.inPause)
             this.nascondiMenuPausa();
     }
@@ -449,12 +482,29 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     @Override
     public void onBackPressed() {
         if(this.inGame){
-            if(!this.inPause)
-                this.mostraMenuPausa();
-            else this.nascondiMenuPausa();
+            if(!this.gameOver){
+                if(!this.inPause)
+                    this.mostraMenuPausa();
+                else this.nascondiMenuPausa();
+            }
         }else{
             Intent intent = new Intent(this, main_menu_activity.class);
             this.startActivity(intent);
         }
+    }
+
+    @Override
+    public void gameOver(GameStatus status) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //Mostriamo il menu e impostiamo il punteggio
+                mostraMenuGameOver();
+                if(fragmentAttivo != null){
+                    ((game_over_fragment)fragmentAttivo).setRiepilogoPunti(status.getPunteggio());
+                }
+            }
+        });
+
     }
 }
