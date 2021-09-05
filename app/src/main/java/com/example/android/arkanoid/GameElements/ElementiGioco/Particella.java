@@ -10,10 +10,12 @@ import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class Particella extends Entity {
-    private final int INCREMENTO_VELOCITA = 100;       //Incremento della velocita
+    public static final String EVENTO_RIMOZIONE_PARTICELLA = "PARTICELLA_RIMOZIONE_PARTICELLA";       //Evento per la rimozione della particella
+
+    private final int INCREMENTO_VELOCITA = 100;                                                //Incremento della velocita della particella al secondo
 
     private final int colore;             //Colore della particella
-    private int durata;                   //Durata di vita della particella
+    private final int durata;                   //Durata di vita della particella
     private long startTime;               //Tempo d'inizio della visualizzazione della particella
 
     public Particella(Vector2D position, Vector2D size, int colore, int durata) {
@@ -45,7 +47,7 @@ public class Particella extends Entity {
             if(scena != null){
                 ParamList pm = new ParamList();
                 pm.add("particella", this);
-                scena.sendEvent(ModalitaClassica.EVENTO_RIMOZIONE_PARTICELLA, pm);
+                scena.sendEvent(Particella.EVENTO_RIMOZIONE_PARTICELLA, pm);
             }
         }
     }

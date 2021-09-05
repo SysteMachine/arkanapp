@@ -195,6 +195,7 @@ public class Map {
     public int getTotalHealth(){
         int somma = 0;
 
+        this.azzeraContatori();
         Brick brick = this.getNextBrick();
         while(brick != null){
             if(brick.getHealth() != Brick.INF_HEALTH){
@@ -202,7 +203,6 @@ public class Map {
             }
             brick = this.getNextBrick();
         }
-        this.azzeraContatori();
 
         return somma;
     }

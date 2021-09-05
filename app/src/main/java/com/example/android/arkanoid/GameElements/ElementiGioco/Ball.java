@@ -4,14 +4,20 @@ import android.graphics.RectF;
 
 import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
-import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class Ball extends Entity {
+    //Identificatori d'evento
+    public final static String EVENTO_BLOCCO_COLPITO = "BALL_BLOCCO_COLPITO";                //Evento per il blocco colpito
+    public final static String EVENTO_BLOCCO_ROTTO = "BALL_BLOCCO_ROTTO";                    //Evento per il blocco rotto
+    public final static String EVENTO_PADDLE_COLPITO = "BALL_PADDLE_COLPITO";                //Evento per la collisione con il paddle
+
+    //Costanti
     private final int DISTURBO_PADDLE = 20;     //Angolo massimo di disturbo dopo aver colpito il paddle
 
+    //Parametri
     private int angoloLancioMassimo;            //Angolo massimo di rotazione della palla nel momento del lancio
     private Vector2D startPosition;             //Posizione iniziale della palla
     private boolean isMoving;                   //Flag di controllo del movimento della palla
@@ -69,16 +75,13 @@ public class Ball extends Entity {
         return new Vector2D(dirX, dirY);
     }
 
-    /**
-     * Controlla la collisione con il paddle
-     * @param posizione Posizione di controllo della palla
-     * @param paddle Paddle di cui controllare l'intersezione
-     * @return Restituisce la nuova direzione dopo il controllo
-     */
-    private Vector2D controllaCollisionePaddle(Vector2D posizione, Paddle paddle){
+    private Vector2D controllaCollisionePaddle(Vector2D posizione, AbstractScene scena){
         Vector2D esito = this.direction;
 
-        if(paddle != null){
+        Entity[] listaEntita = scena.getEntityByName("paddle");
+        for(Entity entita : listaEntita){
+            Paddle paddle = (Paddle)entita;
+
             RectF ballBounds = this.getBounds(posizione.getPosX(), posizione.getPosY());
             RectF paddleBounds = paddle.getBounds();
 
@@ -88,7 +91,7 @@ public class Ball extends Entity {
 
                 if(
                         (ballBounds.left > paddleBounds.left && ballBounds.left < paddleBounds.right) ||
-                        (ballBounds.right > paddleBounds.left && ballBounds.right < paddleBounds.right)
+                                (ballBounds.right > paddleBounds.left && ballBounds.right < paddleBounds.right)
                 ){
                     esito = esito.prodottoPerVettore(new Vector2D(1, -1));
                     int angoloRotazione = (int)( -this.DISTURBO_PADDLE + (Math.random() * this.DISTURBO_PADDLE * 2) );
@@ -96,10 +99,13 @@ public class Ball extends Entity {
                 }
                 if(
                         (ballBounds.top > paddleBounds.top && ballBounds.top < paddleBounds.bottom) ||
-                        (ballBounds.bottom > paddleBounds.top && ballBounds.bottom < paddleBounds.bottom)
+                                (ballBounds.bottom > paddleBounds.top && ballBounds.bottom < paddleBounds.bottom)
                 ){
                     esito = esito.prodottoPerVettore(new Vector2D(-1, 1));
                 }
+
+                scena.sendEvent(Ball.EVENTO_PADDLE_COLPITO, new ParamList());
+                break;  //Se viene trovata una paddle con cui collidere allora rompe il ciclo
             }
         }
 
@@ -115,49 +121,48 @@ public class Ball extends Entity {
     private Vector2D controllaCollisioneBrick(Vector2D posizione, AbstractScene scena){
         Vector2D esito = this.direction;
 
-        if(scena != null){
-            Entity[] brick = (Entity[])scena.getEntityByName("brick");
-            for(Entity ae: brick){
-                Brick b = (Brick)ae;
-                if(b.getHealth() != 0){
-                    //Se il brick non è stato ancora distrutto
-                    RectF collisioneBrick = b.getBounds();
-                    RectF collisionePalla = this.getBounds(posizione.getPosX(), posizione.getPosY());
+        Entity[] listaBrick = scena.getEntityByName("brick");
+        for(Entity entity: listaBrick){
+            Brick brick = (Brick)entity;
+            if(brick.getHealth() != 0){
+                //Se il brick non è stato ancora distrutto
+                RectF collisioneBrick = brick.getBounds();
+                RectF collisionePalla = this.getBounds(posizione.getPosX(), posizione.getPosY());
 
-                    if(collisioneBrick.intersect(collisionePalla)){
-                        //Bisogna ricalcolare i bounds perchè per qualche motivo diventano uguali, mi pesa il culo vedere la documentazione quindi vabien
-                        collisioneBrick = b.getBounds();
-                        collisionePalla = this.getBounds();
+                if(collisioneBrick.intersect(collisionePalla)){
+                    //Bisogna ricalcolare i bounds perchè per qualche motivo diventano uguali, mi pesa il culo vedere la documentazione quindi vabien
+                    collisioneBrick = brick.getBounds();
+                    collisionePalla = this.getBounds();
 
-                        //data una superficia A-B la collisione avviene se almeno uno dei due è all'interno della superfice A'-B' del brick
-                        //Collisione sulla parte larga
-                        if(
-                                (collisionePalla.left > collisioneBrick.left && collisionePalla.left < collisioneBrick.right) ||
-                                (collisionePalla.right > collisioneBrick.left && collisionePalla.right < collisioneBrick.right)
-                        ){
-                            esito = esito.prodottoPerVettore(new Vector2D(1, -1));
-                        }
-                        if(
-                                (collisionePalla.top > collisioneBrick.top && collisionePalla.top < collisioneBrick.bottom) ||
-                                (collisionePalla.bottom > collisioneBrick.top && collisionePalla.bottom < collisioneBrick.bottom)
-                        ){
-                            esito = esito.prodottoPerVettore(new Vector2D(-1, 1));
-                        }
-
-                        //Decrementa il valore della vita del blocco
-                        b.decrementaVita();
-                        b.shake(200, 60);
-                        scena.sendEvent(ModalitaClassica.EVENTO_BLOCCO_COLPITO, new ParamList());
-
-                        if(b.getHealth() == 0){
-                            //Se il brick viene distrutto
-                            ParamList paramList = new ParamList();
-                            paramList.add("brick", b);
-                            scena.sendEvent(ModalitaClassica.EVENTO_BLOCCO_ROTTO, paramList);
-                        }
-
-                        break;  //Usciamo dal ciclo se viene trovato un elemento
+                    //data una superficia A-B la collisione avviene se almeno uno dei due è all'interno della superfice A'-B' del brick
+                    //Collisione sulla parte larga
+                    if(
+                            (collisionePalla.left > collisioneBrick.left && collisionePalla.left < collisioneBrick.right) ||
+                                    (collisionePalla.right > collisioneBrick.left && collisionePalla.right < collisioneBrick.right)
+                    ){
+                        esito = esito.prodottoPerVettore(new Vector2D(1, -1));
                     }
+                    if(
+                            (collisionePalla.top > collisioneBrick.top && collisionePalla.top < collisioneBrick.bottom) ||
+                                    (collisionePalla.bottom > collisioneBrick.top && collisionePalla.bottom < collisioneBrick.bottom)
+                    ){
+                        esito = esito.prodottoPerVettore(new Vector2D(-1, 1));
+                    }
+
+                    //Decrementa il valore della vita del blocco
+                    brick.decrementaVita();
+                    brick.shake(200, 60);
+                    if(brick.getHealth() != Brick.INF_HEALTH)   //Solo se il brick non è indistruttibile
+                        scena.sendEvent(Ball.EVENTO_BLOCCO_COLPITO, new ParamList());
+
+                    if(brick.getHealth() == 0){
+                        //Se il brick viene distrutto
+                        ParamList paramList = new ParamList();
+                        paramList.add("brick", brick);
+                        scena.sendEvent(Ball.EVENTO_BLOCCO_ROTTO, paramList);
+                    }
+
+                    break;  //Usciamo dal ciclo se viene trovato un elemento con cui la palla collide
                 }
             }
         }
@@ -173,12 +178,13 @@ public class Ball extends Entity {
 
             try{
                 //Controllo collisione con schermo, se ci sono problemi con i parametri tutto viene catturato dal catch
-                this.setDirection(this.controllaCollisioneSchermo(nextStep, screenWidth, screenHeight));
-                this.setDirection(this.controllaCollisionePaddle(nextStep, params.<AbstractScene>get(AbstractScene.PARAMETRO_SCENA).<Paddle>getFirstEntityByName("paddle")));
-                this.setDirection(this.controllaCollisioneBrick(nextStep, params.<AbstractScene>get(AbstractScene.PARAMETRO_SCENA)));
+                AbstractScene scena = params.get(AbstractScene.PARAMETRO_SCENA);
 
-                //Ricalcola la prossima direzione
-                nextStep = this.getNextStep(dt);
+                if(scena != null){
+                    this.setDirection(this.controllaCollisioneSchermo(nextStep, screenWidth, screenHeight));
+                    this.setDirection(this.controllaCollisionePaddle(nextStep, scena));
+                    this.setDirection(this.controllaCollisioneBrick(nextStep, scena));
+                }
             }catch (Exception e){e.printStackTrace();}
 
             //Cambia la posizione della palla con la nuova direzione

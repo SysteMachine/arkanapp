@@ -2,15 +2,14 @@ package com.example.android.arkanoid.Util;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AudioUtil {
     private static int globalAudio = 100;
-    private static HashMap<String, MediaPlayer> audio = new HashMap<>();
-    private static ArrayList<String> chiavi = new ArrayList<>();
+    private final static HashMap<String, MediaPlayer> audio = new HashMap<>();
+    private final static ArrayList<String> chiavi = new ArrayList<>();
 
     /**
      * Carica un audio
@@ -48,11 +47,40 @@ public class AudioUtil {
     }
 
     /**
+     * Avvia l'esecuzione dell'audio
+     * @param idAudio Audio da eseguire
+     */
+    public static void avviaAudio(String idAudio){
+        MediaPlayer mediaPlayer = AudioUtil.getMediaPlayer(idAudio);
+        if(mediaPlayer != null){
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.pause();
+                mediaPlayer.seekTo(0);
+            }
+            mediaPlayer.start();
+        }
+    }
+
+    /**
+     * Ferma l'esecuzione dell'audio
+     * @param idAudio Id dell'audio da fermare
+     */
+    public static void fermaAudio(String idAudio){
+        MediaPlayer mediaPlayer = AudioUtil.getMediaPlayer(idAudio);
+        if(mediaPlayer != null){
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.pause();
+                mediaPlayer.seekTo(0);
+            }
+        }
+    }
+
+    /**
      * Ferma tutti i mediaPlayer
      */
     public static void fermaIMediaPlayer(){
         for(String k : AudioUtil.chiavi){
-            AudioUtil.audio.get(k).stop();
+            AudioUtil.fermaAudio(k);
         }
     }
 
@@ -60,7 +88,11 @@ public class AudioUtil {
      * Elimina tutti i mediaplayer
      */
     public static void clear(){
-        AudioUtil.fermaIMediaPlayer();
+        for(String k : AudioUtil.chiavi){
+            try{
+                AudioUtil.audio.get(k).release();
+            }catch (Exception e){e.printStackTrace();}
+        }
         AudioUtil.audio.clear();
         AudioUtil.chiavi.clear();
     }
@@ -73,13 +105,15 @@ public class AudioUtil {
         AudioUtil.globalAudio = globalAudio;
         for(String c : AudioUtil.chiavi){
             MediaPlayer mp = AudioUtil.audio.get(c);
-            mp.setVolume(AudioUtil.getGlobalAudio() / 100.0f, AudioUtil.getGlobalAudio() / 100.0f);
+            try{
+                mp.setVolume(AudioUtil.getGlobalAudio() / 100.0f, AudioUtil.getGlobalAudio() / 100.0f);
+            }catch (Exception e){e.printStackTrace();}
         }
     }
 
     /**
      * Restituisce il valore dell'audio globale
-     * @return
+     * @return Restituisce l'audio globale dell'applicazione
      */
     public static int getGlobalAudio(){
         return AudioUtil.globalAudio;

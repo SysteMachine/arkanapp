@@ -84,11 +84,24 @@ public class GameLoop extends TextureView implements Runnable {
     public boolean addGameComponent(AbstractGameComponent component){
         boolean esito = false;
 
+        if(this.addGameComponentNoSetup(component))
+            component.setup(this.canvasWidht, this.canvasHeight);
+
+        return esito;
+    }
+
+    /**
+     * Aggiunge ul elemento al gameLoop senza eseguire la funzione di setup
+     * @param component Componente da aggiungere all'interno del gameLoop
+     * @return Restituisce l'esito dell'inserimento
+     */
+    public boolean addGameComponentNoSetup(AbstractGameComponent component){
+        boolean esito = false;
+
         if(!this.elementi.contains(component)){
             esito = this.elementi.add(component);
             if(esito) {
                 component.setGameLoop(this);
-                component.setup(this.canvasWidht, this.canvasHeight);
             }
             this.sort();
         }
@@ -233,12 +246,26 @@ public class GameLoop extends TextureView implements Runnable {
             //Disegno sullo schermo
             canvas = this.lockCanvas();
             if(canvas != null){
-                int height = (int)(this.canvasHeight * ((float)this.getWidth()) / this.canvasWidht);
-                int posY = (int)((this.getHeight() * 0.5f) - (height * 0.5f));
+                int width = this.canvasWidht;
+                int height = this.canvasHeight;
+                int posY = 0;
+                int posX = 0;
+
+                if(this.getWidth() > this.getHeight()){
+                    height = this.getHeight();
+                    posY = 0;
+                    width = (int)( this.canvasWidht * ( (float)height / this.canvasHeight ) );
+                    posX = (this.getWidth() / 2) - (width / 2);
+                }else {
+                    width = this.getWidth();
+                    posX = 0;
+                    height = (int)( this.canvasHeight * ( (float)width / this.canvasWidht ) );
+                    posY = (this.getHeight() / 2) - (height / 2);
+                }
 
                 canvas.drawBitmap(
-                        Bitmap.createScaledBitmap(this.bitmapCanvas, this.getWidth(), height, false),
-                        0,
+                        Bitmap.createScaledBitmap(this.bitmapCanvas, width, height, false),
+                        posX,
                         posY,
                         paint
                 );

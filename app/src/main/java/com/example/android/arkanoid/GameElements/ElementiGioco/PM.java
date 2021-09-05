@@ -1,13 +1,18 @@
-package com.example.android.arkanoid.GameElements.ElementiBase;
+package com.example.android.arkanoid.GameElements.ElementiGioco;
 
-import com.example.android.arkanoid.GameElements.ElementiGioco.Paddle;
+import com.example.android.arkanoid.GameElements.ElementiBase.AbstractAlterazione;
+import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
+import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class PM extends Entity {
-    protected AbstractAlterazione alterazione;
+    public static String EVENTO_RIMOZIONE_POWERUP = "PM_RIMOZIONE_POWERUP";
+    public static String EVENTO_RACCOLTA_POWERUP = "PM_RACCOLTA_POWERUP";
+
+    protected AbstractAlterazione alterazione;          //Alterazione associata all'entità
 
     public PM(String name, Vector2D position, Vector2D size, Vector2D speed, Sprite sprite, AbstractAlterazione alterazione) {
         super(
@@ -27,31 +32,21 @@ public class PM extends Entity {
 
         AbstractScene scena = params.get(AbstractScene.PARAMETRO_SCENA);
         if(scena != null){
-            Paddle paddle = scena.getFirstEntityByName("paddle");
             ParamList esito = new ParamList();
-            esito.add("powerup", this);
-            if(paddle != null && paddle.getBounds().intersect(this.getBounds()))    //Evento di collisione con il paddle per la raccolta del powerup
-                scena.sendEvent(ModalitaClassica.EVENTO_POWERUP, esito);
+            esito.add("pm", this);
+
+            Entity[] listaEntita = scena.getEntityByName("paddle");
+            for(Entity entita : listaEntita){
+                Paddle paddle = (Paddle)entita;
+
+                if(paddle.getBounds().intersect(this.getBounds())){
+                    scena.sendEvent(PM.EVENTO_RACCOLTA_POWERUP, esito);
+                }
+            }
 
             if(this.position.getPosY() - (this.size.getPosY() * 0.5f) > screenHeight)   //Evento di fuoriuscita dallo schermo
-                scena.sendEvent(ModalitaClassica.EVENTO_RIMOZIONE_POWERUP, esito);
+                scena.sendEvent(PM.EVENTO_RIMOZIONE_POWERUP, esito);
         }
-    }
-
-    /**
-     * Restituisce l'indicatore del PM, un'entità statica che viene usata come indicatore
-     * @param size Dimensione dell'indicatore
-     * @return Restituisce una Entità che identifica l'indicatore del PM
-     */
-    public Entity getIndicatorePM(Vector2D size){
-        return new Entity(
-                this.getName() + "Indicatore" + this.getId(),
-                new Vector2D(0, 0),
-                new Vector2D(0, 0),
-                size,
-                new Vector2D(0, 0),
-                this.getSprite()
-        );
     }
 
     public AbstractAlterazione getAlterazione() {

@@ -41,7 +41,7 @@ public class selezione_modalita_fragment extends Fragment implements View.OnTouc
         Intent intent = null;
         if(v.equals(this.modalitaClassicaButton)){
             intent = new Intent(this.getContext(), modalita_activity.class);
-            intent.putExtra("MODE", modalita_activity.CODICE_MODALITA_CLASSICA);
+            intent.putExtra(modalita_activity.EXTRA_MODALITA, modalita_activity.CODICE_MODALITA_CLASSICA);
         }
 
         if(intent != null)

@@ -1,6 +1,7 @@
 package com.example.android.arkanoid.GameElements.ElementiBase;
 
 import com.example.android.arkanoid.Util.ParamList;
+import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 
 public abstract class AbstractAlterazione {
     protected int durata;                       //Durata dell'alterazione
@@ -9,6 +10,7 @@ public abstract class AbstractAlterazione {
     protected boolean alterazioneAttiva;        //Flag di alterazione attiva
 
     protected String nomeAlterazione;           //Nome dell'alterazione
+    protected Sprite spriteIcona;               //Sprite che rappresenta l'icona dell'alterazione
 
     public AbstractAlterazione(int durata, String nomeAlterazione) {
         this.nomeAlterazione = nomeAlterazione;
@@ -16,22 +18,23 @@ public abstract class AbstractAlterazione {
 
         this.lastTimeStamp = 0;
         this.alterazioneAttiva = false;
+        this.spriteIcona = null;
     }
 
     /**
-     * Attua l'alterazione
+     * Logica di attivazione dell'alterazione
      * @param status Status del gioco
      * @param parametri Parametri della scena
      * @return Restituisce l'esito dell'elaborazione
      */
-    protected abstract boolean attuaAlterazione(GameStatus status, ParamList parametri);
+    protected abstract boolean logicaAttivazione(GameStatus status, ParamList parametri);
 
     /**
-     * Disattiva l'alterazione
+     * Logica di disattivazione dell'alterazione
      * @param status Status del gioco
      * @param parametri Parametri della scena
      */
-    protected abstract void disattivaAlterazione(GameStatus status, ParamList parametri);
+    protected abstract void logicaDisattivazione(GameStatus status, ParamList parametri);
 
     /**
      * Attiva l'alterazione
@@ -44,7 +47,7 @@ public abstract class AbstractAlterazione {
         if(!this.alterazioneAttiva){
             this.lastTimeStamp = System.currentTimeMillis();
             this.alterazioneAttiva = true;
-            esito = this.attuaAlterazione(status, parametri);
+            esito = this.logicaAttivazione(status, parametri);
         }
         return esito;
     }
@@ -57,7 +60,7 @@ public abstract class AbstractAlterazione {
     private void fermaAlterazione(GameStatus status, ParamList parametri){
         if(this.alterazioneAttiva && System.currentTimeMillis() - this.lastTimeStamp > this.durata){
             this.alterazioneAttiva = false;
-            this.disattivaAlterazione(status, parametri);
+            this.logicaDisattivazione(status, parametri);
         }
     }
 
@@ -72,28 +75,27 @@ public abstract class AbstractAlterazione {
     }
 
     //beam
-
     public int getDurata() {
         return durata;
-    }
-
-    public void setDurata(int durata) {
-        this.durata = durata;
-    }
-
-    public long getLastTimeStamp() {
-        return lastTimeStamp;
-    }
-
-    public void setLastTimeStamp(long lastTimeStamp) {
-        this.lastTimeStamp = lastTimeStamp;
     }
 
     public boolean isAlterazioneAttiva() {
         return alterazioneAttiva;
     }
 
-    public void setAlterazioneAttiva(boolean alterazioneAttiva) {
-        this.alterazioneAttiva = alterazioneAttiva;
+    public String getNomeAlterazione() {
+        return nomeAlterazione;
+    }
+
+    public Sprite getSpriteIcona() {
+        return spriteIcona;
+    }
+
+    public void setDurata(int durata) {
+        this.durata = durata;
+    }
+
+    public void setSpriteIcona(Sprite spriteIcona) {
+        this.spriteIcona = spriteIcona;
     }
 }

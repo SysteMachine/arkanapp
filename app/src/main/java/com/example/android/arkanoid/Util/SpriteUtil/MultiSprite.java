@@ -1,6 +1,7 @@
 package com.example.android.arkanoid.Util.SpriteUtil;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 

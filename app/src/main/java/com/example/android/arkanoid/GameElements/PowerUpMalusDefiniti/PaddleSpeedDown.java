@@ -2,7 +2,7 @@ package com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.AlterazioniDefinite.AlterazioneVelocitaPaddle;
-import com.example.android.arkanoid.GameElements.ElementiBase.PM;
+import com.example.android.arkanoid.GameElements.ElementiGioco.PM;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;

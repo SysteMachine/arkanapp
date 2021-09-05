@@ -15,7 +15,7 @@ public class AlterazioneVelocitaPalla extends AbstractAlterazione {
     }
 
     @Override
-    protected boolean attuaAlterazione(GameStatus status, ParamList parametri) {
+    protected boolean logicaAttivazione(GameStatus status, ParamList parametri) {
         boolean esito = false;
         AbstractScene scena = parametri.get(AbstractScene.PARAMETRO_SCENA);
         if(scena != null){
@@ -29,7 +29,7 @@ public class AlterazioneVelocitaPalla extends AbstractAlterazione {
     }
 
     @Override
-    protected void disattivaAlterazione(GameStatus status, ParamList parametri) {
+    protected void logicaDisattivazione(GameStatus status, ParamList parametri) {
         AbstractScene scena = parametri.get(AbstractScene.PARAMETRO_SCENA);
         if(scena != null){
             Ball palla = scena.getFirstEntityByName("ball");

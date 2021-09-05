@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.VectorMat.Vector2D;
@@ -25,8 +24,10 @@ public class Sprite {
         this.aviable = false;
         if(gameLoop != null){
             try{
-                this.immagine = BitmapFactory.decodeResource(gameLoop.getResources(), drawableId);
-                this.immagine = this.immagine.copy(Bitmap.Config.ARGB_8888, true);  //Rendiamo l'immagine modificabile
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inMutable = true;
+
+                this.immagine = BitmapFactory.decodeResource(gameLoop.getResources(), drawableId, options);
                 this.aviable = true;
             }catch(Exception e){
                 this.aviable = false;
@@ -201,5 +202,13 @@ public class Sprite {
 
     public boolean isAviable() {
         return aviable;
+    }
+
+    public int getWidth(){
+        return this.aviable ? this.immagine.getWidth() : 0;
+    }
+
+    public int getHeight(){
+        return this.aviable ? this.immagine.getWidth() : 0;
     }
 }

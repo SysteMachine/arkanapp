@@ -13,7 +13,7 @@ public class AlterazioneVitaBlocchi extends AbstractAlterazione {
     }
 
     @Override
-    protected boolean attuaAlterazione(GameStatus status, ParamList parametri) {
+    protected boolean logicaAttivazione(GameStatus status, ParamList parametri) {
         AbstractScene scena = parametri.get(AbstractScene.PARAMETRO_SCENA);
         if(scena != null){
             Entity[] entita = scena.getEntityByName("brick");
@@ -28,5 +28,5 @@ public class AlterazioneVitaBlocchi extends AbstractAlterazione {
     }
 
     @Override
-    protected void disattivaAlterazione(GameStatus status, ParamList parametri) {}
+    protected void logicaDisattivazione(GameStatus status, ParamList parametri) {}
 }

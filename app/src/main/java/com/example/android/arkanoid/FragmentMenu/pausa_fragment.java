@@ -22,19 +22,17 @@ public class pausa_fragment extends Fragment implements View.OnClickListener, Vi
         View view = inflater.inflate(R.layout.fragment_pausa_fragment, container, false);
         view.setOnTouchListener(this);
 
-        if(view != null){
-            this.audioButton = view.findViewById(R.id.audioButton);
-            if(this.audioButton != null) {
-                this.audioButton.setOnClickListener(this);
-                this.audioButton.setChecked(AudioUtil.getGlobalAudio() == 0);
-            }
-            this.riprendiButton = view.findViewById(R.id.riprendiButton);
-            if(this.riprendiButton != null)
-                this.riprendiButton.setOnClickListener(this);
-            this.esciButton = view.findViewById(R.id.esciButton);
-            if(this.esciButton != null)
-                this.esciButton.setOnClickListener(this);
+        this.audioButton = view.findViewById(R.id.audioButton);
+        if(this.audioButton != null) {
+            this.audioButton.setOnClickListener(this);
+            this.audioButton.setChecked(AudioUtil.getGlobalAudio() == 0);
         }
+        this.riprendiButton = view.findViewById(R.id.riprendiButton);
+        if(this.riprendiButton != null)
+            this.riprendiButton.setOnClickListener(this);
+        this.esciButton = view.findViewById(R.id.esciButton);
+        if(this.esciButton != null)
+            this.esciButton.setOnClickListener(this);
 
         return view;
     }

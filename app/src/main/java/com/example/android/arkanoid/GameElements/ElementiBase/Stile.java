@@ -5,6 +5,7 @@ import android.graphics.Color;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.ReplaceColorRecord;
+import com.example.android.arkanoid.Util.SpriteUtil.AnimatedSprite;
 import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
@@ -39,7 +40,12 @@ public class Stile {
     protected ReplaceColorRecord[] coloriSfondo;
 
     protected int suonoBackground;
+    protected int suonoHitBrick;
+    protected int suonoHitPaddle;
+    protected int suonoLevelComplete;
+    protected int suonoLifeLost;
 
+    protected int spriteIndicatoreVita;                          //Sprite dell'indicatore della vita
     protected float incrementoVelocitaPallaLivello;              //Percentuale d'incremento della velocità della palla ad ogni livello
     protected float decrementoVelocitaPaddleLivello;             //Percentuale di decremento della velocità della paddle ad ogni livello
     protected float tassoIncrementoVitaBlocchi;                  //Percentuale di vita incrementata ai blocchi ad ogni livello superato
@@ -50,16 +56,27 @@ public class Stile {
         this.setStilePaddle();
         this.setStileBrick();
         this.setStileSfondo();
-        this.setSuonoBackground(R.raw.background1);
+        this.setupAudio();
     }
 
     /**
      * Inizializza le informazioni per il gameplay
      */
     protected void setInformazioniGameplay(){
+        this.spriteIndicatoreVita = R.drawable.indicatori_vita;
+
         this.incrementoVelocitaPallaLivello = 1.03f;
         this.decrementoVelocitaPaddleLivello = 0.99f;
         this.tassoIncrementoVitaBlocchi = 0.5f;
+    }
+
+    /**
+     * Restituisce l'indicatore per l'indicatore della vita
+     * @param gameLoop Game loop per il caricamento dello sprite
+     * @return Restituisce lo sprite per l'indicatore della vita
+     */
+    public Sprite getIndicatoreVitaStile(GameLoop gameLoop){
+        return new AnimatedSprite(this.spriteIndicatoreVita, gameLoop, 4, 5 + (int)(Math.random() * 5));
     }
 
     /**
@@ -193,7 +210,26 @@ public class Stile {
         return  sprite;
     }
 
+    /**
+     * Imposta l'audio di gioco
+     */
+    protected void setupAudio(){
+        this.suonoBackground = R.raw.stilebase_background;
+        this.suonoHitBrick = R.raw.stilebase_hit_brick;
+        this.suonoHitPaddle = R.raw.stilebase_hit_paddle;
+        this.suonoLevelComplete = R.raw.stilebase_level_complete;
+        this.suonoLifeLost = R.raw.stilebase_life_lost;
+    }
+
     //Beam
+    public int getSpriteIndicatoreVita() {
+        return spriteIndicatoreVita;
+    }
+
+    public void setSpriteIndicatoreVita(int spriteIndicatoreVita) {
+        this.spriteIndicatoreVita = spriteIndicatoreVita;
+    }
+
     public float getIncrementoVelocitaPallaLivello() {
         return incrementoVelocitaPallaLivello;
     }
@@ -424,5 +460,37 @@ public class Stile {
 
     public void setSuonoBackground(int suonoBackground) {
         this.suonoBackground = suonoBackground;
+    }
+
+    public int getSuonoHitBrick() {
+        return suonoHitBrick;
+    }
+
+    public void setSuonoHitBrick(int suonoHitBrick) {
+        this.suonoHitBrick = suonoHitBrick;
+    }
+
+    public int getSuonoHitPaddle() {
+        return suonoHitPaddle;
+    }
+
+    public void setSuonoHitPaddle(int suonoHitPaddle) {
+        this.suonoHitPaddle = suonoHitPaddle;
+    }
+
+    public int getSuonoLevelComplete() {
+        return suonoLevelComplete;
+    }
+
+    public void setSuonoLevelComplete(int suonoLevelComplete) {
+        this.suonoLevelComplete = suonoLevelComplete;
+    }
+
+    public int getSuonoLifeLost() {
+        return suonoLifeLost;
+    }
+
+    public void setSuonoLifeLost(int suonoLifeLost) {
+        this.suonoLifeLost = suonoLifeLost;
     }
 }

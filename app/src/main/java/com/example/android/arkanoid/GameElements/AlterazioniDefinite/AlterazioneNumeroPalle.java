@@ -19,7 +19,7 @@ public class AlterazioneNumeroPalle extends AbstractAlterazione {
     }
 
     @Override
-    protected boolean attuaAlterazione(GameStatus status, ParamList parametri) {
+    protected boolean logicaAttivazione(GameStatus status, ParamList parametri) {
         boolean esito = false;
 
         GameLoop gameLoop = parametri.get(ModalitaClassica.PARAMETRO_ALTERAZIONE_GAMELOOP);
@@ -47,7 +47,7 @@ public class AlterazioneNumeroPalle extends AbstractAlterazione {
     }
 
     @Override
-    protected void disattivaAlterazione(GameStatus status, ParamList parametri) {
+    protected void logicaDisattivazione(GameStatus status, ParamList parametri) {
         AbstractScene scena = parametri.get(AbstractScene.PARAMETRO_SCENA);
         if(scena != null){
             for(Entity e : this.palle){
