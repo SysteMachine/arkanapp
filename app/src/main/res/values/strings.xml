@@ -43,4 +43,17 @@
     <string name="fragment_game_over_pubblicato">Your result is now online</string>
     <string name="fragment_game_over_non_pubblicato">Something goes wrong</string>
 
+
+    <string name="editor_activity_modifica_info">Info</string>
+    <string name="editor_activity_modifica_mappa">Map</string>
+    <string name="editor_activity_modifica_parametri">Params</string>
+    <string name="editor_activity_prova_livello">Test</string>
+    <string name="editor_activity_salva_livello">Save level</string>
+    <string name="editor_activity_reset_layer">Reset layer</string>
+
+    <string name="info_fragment_nome_livello">Level name</string>
+    <string name="info_fragment_selected_layer">Selected layer</string>
+    <string name="info_fragment_selected_style">Selected style</string>
+    <string name="info_fragment_livelli_creati">Created</string>
+
 </resources>

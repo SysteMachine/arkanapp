@@ -41,4 +41,11 @@
     <string name="fragment_game_over_torna_menu">Menù principale</string>
     <string name="fragment_game_over_pubblicato">Il tuo risultato è online</string>
     <string name="fragment_game_over_non_pubblicato">Qualcosa è andato storto</string>
+
+    <string name="editor_activity_modifica_info">Info</string>
+    <string name="editor_activity_modifica_mappa">Mappa</string>
+    <string name="editor_activity_modifica_parametri">Parametri</string>
+    <string name="editor_activity_prova_livello">Test</string>
+    <string name="editor_activity_salva_livello">Salva livello</string>
+    <string name="editor_activity_reset_layer">Resetta strato</string>
 </resources>

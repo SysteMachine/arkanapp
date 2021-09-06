@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".editor_activity"
+    android:background="@drawable/splashscreen_background">
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="1dp">
+
+        <ToggleButton
+            android:id="@+id/infoButton"
+            style="@style/labelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/editor_button"
+            android:checked="true"
+            android:textOff="@string/editor_activity_modifica_info"
+            android:textOn="@string/editor_activity_modifica_info"
+            android:textSize="15sp" />
+
+        <ToggleButton
+            android:id="@+id/editorMappaButton"
+            style="@style/labelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/editor_button"
+            android:textOff="@string/editor_activity_modifica_mappa"
+            android:textOn="@string/editor_activity_modifica_mappa"
+            android:textSize="15sp" />
+
+        <ToggleButton
+            android:id="@+id/editorParametriButton"
+            style="@style/labelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/editor_button"
+            android:textOff="@string/editor_activity_modifica_parametri"
+            android:textOn="@string/editor_activity_modifica_parametri"
+            android:textSize="15sp" />
+
+        <ToggleButton
+            android:id="@+id/testLivelloButton"
+            style="@style/labelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/editor_button"
+            android:textOff="@string/editor_activity_prova_livello"
+            android:textOn="@string/editor_activity_prova_livello"
+            android:textSize="15sp" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="65dp"
+        android:weightSum="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="1dp">
+
+        <Button
+            android:id="@+id/salvaLivelloButton"
+            style="@style/buttonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:text="@string/editor_activity_salva_livello"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/resettaLayerButton"
+            style="@style/buttonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:text="@string/editor_activity_reset_layer"
+            android:textSize="15sp" />
+    </TableRow>
+
+    <FrameLayout
+        android:id="@+id/containerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        app:layout_constraintBottom_toTopOf="@+id/tableRow"
+        app:layout_constraintTop_toBottomOf="@+id/tableRow3"
+        tools:layout_editor_absoluteX="10dp">
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>
