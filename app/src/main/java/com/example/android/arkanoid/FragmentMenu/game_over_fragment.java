@@ -40,7 +40,8 @@ public class game_over_fragment extends Fragment implements View.OnTouchListener
             this.nuovaPartitaButton.setOnClickListener(this);
         if(this.condividiButton != null) {
             RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this.getContext());
-            if(recordSalvataggio.isLogin() || !game_over_fragment.esitoPubblicato)
+            if(recordSalvataggio.isLogin() && !game_over_fragment.esitoPubblicato)
+                //Solo se l'utente ha loggato e non ha pubblicato l'esito
                 this.condividiButton.setOnClickListener(this);
             else
                 this.condividiButton.setVisibility(View.GONE);
