@@ -52,7 +52,7 @@ public class pausa_fragment extends Fragment implements View.OnClickListener, Vi
         }
 
         if(v.equals(this.esciButton) && this.getActivity() != null){
-            ((modalita_activity)this.getActivity()).tornaAlMenu();
+            ((modalita_activity)this.getActivity()).gameOver(null);
         }
 
     }

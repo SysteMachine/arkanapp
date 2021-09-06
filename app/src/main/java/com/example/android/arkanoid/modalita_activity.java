@@ -278,6 +278,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
                     this.containerModalita.setVisibility(View.VISIBLE);
                     this.nascondiMenuGameOver();
                     this.nascondiMenuPausa();
+                    this.gameLoop.removeAll();
                     this.gameLoop.setShowFPS(true);
                     this.gameLoop.addGameComponent(modalita_activity.modalita);
                     this.inGame = true;
@@ -291,6 +292,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
      */
     protected void mostraMenuGameOver(){
         if(this.inGame && !this.gameOver){
+            this.hideFragment(false);
             this.showFragment(game_over_fragment.class, true);
             if(this.gameLoop != null)
                 this.gameLoop.setUpdateRunning(false);
@@ -315,6 +317,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
      */
     protected void mostraMenuPausa(){
         if(this.inGame && !this.inPause && !this.gameOver){
+            this.hideFragment(false);
             this.showFragment(pausa_fragment.class, true);
             if(this.gameLoop != null)
                 this.gameLoop.setUpdateRunning(false);
@@ -367,7 +370,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
 
     @Override
     protected void onFrameContrastoTouched(View v, MotionEvent e) {
-        if(this.inPause)
+        if(this.inPause && !this.gameOver)
             this.nascondiMenuPausa();
     }
 
