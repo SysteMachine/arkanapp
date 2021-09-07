@@ -23,13 +23,12 @@ public class parametri_fragment extends Fragment implements View.OnTouchListener
     private TextView pv_pad_label;
     private SeekBar pv_pal_seek;
     private SeekBar pv_pad_seek;
-    private EditText hitBlockField;
+    private EditText puntiColpoField;
     private EditText puntiPartitaField;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setRetainInstance(true);
     }
 
     /**
@@ -49,42 +48,61 @@ public class parametri_fragment extends Fragment implements View.OnTouchListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_parametri_fragment, container, false);
-
         view.setOnTouchListener(this);
+        editor_activity activity = this.activity();
         this.pv_pal_label = view.findViewById(R.id.velocitaPallaLabel);
         this.pv_pad_label = view.findViewById(R.id.velocitaPaddleLabel);
-
-        editor_activity activity = this.activity();
-
         this.pv_pal_seek = view.findViewById(R.id.PVPALSeek);
+        this.pv_pad_seek = view.findViewById(R.id.PVPADSeek);
+        this.puntiColpoField = view.findViewById(R.id.puntiColpoField);
+        this.puntiPartitaField = view.findViewById(R.id.puntiPartitaField);
+
         if(this.pv_pal_seek != null && activity != null) {
             this.pv_pal_seek.setOnSeekBarChangeListener(this);
-            this.pv_pal_seek.setProgress((int)(activity.getLivello().getLayerLivello(activity.getLayerCorrente()).getPercentualeIncrementoVelocitaPalla() * 100));
-            this.pv_pal_seek.setMin((int)(LayerLivello.MIN_PVPALLA * 100));
             this.pv_pal_seek.setMax((int)(LayerLivello.MAX_PVPALLA * 100));
+            this.pv_pal_seek.setMin((int)(LayerLivello.MIN_PVPALLA * 100));
         }
-
-        this.pv_pad_seek = view.findViewById(R.id.PVPADSeek);
         if(this.pv_pad_seek != null && activity != null) {
             this.pv_pad_seek.setOnSeekBarChangeListener(this);
-            this.pv_pad_seek.setProgress((int)(activity.getLivello().getLayerLivello(activity.getLayerCorrente()).getPercentualeIncrementoVelocitaPaddle() * 100));
-            this.pv_pad_seek.setMin((int)(LayerLivello.MIN_PVPADDLE * 100));
             this.pv_pad_seek.setMax((int)(LayerLivello.MAX_PVPADDLE * 100));
+            this.pv_pad_seek.setMin((int)(LayerLivello.MIN_PVPADDLE * 100));
         }
-
-        this.hitBlockField = view.findViewById(R.id.puntiColpoField);
-        if(this.hitBlockField != null)
-            this.hitBlockField.addTextChangedListener(this);
-
-        this.puntiPartitaField = view.findViewById(R.id.puntiPartitaField);
-        if(this.puntiPartitaField != null)
+        if(this.puntiColpoField != null && activity != null)
+            this.puntiColpoField.addTextChangedListener(this);
+        if(this.puntiPartitaField != null && activity != null)
             this.puntiPartitaField.addTextChangedListener(this);
 
+        this.setStileComponenti();
         return view;
+    }
+
+    /**
+     * Imposta lo stile delle componenti
+     */
+    private void setStileComponenti(){
+        editor_activity activity = this.activity();
+        if(activity != null){
+            LayerLivello layerLivello = activity.getLivello().getLayerLivello(activity.getLayerCorrente());
+            if(this.pv_pal_seek != null && this.pv_pal_label != null){
+                int progresso = (int)(layerLivello.getPercentualeIncrementoVelocitaPalla() * 100);
+                this.pv_pal_seek.setProgress(progresso);
+                this.pv_pal_label.setText(new StringBuilder().append(this.getContext().getText(R.string.parametri_fragment_velocita_palla)).append(": ").append(progresso).append("%").toString());
+            }
+            if(this.pv_pad_seek != null && this.pv_pad_label != null) {
+                int progresso = (int)(layerLivello.getPercentualeIncrementoVelocitaPaddle() * 100);
+                this.pv_pad_seek.setProgress(progresso);
+                this.pv_pad_label.setText(new StringBuilder().append(this.getContext().getText(R.string.parametri_fragment_velocita_paddle)).append(": ").append(progresso).append("%").toString());
+            }
+            if(this.puntiColpoField != null)
+                this.puntiColpoField.setText("" + layerLivello.getPuntiPerColpo());
+            if(this.puntiPartitaField != null)
+                this.puntiPartitaField.setText("" + layerLivello.getPuntiTerminazione());
+        }
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        v.performClick();
         return true;
     }
 
@@ -96,42 +114,35 @@ public class parametri_fragment extends Fragment implements View.OnTouchListener
 
     @Override
     public void afterTextChanged(Editable s) {
-        if(s.equals(this.hitBlockField)){
-            editor_activity activity = this.activity();
-            if(activity != null){
-                activity.getLivello().getLayerLivello(activity.getLayerCorrente()).setPuntiPerColpo(Integer.valueOf(this.hitBlockField.getText().toString()));
-            }
-        }
+        editor_activity activity = this.activity();
+        if(!s.toString().equals("") && activity != null){
+            LayerLivello layerLivello = activity.getLivello().getLayerLivello(activity.getLayerCorrente());
 
-        if(s.equals(this.puntiPartitaField)){
-            editor_activity activity = this.activity();
-            if(activity != null){
-                activity.getLivello().getLayerLivello(activity.getLayerCorrente()).setPuntiTerminazione(Integer.valueOf(this.puntiPartitaField.getText().toString()));
-            }
+            if(s.equals(this.puntiColpoField.getText()))
+                layerLivello.setPuntiPerColpo(Integer.valueOf(s.toString()));
+
+            if(s.equals(this.puntiPartitaField.getText()))
+                layerLivello.setPuntiTerminazione(Integer.valueOf(s.toString()));
         }
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if(seekBar.equals(this.pv_pal_seek)){
-            int value = this.pv_pal_seek.getProgress();
-            if(this.pv_pal_label != null){
-                this.pv_pal_label.setText(this.getContext().getText(R.string.parametri_fragment_velocita_palla) + ": " + value + "%");
-            }
-            editor_activity activity = this.activity();
-            if(activity != null)
-                activity.getLivello().getLayerLivello(activity.getLayerCorrente()).setPercentualeIncrementoVelocitaPalla(value / 100.0f);
-        }
+        editor_activity activity = this.activity();
+        if(activity != null){
+            LayerLivello layerLivello = activity.getLivello().getLayerLivello(activity.getLayerCorrente());
 
-        if(seekBar.equals(this.pv_pad_seek)){
-            int value = this.pv_pad_seek.getProgress();
-            if(this.pv_pad_label != null){
-                this.pv_pad_label.setText(this.getContext().getText(R.string.parametri_fragment_velocita_paddle) + ": " + value + "%");
+            if(seekBar.equals(this.pv_pal_seek)){
+                float valore = progress / 100.0f;
+                layerLivello.setPercentualeIncrementoVelocitaPalla(valore);
             }
-            editor_activity activity = this.activity();
-            if(activity != null)
-                activity.getLivello().getLayerLivello(activity.getLayerCorrente()).setPercentualeIncrementoVelocitaPaddle(value / 100.0f);
+
+            if(seekBar.equals(this.pv_pad_seek)){
+                float valore = progress / 100.0f;
+                layerLivello.setPercentualeIncrementoVelocitaPaddle(valore);
+            }
         }
+        this.setStileComponenti();
     }
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {}

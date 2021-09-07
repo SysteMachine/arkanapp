@@ -38,7 +38,8 @@ public class ModalitaTestLivello extends ModalitaClassica {
 
     @Override
     protected void logicaAvanzamentoLivello() {
-        if(this.mappa.getVitaBlocchi() == 0) {
+        if(this.mappa.getTotalHealth() == 0) {
+            this.status.incrementaPunteggio(this.PUNTI_PER_PARTITA);
             if (this.gameOverListener != null) {
                 this.gameOverListener.gameOver(this.status);
             }

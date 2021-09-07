@@ -10,6 +10,9 @@ import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class Stile {
+    public static int ID_STILE = 0;
+    public static String NOME_STILE = "Classico";
+
     protected int immaginePalla;
     protected int angoloDiLancioMassimoPalla;
     protected float velocitaInizialePalla;

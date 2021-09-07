@@ -23,15 +23,13 @@ public class mappa_fragment extends Fragment implements View.OnTouchListener, Nu
     private NumberPicker vitaBloccoPicker;
     private ToggleButton infHealthButton;
 
-    private GameLoop gameLoop;
-    private PannelloMappa pannelloMappa;
+    private GameLoop gameLoop;                  //GameLoop per la visualizzazione della mappa
+    private PannelloMappa pannelloMappa;        //Pannello di visualizzazione della mappa
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setRetainInstance(true);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
     }
 
     @Override
@@ -51,7 +49,6 @@ public class mappa_fragment extends Fragment implements View.OnTouchListener, Nu
 
     /**
      * Restituisce l'activity del fragment
-     *
      * @return Restituisce l'activity del fragment o null in caso di problemi
      */
     private editor_activity activity() {
@@ -66,59 +63,50 @@ public class mappa_fragment extends Fragment implements View.OnTouchListener, Nu
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mappa_fragment, container, false);
         view.setOnTouchListener(this);
+        editor_activity activity = this.activity();
+        LayerLivello layerLivello = activity.getLivello().getLayerLivello(activity.getLayerCorrente());
 
         ViewGroup containerMappa = view.findViewById(R.id.frameMappa);
+        this.altezzaPicker = view.findViewById(R.id.altezzaMappaPicker);
+        this.numeroColonnePicker = view.findViewById(R.id.numeroColonnePicker);
+        this.numeroRighePicker = view.findViewById(R.id.numeroRighePicker);
+        this.vitaBloccoPicker = view.findViewById(R.id.vitaBrickPicker);
+        this.infHealthButton = view.findViewById(R.id.infHealthButton);
+
         if(containerMappa != null){
             this.gameLoop = new GameLoop(this.getContext(), 10, 720, 720);
             this.gameLoop.setShowFPS(false);
             containerMappa.addView(this.gameLoop);
             this.gameLoop.start();
-        }
 
-        editor_activity activity = this.activity();
-        if(activity != null){
-            this.pannelloMappa = new PannelloMappa(activity.getLivello().getLayerLivello(activity.getLayerCorrente()));
-            if(this.gameLoop != null)
-                this.gameLoop.addGameComponent(this.pannelloMappa);
+            this.pannelloMappa = new PannelloMappa(layerLivello);
+            this.gameLoop.addGameComponent(this.pannelloMappa);
         }
-
-        this.altezzaPicker = view.findViewById(R.id.altezzaMappaPicker);
         if(this.altezzaPicker != null){
             this.altezzaPicker.setMinValue(LayerLivello.MIN_ALTEZZA);
             this.altezzaPicker.setMaxValue(LayerLivello.MAX_ALTEZZA);
-            if(activity != null)
-                this.altezzaPicker.setValue(activity.getLivello().getLayerLivello(activity.getLayerCorrente()).getAltezza());
+            this.altezzaPicker.setValue(layerLivello.getAltezza());
             this.altezzaPicker.setOnValueChangedListener(this);
         }
-
-        this.numeroColonnePicker = view.findViewById(R.id.numeroColonnePicker);
         if(this.numeroColonnePicker != null){
             this.numeroColonnePicker.setMinValue(LayerLivello.MIN_COLONNE);
             this.numeroColonnePicker.setMaxValue(LayerLivello.MAX_COLONNE);
-            if(activity != null)
-                this.numeroColonnePicker.setValue(activity.getLivello().getLayerLivello(activity.getLayerCorrente()).getColonne());
+            this.numeroColonnePicker.setValue(layerLivello.getColonne());
             this.numeroColonnePicker.setOnValueChangedListener(this);
         }
-
-        this.numeroRighePicker = view.findViewById(R.id.numeroRighePicker);
         if(this.numeroRighePicker != null){
             this.numeroRighePicker.setMinValue(LayerLivello.MIN_RIGHE);
             this.numeroRighePicker.setMaxValue(LayerLivello.MAX_RIGHE);
-            if(activity != null)
-                this.numeroRighePicker.setValue(activity.getLivello().getLayerLivello(activity.getLayerCorrente()).getRighe());
+            this.numeroRighePicker.setValue(layerLivello.getRighe());
             this.numeroRighePicker.setOnValueChangedListener(this);
         }
-
-        this.vitaBloccoPicker = view.findViewById(R.id.vitaBrickPicker);
         if(this.vitaBloccoPicker != null){
             this.vitaBloccoPicker.setMinValue(0);
             this.vitaBloccoPicker.setMaxValue(10);
-            if(activity != null)
-                this.vitaBloccoPicker.setValue(0);
+            this.vitaBloccoPicker.setValue(1);
+            this.pannelloMappa.setVitaBrick(1);
             this.vitaBloccoPicker.setOnValueChangedListener(this);
         }
-
-        this.infHealthButton = view.findViewById(R.id.infHealthButton);
         if(this.infHealthButton != null)
             this.infHealthButton.setOnClickListener(this);
 
@@ -127,24 +115,25 @@ public class mappa_fragment extends Fragment implements View.OnTouchListener, Nu
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        v.performClick();
         return true;
     }
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         editor_activity activity = this.activity();
-        if(picker.equals(this.altezzaPicker) && activity != null){
-            activity.getLivello().getLayerLivello(activity.getLayerCorrente()).setAltezza(newVal);
-        }
-        if(picker.equals(this.numeroColonnePicker) && activity != null){
-            activity.getLivello().getLayerLivello(activity.getLayerCorrente()).setColonne(newVal);
-        }
-        if(picker.equals(this.numeroRighePicker) && activity != null){
-            activity.getLivello().getLayerLivello(activity.getLayerCorrente()).setRighe(newVal);
-        }
-        if(picker.equals(this.vitaBloccoPicker) && this.pannelloMappa != null && this.infHealthButton != null){
-            if(!this.infHealthButton.isChecked()){
-                this.pannelloMappa.setVitaBrick(newVal);
+        if(activity != null){
+            LayerLivello layerLivello = activity.getLivello().getLayerLivello(activity.getLayerCorrente());
+            if(picker.equals(this.altezzaPicker))
+                layerLivello.setAltezza(newVal);
+            if(picker.equals(this.numeroColonnePicker))
+                layerLivello.setColonne(newVal);
+            if(picker.equals(this.numeroRighePicker))
+                layerLivello.setRighe(newVal);
+            if(picker.equals(this.vitaBloccoPicker) && this.pannelloMappa != null && this.infHealthButton != null){
+                if(!this.infHealthButton.isChecked()){
+                    this.pannelloMappa.setVitaBrick(newVal);
+                }
             }
         }
     }

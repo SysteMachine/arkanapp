@@ -66,4 +66,6 @@
     <string name="parametri_fragment_velocita_paddle">Velocita paddle</string>
     <string name="parametri_fragment_punti_colpo">Punti per colpo</string>
     <string name="parametri_fragment_punti_partita">Punti per strato</string>
+
+    <string name="test_fragment_riavvia">Riavvia</string>
 </resources>

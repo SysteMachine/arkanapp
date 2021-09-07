@@ -50,6 +50,10 @@
     <string name="editor_activity_prova_livello">Test</string>
     <string name="editor_activity_salva_livello">Save level</string>
     <string name="editor_activity_reset_layer">Reset layer</string>
+    <string name="editor_activity_conferma_salvataggio">Level saved</string>
+    <string name="editor_activity_errore_salvataggio">Level not saved</string>
+    <string name="editor_activity_sovrascrizione">Override message</string>
+    <string name="editor_activity_sovrascrizione_descrizione">Do you want override previous level?</string>
 
     <string name="info_fragment_nome_livello">Level name</string>
     <string name="info_fragment_selected_layer">Selected layer</string>
@@ -66,7 +70,7 @@
     <string name="parametri_fragment_velocita_paddle">Paddle speed</string>
     <string name="parametri_fragment_punti_colpo">Hit point</string>
     <string name="parametri_fragment_punti_partita">Level point</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="test_fragment_riavvia">Reload</string>
 
 </resources>

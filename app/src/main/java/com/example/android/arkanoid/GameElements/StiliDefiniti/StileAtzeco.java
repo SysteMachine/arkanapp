@@ -8,6 +8,8 @@ import com.example.android.arkanoid.Util.ReplaceColorRecord;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class StileAtzeco extends Stile {
+    public static int ID_STILE = 3;
+    public static String NOME_STILE = "Azteco";
 
     protected void setStilePalla(){
         super.setStilePalla();

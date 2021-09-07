@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.example.android.arkanoid.Editor.LayerLivello;
@@ -22,7 +23,9 @@ import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 import com.example.android.arkanoid.editor_activity;
 
-public class test_fragment extends Fragment implements View.OnTouchListener, GameOverListener {
+public class test_fragment extends Fragment implements View.OnTouchListener, GameOverListener, View.OnClickListener {
+    private Button riavviaButton;
+
     private GameLoop gameLoop;
     private ModalitaTestLivello testLivello;
 
@@ -37,6 +40,10 @@ public class test_fragment extends Fragment implements View.OnTouchListener, Gam
         View view = inflater.inflate(R.layout.fragment_test_fragment, container, false);
 
         view.setOnTouchListener(this);
+        this.riavviaButton = view.findViewById(R.id.riavviaButton);
+        if(this.riavviaButton != null)
+            this.riavviaButton.setOnClickListener(this);
+
         this.gameLoop = new GameLoop(this.getContext(), 60, 720, 1280);
         this.gameLoop.setShowFPS(true);
         FrameLayout mainFrame = view.findViewById(R.id.mainFrame);
@@ -83,17 +90,13 @@ public class test_fragment extends Fragment implements View.OnTouchListener, Gam
             Livello l = activity.getLivello();
             LayerLivello ll = l.getLayerLivello(activity.getLayerCorrente());
 
-            switch (l.getIndiceStile()){
-                case 1:
-                    stile = new StileSpaziale();
-                    break;
-                case 2:
-                    stile = new StileAtzeco();
-                    break;
-                case 3:
-                    stile = new StileFuturistico();
-                    break;
-            }
+            if(l.getIndiceStile() == StileSpaziale.ID_STILE)
+                stile = new StileSpaziale();
+            if(l.getIndiceStile() == StileFuturistico.ID_STILE)
+                stile = new StileFuturistico();
+            if(l.getIndiceStile() == StileAtzeco.ID_STILE)
+                stile = new StileAtzeco();
+
 
             stile.setNumeroRigheMappa(ll.getRighe());
             stile.setNumeroColonneMappa(ll.getColonne());
@@ -128,6 +131,26 @@ public class test_fragment extends Fragment implements View.OnTouchListener, Gam
     public void gameOver(GameStatus status) {
         if(this.gameLoop != null){
             this.gameLoop.setUpdateRunning(false);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.equals(this.riavviaButton)){
+            editor_activity activity = this.activity();
+            if(this.gameLoop != null && this.testLivello != null && activity != null){
+                this.gameLoop.stop();
+                this.gameLoop.setUpdateRunning(true);
+                this.gameLoop.removeAll();
+                this.testLivello = new ModalitaTestLivello(
+                        this.creazioneStilePartita(),
+                        new GameStatus(5, 0, GameStatus.TOUCH),
+                        activity.getLivello().getLayerLivello(activity.getLayerCorrente())
+                );
+                this.testLivello.setGameOverListener(this);
+                this.gameLoop.addGameComponent(this.testLivello);
+                this.gameLoop.start();
+            }
         }
     }
 }

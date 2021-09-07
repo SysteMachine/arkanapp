@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class LayerLivello {
     public static int MAX_RIGHE = 6, MIN_RIGHE = 1;
-    public static int MIN_COLONNE = 5, MAX_COLONNE = 10;
+    public static int MIN_COLONNE = 4, MAX_COLONNE = 10;
     public static int MIN_ALTEZZA = 50, MAX_ALTEZZA = 500;
     public static int MIN_VITA_BLOCCO = 1, MAX_VITA_BLOCCO = 10;
     public static float MIN_PVPALLA = 0.5f, MAX_PVPALLA = 3;
@@ -35,6 +35,21 @@ public class LayerLivello {
 
     public LayerLivello(String stringaSalvataggio){
         this.ripristinaSalvataggio(stringaSalvataggio);
+    }
+
+    /**
+     * Esegue il reset dello strato
+     */
+    public void reset(){
+        this.posizioneLivello = this.posizioneLivello;
+        this.posizioneBlocchi = "";
+        this.righe = LayerLivello.MIN_RIGHE;
+        this.colonne = LayerLivello.MIN_COLONNE;
+        this.altezza = LayerLivello.MIN_ALTEZZA;
+        this.percentualeIncrementoVelocitaPalla = 1;
+        this.percentualeIncrementoVelocitaPaddle = 1;
+        this.puntiPerColpo = 0;
+        this.puntiTerminazione = 0;
     }
 
     /**

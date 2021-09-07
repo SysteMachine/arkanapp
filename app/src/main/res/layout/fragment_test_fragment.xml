@@ -13,8 +13,8 @@
 
         <FrameLayout
             android:id="@+id/mainFrame"
-            android:layout_width="270dp"
-            android:layout_height="480dp"
+            android:layout_width="252dp"
+            android:layout_height="448dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -22,5 +22,21 @@
             app:layout_constraintVertical_bias="0.0">
 
         </FrameLayout>
+
+        <Button
+            android:id="@+id/riavviaButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            style="@style/buttonStyle"
+            android:text="@string/test_fragment_riavvia"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mainFrame"
+            app:layout_constraintVertical_bias="0.050000012" />
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

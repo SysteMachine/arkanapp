@@ -17,6 +17,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
+import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
+import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
+import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
+import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
 import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.DBUtil;
 import com.example.android.arkanoid.editor_activity;
@@ -29,7 +34,7 @@ public class info_fragment extends Fragment implements
         AdapterView.OnItemSelectedListener,
         AdapterView.OnItemLongClickListener,
         TextWatcher {
-    private final String QUERY_CONTROLLO_NOME_LIVELLO = "SELECT COUNT(*) AS N FROM creazioni WHERE creazioni.creazioni_nome LIKE NAME";
+    private final String QUERY_CONTROLLO_NOME_LIVELLO = "SELECT COUNT(*) AS N FROM creazioni WHERE creazioni.creazioni_nome LIKE NAME AND creazioni_user_email <> EMAIL";
 
     private EditText nomeLivelloField;
     private Spinner spinnerLayer;
@@ -41,7 +46,6 @@ public class info_fragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setRetainInstance(true);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
@@ -72,8 +76,10 @@ public class info_fragment extends Fragment implements
             this.aggiungiButton.setOnClickListener(this);
         if (this.rimuoviButton != null)
             this.rimuoviButton.setOnClickListener(this);
-        if (this.nomeLivelloField != null)
+        if (this.nomeLivelloField != null) {
             this.nomeLivelloField.addTextChangedListener(this);
+            this.nomeLivelloField.setText(this.activity().getLivello().getNomeLivello());
+        }
 
         return view;
     }
@@ -101,8 +107,10 @@ public class info_fragment extends Fragment implements
             String[] layerString = new String[numeroLivelli];
             for (int i = 0; i < numeroLivelli; i++)
                 layerString[i] = "Layer: " + i;
-            if (this.spinnerLayer != null)
-                spinnerLayer.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, layerString));
+            if (this.spinnerLayer != null) {
+                this.spinnerLayer.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, layerString));
+                this.spinnerLayer.setSelection(activity.getLayerCorrente());
+            }
         }
     }
 
@@ -115,13 +123,15 @@ public class info_fragment extends Fragment implements
             int numeroLivelli = activity.getLivello().getContatoreLivello();
             String[] stiliString = new String[4];
 
-            stiliString[0] = "Classico";
-            stiliString[1] = "Spaziale";
-            stiliString[2] = "Azteco";
-            stiliString[3] = "Futuristico";
+            stiliString[Stile.ID_STILE] = Stile.NOME_STILE;
+            stiliString[StileSpaziale.ID_STILE] = StileSpaziale.NOME_STILE;
+            stiliString[StileAtzeco.ID_STILE] = StileAtzeco.NOME_STILE;
+            stiliString[StileFuturistico.ID_STILE] = StileFuturistico.NOME_STILE;
 
-            if (this.spinnerStile != null)
-                spinnerStile.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, stiliString));
+            if (this.spinnerStile != null) {
+                this.spinnerStile.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, stiliString));
+                this.spinnerStile.setSelection(activity.getLivello().getIndiceStile());
+            }
         }
     }
 
@@ -191,8 +201,10 @@ public class info_fragment extends Fragment implements
     @Override
     public void afterTextChanged(Editable s) {
         //Eseguiamo un controllo sul testo inserito come nome per verificare che non sia inserito nel database
+        RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this.getContext());
         String testo = this.nomeLivelloField.getText().toString();
         String query = DBUtil.repalceJolly(this.QUERY_CONTROLLO_NOME_LIVELLO, "NAME", testo);
+        query = DBUtil.repalceJolly(query, "EMAIL", recordSalvataggio.getEmail());
         try{
             String esitoQuery = DBUtil.executeQuery(query);
             if(!esitoQuery.equals("ERROR")){
@@ -201,11 +213,13 @@ public class info_fragment extends Fragment implements
                     //Se il nome non è mai stato utilizzato allora effettua la modifica
                     this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontAviableColor));
                     editor_activity activity = this.activity();
-                    if(activity != null){
+                    if(activity != null)
                         activity.getLivello().setNomeLivello(testo);
-                    }
                 }else{
                     this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontErrorColor));
+                    editor_activity activity = this.activity();
+                    if(activity != null)
+                        activity.getLivello().setNomeLivello("");
                 }
             }
         }catch (Exception e){e.printStackTrace();}

@@ -8,7 +8,8 @@ import com.example.android.arkanoid.Util.ReplaceColorRecord;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class StileFuturistico extends Stile {
-    public StileFuturistico(){}
+    public static int ID_STILE = 2;
+    public static String NOME_STILE = "Futuristico";
 
     protected void setStilePalla(){
         super.setStilePalla();
