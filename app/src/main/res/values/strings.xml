@@ -30,7 +30,7 @@
     <string name="modalita_activity_seleziona_controllo_touch">Touch</string>
     <string name="modalita_activity_seleziona_controllo_gyro">Gyro</string>
 
-    <string name="pausa_fragment_riprendi">Resoume</string>
+    <string name="pausa_fragment_riprendi">Resume</string>
     <string name="pausa_fragment_esci">Quit</string>
 
     <plurals name="fragment_game_over_punteggio">
@@ -55,5 +55,18 @@
     <string name="info_fragment_selected_layer">Selected layer</string>
     <string name="info_fragment_selected_style">Selected style</string>
     <string name="info_fragment_livelli_creati">Created</string>
+
+    <string name="mappa_fragment_altezza_mappa">Map height:</string>
+    <string name="mappa_fragment_numero_righe">Row count:</string>
+    <string name="mappa_fragment_numero_colonne">Column count:</string>
+    <string name="mappa_fragment_vita_blocco">Brick health:</string>
+    <string name="mappa_fragment_blocco_indistruttibile">I_Brick</string>
+
+    <string name="parametri_fragment_velocita_palla">Ball speed</string>
+    <string name="parametri_fragment_velocita_paddle">Paddle speed</string>
+    <string name="parametri_fragment_punti_colpo">Hit point</string>
+    <string name="parametri_fragment_punti_partita">Level point</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

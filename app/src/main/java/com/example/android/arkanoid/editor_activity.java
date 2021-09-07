@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.ToggleButton;
 
 import com.example.android.arkanoid.Editor.Fragment.info_fragment;
+import com.example.android.arkanoid.Editor.Fragment.mappa_fragment;
+import com.example.android.arkanoid.Editor.Fragment.parametri_fragment;
+import com.example.android.arkanoid.Editor.Fragment.test_fragment;
 import com.example.android.arkanoid.Editor.LayerLivello;
 import com.example.android.arkanoid.Editor.Livello;
 
@@ -24,6 +27,9 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
 
     //Fragment del pannello
     private Fragment infoFragment;              //Fragmen di info
+    private Fragment mappaFragment;             //Fragment per la modifica della mappa
+    private Fragment parametriFragment;         //Fragment per i parametri
+    private Fragment testFragment;              //Fragment per il test
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,7 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
 
         this.prendiRiferimenti();
         this.inizializzaInformazioni();
+        this.impostaStile();
     }
 
     /**
@@ -59,6 +66,9 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
      */
     private void inizializzaInformazioni(){
         this.infoFragment = new info_fragment();
+        this.mappaFragment = new mappa_fragment();
+        this.parametriFragment = new parametri_fragment();
+        this.testFragment = new test_fragment();
 
         this.tabCorrente = 0;
         this.layerCorrente = 0;
@@ -82,18 +92,30 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
                 this.mappaButton.setChecked(true);
                 this.parametriButton.setChecked(false);
                 this.testButton.setChecked(false);
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.containerFragment, this.mappaFragment)
+                        .commit();
                 break;
             case 2:
                 this.infoButton.setChecked(false);
                 this.mappaButton.setChecked(false);
                 this.parametriButton.setChecked(true);
                 this.testButton.setChecked(false);
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.containerFragment, this.parametriFragment)
+                        .commit();
                 break;
             case 3:
                 this.infoButton.setChecked(false);
                 this.mappaButton.setChecked(false);
                 this.parametriButton.setChecked(false);
                 this.testButton.setChecked(true);
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.containerFragment, this.testFragment)
+                        .commit();
                 break;
         }
     }

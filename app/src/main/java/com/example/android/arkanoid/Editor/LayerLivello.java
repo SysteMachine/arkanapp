@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class LayerLivello {
     public static int MAX_RIGHE = 6, MIN_RIGHE = 1;
     public static int MIN_COLONNE = 5, MAX_COLONNE = 10;
-    public static int MIN_ALTEZZA = 300, MAX_ALTEZZA = 500;
+    public static int MIN_ALTEZZA = 50, MAX_ALTEZZA = 500;
     public static int MIN_VITA_BLOCCO = 1, MAX_VITA_BLOCCO = 10;
     public static float MIN_PVPALLA = 0.5f, MAX_PVPALLA = 3;
     public static float MIN_PVPADDLE = 0.5f, MAX_PVPADDLE = 3;
@@ -58,6 +58,26 @@ public class LayerLivello {
     }
 
     /**
+     * Restituisce il blocco in posizione
+     * @param posX Posizione X del blocco
+     * @param posY Posizione Y del blocco
+     * @return Restituisce un array di interi con gli elementi del blocco
+     */
+    public int[] getBloccoAt(int posX, int posY){
+        int[] esito = null;
+
+        ArrayList<int[]> blocchi = this.parseListaBlocchi();
+        for(int[] b : blocchi){
+            if(b[0] == posX && b[1] == posY){
+                esito = b;
+                break;
+            }
+        }
+
+        return esito;
+    }
+
+    /**
      * Aggiunge un blocco alla lista dei blocchi
      * @param posX PosizioneX del blocco
      * @param posY PosizioneY del blocco
@@ -67,7 +87,7 @@ public class LayerLivello {
     public boolean addBlocco(int posX, int posY, int vitaBlocco){
         boolean esito = false;
 
-        if(posX >= 0 && posX < this.colonne && posY >= 0 && posY < this.righe && vitaBlocco >= LayerLivello.MIN_VITA_BLOCCO && vitaBlocco <= LayerLivello.MAX_VITA_BLOCCO){
+        if(posX >= 0 && posX < this.colonne && posY >= 0 && posY < this.righe && (vitaBlocco >= LayerLivello.MIN_VITA_BLOCCO  || vitaBlocco == -1) && vitaBlocco <= LayerLivello.MAX_VITA_BLOCCO){
             StringBuilder sb = new StringBuilder();
             if(!this.esisteBlocco(posX, posY)){
                 sb.append(this.posizioneBlocchi).append(",").append(posX).append(":").append(posY).append(":").append(vitaBlocco);

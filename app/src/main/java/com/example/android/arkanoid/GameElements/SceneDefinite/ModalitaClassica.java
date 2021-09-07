@@ -192,6 +192,10 @@ public class ModalitaClassica extends AbstractModalita{
                 this.stile.getImmagineBrickIndistruttibileStile(this.owner),
                 new MultiSprite(R.drawable.crepebrick, this.owner, 10)
         );
+        try{
+            //Generiamo la mappa con il metodo che possediamo
+            this.mappa.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneMappa", int.class, int.class), this);
+        }catch (Exception e){e.printStackTrace();}
         this.mappa.inserisciOstacoli(stile.getNumeroBlocchiIndistruttibili());
 
         //Creazione dello sfondo

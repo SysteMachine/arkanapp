@@ -12,7 +12,7 @@ public class Livello {
     private String nomeLivello;
     private int indiceStile;
 
-    private ArrayList<LayerLivello> layer;
+    private final ArrayList<LayerLivello> layer;
 
     public Livello(String parametro, boolean salvataggio){
         this.layer = new ArrayList<>();
@@ -48,7 +48,7 @@ public class Livello {
      * @param livelloLayer Livello del layer da eliminare
      */
     public void eliminaLayer(int livelloLayer){
-        if(this.layer.size() -1 > 0) {
+        if(this.layer.size() -1 >= Livello.MIN_LAYER) {
             int contatoreLivello = 0;
             for (Iterator<LayerLivello> it = this.layer.iterator(); it.hasNext(); ) {
                 LayerLivello ll = it.next();

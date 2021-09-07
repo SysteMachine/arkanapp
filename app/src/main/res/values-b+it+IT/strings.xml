@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Arkanoido</string>
+
     <string name="splash_screen_tabButtonMessage">Premi per iniziare</string>
     <string name="login_login">Accedi</string>
     <string name="login_registrati">Registrati</string>
@@ -48,4 +50,20 @@
     <string name="editor_activity_prova_livello">Test</string>
     <string name="editor_activity_salva_livello">Salva livello</string>
     <string name="editor_activity_reset_layer">Resetta strato</string>
+
+    <string name="info_fragment_nome_livello">Nome livello</string>
+    <string name="info_fragment_selected_layer">Strato selezionato</string>
+    <string name="info_fragment_selected_style">Stile selzionato</string>
+    <string name="info_fragment_livelli_creati">Creazioni</string>
+
+    <string name="mappa_fragment_altezza_mappa">Altezza mappa:</string>
+    <string name="mappa_fragment_numero_righe">Numero righe:</string>
+    <string name="mappa_fragment_numero_colonne">Numero colonne:</string>
+    <string name="mappa_fragment_vita_blocco">Vita brick:</string>
+    <string name="mappa_fragment_blocco_indistruttibile">I_Brick</string>
+
+    <string name="parametri_fragment_velocita_palla">Velocita palla</string>
+    <string name="parametri_fragment_velocita_paddle">Velocita paddle</string>
+    <string name="parametri_fragment_punti_colpo">Punti per colpo</string>
+    <string name="parametri_fragment_punti_partita">Punti per strato</string>
 </resources>

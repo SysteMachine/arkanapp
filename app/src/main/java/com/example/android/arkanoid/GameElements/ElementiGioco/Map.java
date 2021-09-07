@@ -94,7 +94,7 @@ public class Map {
                         Brick brick = new Brick(
                                 new Vector2D(startX, startY),
                                 new Vector2D(brickWidth, brickHeight),
-                                this.coloriBrick[(i + j) % this.coloriBrick.length],
+                                this.getVitaBlocchi() == -1 ? this.bickIndistruttibile : this.coloriBrick[(i + j) % this.coloriBrick.length],
                                 this.spriteCrepe,
                                 (int)Math.floor(this.vitaBlocchi)
                         );
@@ -213,7 +213,7 @@ public class Map {
     }
 
     public void setVitaBlocchi(float vita) {
-        if(vita > 0 && vita <= Map.MAX_HEALTH_BRICK)
+        if( (vita > 0 || vita == Brick.INF_HEALTH) && vita <= Map.MAX_HEALTH_BRICK)
             this.vitaBlocchi = vita;
         else
             this.vitaBlocchi = 1;

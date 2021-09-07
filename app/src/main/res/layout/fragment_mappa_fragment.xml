@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Editor.Fragment.mappa_fragment"
+    android:background="@color/background">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/frameMappa"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" >
+
+        </FrameLayout>
+
+        <TableLayout
+            android:id="@+id/tableLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:weightSum="4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameMappa"
+            app:layout_constraintVertical_bias="0.0"
+            tools:layout_editor_absoluteX="31dp">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="5"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:id="@+id/altezzaMappaLabel"
+                    style="@style/labelStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:layout_gravity="center"
+                    android:textAlignment="textStart"
+                    android:text="@string/mappa_fragment_altezza_mappa"
+                    android:textSize="20sp" />
+
+                <NumberPicker
+                    android:id="@+id/altezzaMappaPicker"
+                    style="@style/number_picker_style"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="5"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:id="@+id/numeroColonneLabel"
+                    style="@style/labelStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:layout_gravity="center"
+                    android:textAlignment="textStart"
+                    android:text="@string/mappa_fragment_numero_colonne"
+                    android:textSize="20sp" />
+
+                <NumberPicker
+                    android:id="@+id/numeroColonnePicker"
+                    style="@style/number_picker_style"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="5"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:id="@+id/numeroRigheLabel"
+                    style="@style/labelStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:layout_gravity="center"
+                    android:textAlignment="textStart"
+                    android:text="@string/mappa_fragment_numero_righe"
+                    android:textSize="20sp" />
+
+                <NumberPicker
+                    android:id="@+id/numeroRighePicker"
+                    style="@style/number_picker_style"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="5"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:id="@+id/vitaBrickLabel"
+                    style="@style/labelStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_gravity="center"
+                    android:textAlignment="textStart"
+                    android:text="@string/mappa_fragment_vita_blocco"
+                    android:textSize="20sp" />
+
+                <NumberPicker
+                    android:id="@+id/vitaBrickPicker"
+                    style="@style/number_picker_style"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1" />
+
+                <ToggleButton
+                    android:id="@+id/infHealthButton"
+                    style="@style/buttonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textOn="@string/mappa_fragment_blocco_indistruttibile"
+                    android:textOff="@string/mappa_fragment_blocco_indistruttibile"
+                    android:background="@drawable/pulsante_con_stato"
+                    android:layout_weight="1"/>
+            </TableRow>
+        </TableLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

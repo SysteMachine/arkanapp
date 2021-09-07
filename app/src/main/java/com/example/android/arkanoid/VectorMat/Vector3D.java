@@ -43,4 +43,12 @@ public class Vector3D extends Vector2D{
     public static Vector3D differenzaVettoriale(Vector3D v1, Vector3D v2){
         return Vector3D.sommaVettoriale(v1, v2.prodottoPerScalare(-1));
     }
+
+    public float getPosZ() {
+        return posZ;
+    }
+
+    public void setPosZ(float posZ) {
+        this.posZ = posZ;
+    }
 }
