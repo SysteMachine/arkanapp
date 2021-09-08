@@ -28,8 +28,8 @@ public class DBUtil {
         URL urlObject = new URL(DBUtil.CONNECTOR);
         HttpURLConnection con = (HttpURLConnection)urlObject.openConnection();
         con.setRequestMethod("POST");
-        con.setConnectTimeout(10000);
-        con.setReadTimeout(15000);
+        con.setConnectTimeout(1000);
+        con.setReadTimeout(1500);
 
         con.setDoOutput(true);
         OutputStream os = con.getOutputStream();

@@ -1,6 +1,7 @@
 package com.example.android.arkanoid;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
@@ -27,6 +28,7 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
     private final String QUERY_CONTROLLO_PROPRIETARIO_LIVELLO = "SELECT creazioni_user_email AS EMAIL FROM creazioni WHERE creazioni_nome LIKE NAME";
     private final String QUERY_INSERIMENTO_LIVELLO = "INSERT INTO creazioni VALUES(NOME, DATI, EMAIL)";
     private final String QUERY_AGGIORNAMENTO_LIVELLO = "UPDATE creazioni SET creazioni_dati = DATI WHERE creazioni_nome LIKE NOME";
+    private final String QUERY_CARICAMENTO_LIVELLO = "SELECT creazioni_dati AS DATI FROM creazioni WHERE creazioni_nome LIKE NOME";
 
     private ToggleButton infoButton;
     private ToggleButton mappaButton;
@@ -37,6 +39,7 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
     private Button salvaLivelloButton;
 
     private AlertDialog dialogoSovrascrizione;
+    private AlertDialog dialogoResetLayer;
 
     //------------------------------------------------------
     private int tabCorrente;                    //Tab correntemente visualizzata sull'activitiy
@@ -107,6 +110,12 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
                 .setPositiveButton(android.R.string.yes, this)
                 .setNegativeButton(android.R.string.no, null)
                 .create();
+        this.dialogoResetLayer = new AlertDialog.Builder(this)
+                .setTitle(this.getResources().getString(R.string.editor_activity_reset))
+                .setMessage(this.getResources().getString(R.string.editor_activity_reset_descrizione))
+                .setPositiveButton(android.R.string.yes, this)
+                .setNegativeButton(android.R.string.no, null)
+                .create();
     }
 
     private void impostaStile(){
@@ -167,7 +176,7 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
         if(v.equals(this.testButton))
             this.tabCorrente = 3;
         if(v.equals(this.resetLayerButton)) {
-            this.livello.getLayerLivello(this.layerCorrente).reset();
+            this.dialogoResetLayer.show();
             this.onClick(this.infoButton);
         }
         if(v.equals(this.salvaLivelloButton))
@@ -214,6 +223,35 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Torna al menu principale
+     */
+    private void tornaAlMenu(){
+        Intent intent = new Intent(this, main_menu_activity.class);
+        AudioUtil.clear();
+        AudioUtil.loadAudio("background_music", R.raw.background_music, this);
+        AudioUtil.getMediaPlayer("background_music").setLooping(true);
+        AudioUtil.getMediaPlayer("background_music").start();
+        this.startActivity(intent);
+    }
+
+    /**
+     * Carica il livello dato un nome
+     * @param nome Nome del livello da caricare
+     */
+    public void caricaLivello(String nome){
+        String query = DBUtil.repalceJolly(this.QUERY_CARICAMENTO_LIVELLO, "NOME", nome);
+        try{
+            String esito = DBUtil.executeQuery(query);
+            if(!esito.equals("ERROR")){
+                String dati = new JSONObject(esito).getString("DATI");
+                this.livello = new Livello(dati, true);
+                this.layerCorrente = 0;
+                this.impostaStile();
+            }
+        }catch (Exception e){e.printStackTrace();}
+    }
+
     //Beam
     //Get
     public Livello getLivello() {
@@ -249,5 +287,14 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
                 toast.show();
             }catch (Exception e){e.printStackTrace();}
         }
+
+        if(dialog.equals(this.dialogoResetLayer)){
+            this.livello.getLayerLivello(this.getLayerCorrente()).reset();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.tornaAlMenu();
     }
 }

@@ -50,6 +50,16 @@
     <string name="editor_activity_prova_livello">Test</string>
     <string name="editor_activity_salva_livello">Salva livello</string>
     <string name="editor_activity_reset_layer">Resetta strato</string>
+    <string name="editor_activity_conferma_salvataggio">Livello salvato</string>
+    <string name="editor_activity_errore_salvataggio">Livello non salvato</string>
+    <string name="editor_activity_sovrascrizione">Messaggio sovrascrittura</string>
+    <string name="editor_activity_sovrascrizione_descrizione">Vuoi sostituire questo livello?</string>
+    <string name="editor_activity_reset">Messaggio reset</string>
+    <string name="editor_activity_reset_descrizione">Vuoi resettare questo layer?</string>
+    <string name="editor_activity_cancellazione">Messaggio cancellazione</string>
+    <string name="editor_activity_cancellazione_descrizione">Vuoi cancellare questo layer?</string>
+    <string name="editor_activity_caricamento">Messaggio caricamento</string>
+    <string name="editor_activity_caricamento_descrizione">Vuoi caricare questo livello?</string>
 
     <string name="info_fragment_nome_livello">Nome livello</string>
     <string name="info_fragment_selected_layer">Strato selezionato</string>

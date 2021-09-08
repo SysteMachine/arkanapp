@@ -54,6 +54,12 @@
     <string name="editor_activity_errore_salvataggio">Level not saved</string>
     <string name="editor_activity_sovrascrizione">Override message</string>
     <string name="editor_activity_sovrascrizione_descrizione">Do you want override previous level?</string>
+    <string name="editor_activity_reset">Reset message</string>
+    <string name="editor_activity_reset_descrizione">Do you want reset this layer?</string>
+    <string name="editor_activity_cancellazione">Delete message</string>
+    <string name="editor_activity_cancellazione_descrizione">Do you want delete this layer?</string>
+    <string name="editor_activity_caricamento">Load message</string>
+    <string name="editor_activity_caricamento_descrizione">Do you want load this level?</string>
 
     <string name="info_fragment_nome_livello">Level name</string>
     <string name="info_fragment_selected_layer">Selected layer</string>

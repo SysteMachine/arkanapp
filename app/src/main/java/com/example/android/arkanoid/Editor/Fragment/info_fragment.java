@@ -1,9 +1,11 @@
 package com.example.android.arkanoid.Editor.Fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,8 +18,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
+import com.example.android.arkanoid.Editor.LayerLivello;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
@@ -28,13 +32,20 @@ import com.example.android.arkanoid.editor_activity;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 public class info_fragment extends Fragment implements
         View.OnTouchListener,
         View.OnClickListener,
         AdapterView.OnItemSelectedListener,
         AdapterView.OnItemLongClickListener,
-        TextWatcher {
+        TextWatcher,
+        DialogInterface.OnClickListener{
     private final String QUERY_CONTROLLO_NOME_LIVELLO = "SELECT COUNT(*) AS N FROM creazioni WHERE creazioni.creazioni_nome LIKE NAME AND creazioni_user_email <> EMAIL";
+    private final String QUERY_LIVELLI_CREATI = "SELECT creazioni_nome AS NOME FROM creazioni WHERE creazioni_user_email LIKE EMAIL";
 
     private EditText nomeLivelloField;
     private Spinner spinnerLayer;
@@ -42,6 +53,11 @@ public class info_fragment extends Fragment implements
     private ListView listaLivelliCreati;
     private ImageView aggiungiButton;
     private ImageView rimuoviButton;
+
+    private AlertDialog dialogoEliminazioneLayer;
+    private AlertDialog dialogoCaricamentoLivello;
+
+    private String selectedLevel;                           //Livello da caricare selezionato
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +71,19 @@ public class info_fragment extends Fragment implements
         View view = inflater.inflate(R.layout.fragment_info_fragment, container, false);
 
         view.setOnTouchListener(this);
+
+        this.dialogoEliminazioneLayer = new AlertDialog.Builder(this.getContext())
+                .setTitle(this.getResources().getString(R.string.editor_activity_cancellazione))
+                .setMessage(this.getResources().getString(R.string.editor_activity_cancellazione_descrizione))
+                .setPositiveButton(android.R.string.yes, this)
+                .setNegativeButton(android.R.string.no, null)
+                .create();
+        this.dialogoCaricamentoLivello = new AlertDialog.Builder(this.getContext())
+                .setTitle(this.getResources().getString(R.string.editor_activity_caricamento))
+                .setMessage(this.getResources().getString(R.string.editor_activity_caricamento_descrizione))
+                .setPositiveButton(android.R.string.yes, this)
+                .setNegativeButton(android.R.string.no, null)
+                .create();
 
         this.nomeLivelloField = view.findViewById(R.id.nomeLivelloField);
         this.spinnerLayer = view.findViewById(R.id.spinnerLayer);
@@ -103,7 +132,7 @@ public class info_fragment extends Fragment implements
     private void configuraSpinnerLayer() {
         editor_activity activity = this.activity();
         if (activity != null) {
-            int numeroLivelli = activity.getLivello().getContatoreLivello();
+            int numeroLivelli = activity.getLivello().getNLivelli();
             String[] layerString = new String[numeroLivelli];
             for (int i = 0; i < numeroLivelli; i++)
                 layerString[i] = "Layer: " + i;
@@ -140,11 +169,19 @@ public class info_fragment extends Fragment implements
      */
     private void configuraListaLivelliCreati() {
         if (this.listaLivelliCreati != null) {
-            String[] testString = new String[20];
-            for (int i = 0; i < testString.length; i++) {
-                testString[i] = "CAsfdsgdsf";
-            }
-            this.listaLivelliCreati.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, testString));
+            RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this.getContext());
+            String query = DBUtil.repalceJolly(this.QUERY_LIVELLI_CREATI, "EMAIL", recordSalvataggio.getEmail());
+            try{
+                String esito = DBUtil.executeQuery(query);
+                if(!esito.equals("ERROR")){
+                    BufferedReader reader = new BufferedReader(new InputStreamReader( new ByteArrayInputStream(esito.getBytes()) ) );
+                    ArrayList<String> righe = new ArrayList<>();
+                    String riga;
+                    while((riga = reader.readLine()) != null)
+                        righe.add(new JSONObject(riga).getString("NOME"));
+                    this.listaLivelliCreati.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, righe.toArray(new String[0])));
+                }
+            }catch (Exception e){e.printStackTrace();}
         }
     }
 
@@ -160,19 +197,23 @@ public class info_fragment extends Fragment implements
         editor_activity activity = this.activity();
 
         if (v.equals(this.aggiungiButton) && activity != null) {
-            activity.getLivello().creaLayerLivello();
+            LayerLivello ll = activity.getLivello().creaLayerLivello();
+            activity.setLayerCorrente(ll.getPosizioneLivello());
+            this.configuraSpinnerLayer();
         }
 
         if (v.equals(this.rimuoviButton) && activity != null) {
-            activity.getLivello().eliminaLayer(activity.getLayerCorrente());
+            if (activity.getLivello().getNLivelli() - 1 >= 1) {
+                this.dialogoEliminazioneLayer.show();
+            }
         }
-
-        this.configuraSpinnerLayer();
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        System.out.println("Long " + parent.getClass().getName() + " " + view.getClass().getName() + " " + position + " " + id);
+        TextView tView = (TextView)view;
+        this.selectedLevel = tView.getText().toString();
+        this.dialogoCaricamentoLivello.show();
         return true;
     }
 
@@ -223,5 +264,23 @@ public class info_fragment extends Fragment implements
                 }
             }
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if(dialog.equals(this.dialogoEliminazioneLayer)){
+            editor_activity activity = this.activity();
+            if(activity != null){
+                activity.getLivello().eliminaLayer(activity.getLayerCorrente());
+                activity.setLayerCorrente(0);
+                this.configuraSpinnerLayer();
+            }
+        }
+
+        if(dialog.equals(this.dialogoCaricamentoLivello)){
+            editor_activity activity = this.activity();
+            if(activity != null)
+                activity.caricaLivello(this.selectedLevel);
+        }
     }
 }

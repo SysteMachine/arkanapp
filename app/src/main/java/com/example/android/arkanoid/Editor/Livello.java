@@ -120,6 +120,9 @@ public class Livello {
     }
 
     //Getter
+    public int getNLivelli(){
+        return this.layer.size();
+    }
 
     public int getContatoreLivello() {
         return contatoreLivello;
