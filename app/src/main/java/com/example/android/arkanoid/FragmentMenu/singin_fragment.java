@@ -12,15 +12,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.android.arkanoid.R;
-import com.example.android.arkanoid.Util.DBUtil;
+import com.example.android.arkanoid.Util.QueryExecutor;
 import com.example.android.arkanoid.login_activity;
 
 import org.json.JSONObject;
 
 public class singin_fragment extends Fragment implements View.OnTouchListener, View.OnClickListener, Runnable {
-    private final String QUERY_CONTROLLO_EMAIL = "SELECT COUNT(*) AS N FROM user WHERE user_email LIKE EMAIL";
-    private final String QUERY_REGISTRAZIONE = "INSERT INTO user (user_email, user_username, user_password) VALUES (EMAIL, USERNAME, Password(PASSWORD))";
-
     private Button pulsanteRegistrazione;
     private EditText emailField;
     private EditText usernameField;
@@ -35,7 +32,6 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setRetainInstance(true);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
     }
@@ -60,19 +56,18 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_singin_fragment, container, false);
-        if(view != null) {
-            view.setOnTouchListener(this);
 
-            //Caricamento degli elementi
-            this.pulsanteRegistrazione = view.findViewById(R.id.pulsanteRegistrazione);
-            if(this.pulsanteRegistrazione != null)
-                this.pulsanteRegistrazione.setOnClickListener(this);
+        view.setOnTouchListener(this);
 
-            this.emailField = view.findViewById(R.id.inputEmail);
-            this.usernameField = view.findViewById(R.id.inputUsername);
-            this.passwordField = view.findViewById(R.id.inputPassword);
-            this.rPasswordField = view.findViewById(R.id.inputRipetiPassword);
-        }
+        this.pulsanteRegistrazione = view.findViewById(R.id.pulsanteRegistrazione);
+        this.emailField = view.findViewById(R.id.inputEmail);
+        this.usernameField = view.findViewById(R.id.inputUsername);
+        this.passwordField = view.findViewById(R.id.inputPassword);
+        this.rPasswordField = view.findViewById(R.id.inputRipetiPassword);
+
+        if(this.pulsanteRegistrazione != null)
+            this.pulsanteRegistrazione.setOnClickListener(this);
+
         return view;
     }
 
@@ -87,15 +82,9 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
             String email = this.emailField.getText().toString();
             if(email.contains("@") && email.contains(".")){
                 try{
-                    String esitoQuery = DBUtil.executeQuery(DBUtil.repalceJolly(this.QUERY_CONTROLLO_EMAIL, "EMAIL", email));
-                    if(!esitoQuery.equals("ERROR")){
-                        int nElementi = new JSONObject(esitoQuery.trim()).getInt("N");
-                        if(nElementi == 0)
-                            esito = true;
-                    }
+                    esito = QueryExecutor.controlloEsistenzaEmailRegistrata(email);
                 }catch (Exception e){e.printStackTrace();}
             }
-
         }
 
         return esito;
@@ -136,6 +125,7 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        v.performClick();
         return true;
     }
 
@@ -151,14 +141,8 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
             String username = this.usernameField.getText().toString().trim();
             String password = this.passwordField.getText().toString().trim();
 
-            String query = DBUtil.repalceJolly(this.QUERY_REGISTRAZIONE, "EMAIL", email);
-            query = DBUtil.repalceJolly(query, "USERNAME", username);
-            query = DBUtil.repalceJolly(query, "PASSWORD", password);
-
             try{
-                String esitoQuery = DBUtil.executeQuery(query);
-                if(!esitoQuery.equals("ERROR"))
-                    esito = true;
+                esito = QueryExecutor.registrazioneUtente(email, username, password);
             }catch (Exception e){e.printStackTrace();}
         }
 
@@ -173,7 +157,7 @@ public class singin_fragment extends Fragment implements View.OnTouchListener, V
                 if(!esitoRegistrazione)
                     ((login_activity) this.getActivity()).scriviMessaggioErrore(this.getResources().getString(R.string.singin_fragment_errore_registrazione));
 
-                ((login_activity) this.getActivity()).hideFragment(true);
+                ((login_activity) this.getActivity()).nascondiFragment(true);
             }
         }
     }

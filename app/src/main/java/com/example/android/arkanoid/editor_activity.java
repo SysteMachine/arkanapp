@@ -19,17 +19,9 @@ import com.example.android.arkanoid.Editor.Fragment.parametri_fragment;
 import com.example.android.arkanoid.Editor.Fragment.test_fragment;
 import com.example.android.arkanoid.Editor.Livello;
 import com.example.android.arkanoid.Util.AudioUtil;
-import com.example.android.arkanoid.Util.DBUtil;
-
-import org.json.JSONObject;
+import com.example.android.arkanoid.Util.QueryExecutor;
 
 public class editor_activity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener{
-    private final String QUERY_CONTROLLO_NOME_LIVELLO = "SELECT COUNT(*) AS N FROM creazioni WHERE creazioni_nome LIKE NAME";
-    private final String QUERY_CONTROLLO_PROPRIETARIO_LIVELLO = "SELECT creazioni_user_email AS EMAIL FROM creazioni WHERE creazioni_nome LIKE NAME";
-    private final String QUERY_INSERIMENTO_LIVELLO = "INSERT INTO creazioni VALUES(NOME, DATI, EMAIL)";
-    private final String QUERY_AGGIORNAMENTO_LIVELLO = "UPDATE creazioni SET creazioni_dati = DATI WHERE creazioni_nome LIKE NOME";
-    private final String QUERY_CARICAMENTO_LIVELLO = "SELECT creazioni_dati AS DATI FROM creazioni WHERE creazioni_nome LIKE NOME";
-
     private ToggleButton infoButton;
     private ToggleButton mappaButton;
     private ToggleButton parametriButton;
@@ -194,31 +186,18 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
         RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this);
         if(recordSalvataggio.isLogin() && !this.livello.getNomeLivello().equals("")) {
             //Operazione consentita solo durante il login
-            String queryControlloNome = DBUtil.repalceJolly(this.QUERY_CONTROLLO_NOME_LIVELLO, "NAME", this.livello.getNomeLivello());
-            String risultato = DBUtil.executeQuery(queryControlloNome);
-            if (!risultato.equals("ERROR")) {
-                if (new JSONObject(risultato).getInt("N") == 0) {
-                    //Se non ci sono record inseriti si aggiunge normalmente
-                    String queryInserimento = DBUtil.repalceJolly(this.QUERY_INSERIMENTO_LIVELLO, "NOME", this.livello.getNomeLivello());
-                    queryInserimento = DBUtil.repalceJolly(queryInserimento, "EMAIL", recordSalvataggio.getEmail());
-                    queryInserimento = DBUtil.repalceJolly(queryInserimento, "DATI", this.livello.getSalvataggio());
-                    risultato = DBUtil.executeQuery(queryInserimento);
-                    Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-                    if(!risultato.equals("ERROR"))
-                        toast.setText(this.getResources().getString(R.string.editor_activity_conferma_salvataggio));
-                    else
-                        toast.setText(this.getResources().getString(R.string.editor_activity_errore_salvataggio));
-                    toast.show();
-                } else {
-                    //Se esiste un altro elemento si controlla il proprietario
-                    String queryControlloProprietario = DBUtil.repalceJolly(this.QUERY_CONTROLLO_PROPRIETARIO_LIVELLO, "NAME", this.livello.getNomeLivello());
-                    risultato = DBUtil.executeQuery(queryControlloProprietario);
-                    if(!risultato.equals("ERROR") && new JSONObject(risultato).getString("EMAIL").equals(recordSalvataggio.getEmail()))  {
-                        //Se il precedente salvataggio è del giocatore chiede la sovrascrizione
-                        this.dialogoSovrascrizione.show();
-                    }else
-                        Toast.makeText(this, this.getResources().getString(R.string.editor_activity_errore_salvataggio), Toast.LENGTH_LONG).show();
-                }
+            if(QueryExecutor.controlloEsistenzaNomeLivello(this.livello.getNomeLivello())){
+                //Se il nome del livello non compare da nessuna parte inserisce il nuovo livello normalmente
+                if(QueryExecutor.inserisciLivello(this.livello.getNomeLivello(), this.livello.getSalvataggio(), recordSalvataggio.getEmail()))
+                    Toast.makeText(this, this.getResources().getString(R.string.editor_activity_conferma_salvataggio), Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(this, this.getResources().getString(R.string.editor_activity_errore_salvataggio), Toast.LENGTH_LONG).show();
+            }else{
+                //Se esiste già un livello chiamato in questo modo, controlla il proprietario ese è l'utente sovrascrive il salvataggio
+                if(recordSalvataggio.getEmail().equals(QueryExecutor.controlloProprietarioLivello(this.livello.getNomeLivello())))
+                    this.dialogoSovrascrizione.show();
+                else
+                    Toast.makeText(this, this.getResources().getString(R.string.editor_activity_errore_salvataggio), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -240,12 +219,10 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
      * @param nome Nome del livello da caricare
      */
     public void caricaLivello(String nome){
-        String query = DBUtil.repalceJolly(this.QUERY_CARICAMENTO_LIVELLO, "NOME", nome);
         try{
-            String esito = DBUtil.executeQuery(query);
-            if(!esito.equals("ERROR")){
-                String dati = new JSONObject(esito).getString("DATI");
-                this.livello = new Livello(dati, true);
+            String esito = QueryExecutor.caricaLivello(nome);
+            if(esito != null){
+                this.livello = new Livello(esito, true);
                 this.layerCorrente = 0;
                 this.impostaStile();
             }
@@ -274,17 +251,12 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if(dialog.equals(this.dialogoSovrascrizione)){
-            String queryAggiornamento = DBUtil.repalceJolly(this.QUERY_AGGIORNAMENTO_LIVELLO, "NOME", this.livello.getNomeLivello());
-            queryAggiornamento = DBUtil.repalceJolly(queryAggiornamento, "DATI", this.livello.getSalvataggio());
-
-            try {
-                String esito = DBUtil.executeQuery(queryAggiornamento);
-                Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-                if(!esito.equals("ERROR"))
-                    toast.setText(this.getResources().getString(R.string.editor_activity_conferma_salvataggio));
+            try{
+                if(QueryExecutor.aggiornaLivello(this.livello.getNomeLivello(), this.livello.getSalvataggio()))
+                    Toast.makeText(this, this.getResources().getString(R.string.editor_activity_conferma_salvataggio), Toast.LENGTH_LONG).show();
                 else
-                    toast.setText(this.getResources().getString(R.string.editor_activity_errore_salvataggio));
-                toast.show();
+                    Toast.makeText(this, this.getResources().getString(R.string.editor_activity_errore_salvataggio), Toast.LENGTH_LONG).show();
+
             }catch (Exception e){e.printStackTrace();}
         }
 

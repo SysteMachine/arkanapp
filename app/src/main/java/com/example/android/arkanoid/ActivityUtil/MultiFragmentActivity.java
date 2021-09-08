@@ -2,191 +2,228 @@ package com.example.android.arkanoid.ActivityUtil;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.example.android.arkanoid.R;
 
-public class MultiFragmentActivity extends AppCompatActivity implements View.OnTouchListener {
-    private boolean fragmentVisible;                //Flag per controllare al momento del ripristino se il fragment era visibile
-    private String fragmentClassName;               //Nome della classe del fragment
-    private int fragmentLayoutId;                   //Id del fragment layout
+public class MultiFragmentActivity extends AppCompatActivity implements View.OnTouchListener, Animator.AnimatorListener {
+    private FrameLayout frameContrasto;                   //Frame di contrasto
+    private FrameLayout containerFragment;                //Contenitore del fragment
 
-    protected Fragment fragmentAttivo;              //Fragment attualmente attivo nel pannello
-    protected FrameLayout frameContrasto;           //Frame di contrasto del' fragment
-    protected FrameLayout fragmentLayout;           //Posizione per posizionare il fragment
-    protected Animator openFragmentAnimation;       //Animazione di apertura del fragment
-    protected Animator closeFragmentAnimation;      //Animazione di chiusura del fragment
+    private boolean fragmentVisible;                      //Flag per il controllo della visibilità del fragment
 
-    /**
-     * Carica gli elementi essenziali per il funzionamento del pannello
-     * @param savedInstanceState statoSalvato
-     */
-    protected void loadEssentials(Bundle savedInstanceState){
-        if(savedInstanceState != null){
-            this.fragmentVisible = savedInstanceState.getBoolean("FRAGMENT_VISIBLE");
-            if(this.fragmentVisible){
-                this.fragmentClassName = savedInstanceState.getString("FRAGMENT_CLASS_NAME");
-                this.fragmentLayoutId = savedInstanceState.getInt("FRAGMENT_LAYOUT_ID");
-                try{
-                    Class classe = Class.forName(this.fragmentClassName);
-                    this.showFragment(classe, false);
-                }catch (Exception e){e.printStackTrace();}
-            }
-        }
+    protected Animator animazioneAperturaFragment;        //Animazione di apertura del fragment
+    protected Animator animazioneChiusuraFragment;        //Animazione di chiusura del fragment
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.animazioneAperturaFragment = AnimatorInflater.loadAnimator(this, R.animator.open_animation);
+        this.animazioneChiusuraFragment = AnimatorInflater.loadAnimator(this, R.animator.close_animation);
+        this.fragmentVisible = false;
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        this.creaStrutturaFragment();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("FRAGMENT_VISIBLE", this.fragmentVisible);
-        outState.putString("FRAGMENT_CLASS_NAME", this.fragmentClassName);
-        outState.putInt("FRAGMENT_LAYOUT_ID", this.fragmentLayoutId);
+        outState.putBoolean("fragmentVisible", this.fragmentVisible);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        this.hideFragment(false, false);
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        this.fragmentVisible = savedInstanceState.getBoolean("fragmentVisible");
+        this.cambiaVisibilitaContainer(fragmentVisible);
     }
 
     /**
-     * Carica il layout dove verrà inserito il fragment
-     * @param id Id del container del fragment
+     * Restituisce la view root dell'activity
+     * @return Restituisce la viewgroup parent
      */
-    protected void loadFragmentLayout(int id){
-        this.fragmentLayout = this.findViewById(id);
-        this.openFragmentAnimation = AnimatorInflater.loadAnimator(this, R.animator.open_animation);
-        this.closeFragmentAnimation = AnimatorInflater.loadAnimator(this, R.animator.close_animation);
+    private ViewGroup getRootView(){
+        return (ViewGroup) ((ViewGroup)this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
     /**
-     * Carica il frame di contrasto
-     * @param id Id del frame di contrasto
+     * Crea il frame di contrasto dell'activity
+     * @return Restituisce un FrameLayout configurato per essere usato come pannello di contrasto
      */
-    protected void loadFrameContrasto(int id){
-        this.frameContrasto = this.findViewById(id);
-        if(this.frameContrasto != null) {
-            this.frameContrasto.setOnTouchListener(this);
+    private FrameLayout creaFrameContrasto(){
+        FrameLayout frameContrasto = new FrameLayout(this);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)frameContrasto.getLayoutParams();
+        if(params != null){
+            params.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            params.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            frameContrasto.setLayoutParams(params);
+        }
+
+        frameContrasto.setId(R.id.frame_contrasto);
+        frameContrasto.setZ(10000);
+        frameContrasto.setAlpha(0.5f);
+        frameContrasto.setBackgroundColor(Color.rgb(0, 0, 0));
+        frameContrasto.setVisibility(View.GONE);
+
+        return frameContrasto;
+    }
+
+    /**
+     * Crea il container del fragment
+     * @return Fragment Container
+     */
+    private FrameLayout creaFragmentContainer(){
+        FrameLayout fragmentContainer = new FrameLayout(this);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)fragmentContainer.getLayoutParams();
+        if(params != null){
+            params.height = 200;
+            params.width = 200;
+            fragmentContainer.setLayoutParams(params);
+        }
+
+        fragmentContainer.setId(R.id.container_fragment);
+        fragmentContainer.setZ(11000);
+        fragmentContainer.setVisibility(View.GONE);
+
+        return fragmentContainer;
+    }
+
+    /**
+     * Crea la struttura che ospita il fragment
+     */
+    private void creaStrutturaFragment(){
+        this.containerFragment = this.creaFragmentContainer();
+        this.frameContrasto = this.creaFrameContrasto();
+        this.frameContrasto.setOnTouchListener(this);
+
+        ViewGroup rootView = this.getRootView();
+        rootView.setId(View.generateViewId());
+        if(rootView != null){
+            ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            this.frameContrasto.setLayoutParams(params);
+            rootView.addView(this.frameContrasto);
+
+            params = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+            params.rightMargin = this.getResources().getDimensionPixelSize(R.dimen.ten_dp);
+            params.leftMargin = this.getResources().getDimensionPixelSize(R.dimen.ten_dp);
+            params.bottomToBottom = rootView.getId();
+            params.leftToLeft = rootView.getId();
+            params.rightToRight = rootView.getId();
+            params.topToTop = rootView.getId();
+            this.containerFragment.setLayoutParams(params);
+            rootView.addView(this.containerFragment);
+        }
+    }
+
+    /**
+     * Cambia la visibilità del container
+     * @param fragmentVisible Visibilità da impostare
+     */
+    private void cambiaVisibilitaContainer(boolean fragmentVisible){
+        if(fragmentVisible){
+            this.frameContrasto.setVisibility(View.VISIBLE);
+            this.containerFragment.setVisibility(View.VISIBLE);
+        }else{
             this.frameContrasto.setVisibility(View.GONE);
+            this.containerFragment.setVisibility(View.GONE);
         }
     }
 
     /**
-     * Rende visibile il fragment
-     * @param classeFragment Classe del fragment da visualizzare
+     * Mostra il fragment sullo schermo
+     * @param fragment Fragment da visualizzare
      * @param showAnimation Flag di visualizzazione dell'animazione
-     * @return Restituisce false se l'operazione fallisce, true in caso contrario
      */
-    public boolean showFragment(Class<? extends Fragment> classeFragment, boolean showAnimation){
-        boolean esito = false;
-
-        if(this.fragmentLayout != null && classeFragment != null){
-            //Se è possibile inserire il fragment
-            try{
-                Fragment fragment = classeFragment.newInstance();
-                if(this.frameContrasto != null)
-                    this.frameContrasto.setVisibility(View.VISIBLE);
-
-                if(showAnimation && this.openFragmentAnimation != null){
-                    this.openFragmentAnimation.setTarget(this.fragmentLayout);
-                    this.openFragmentAnimation.start();
-                }
-
+    public void mostraFragment(Fragment fragment, boolean showAnimation){
+        if(!this.fragmentVisible){
+            if(fragment != null){
+                fragment.setRetainInstance(true);
                 this.getSupportFragmentManager()
                         .beginTransaction()
-                        .add(this.fragmentLayout.getId(), fragment)
+                        .replace(this.containerFragment.getId(), fragment)
                         .commit();
-
-                this.fragmentAttivo = fragment;
                 this.fragmentVisible = true;
-                this.fragmentClassName = this.fragmentAttivo.getClass().getName();
-                this.fragmentLayoutId = this.fragmentLayout.getId();
-                esito = true;
-            }catch (Exception e){e.printStackTrace();}
-        }
-
-        return esito;
-    }
-
-    /**
-     * Nasconde il fragment
-     * @param showAnimation Flag di visualizzazione dell'animazione
-     * @param resetStatus Flag per il reset dello status del fragment
-     */
-    public void hideFragment(boolean showAnimation, boolean resetStatus){
-        if(this.fragmentAttivo != null){
-            //Solo se il fragment è visibile
-            if(showAnimation && this.closeFragmentAnimation != null && this.fragmentLayout != null){
-                //Se è possibile eseguire l'animazione e l'utente l'ha richiesta la esegue
-                class AL extends AbstractAnimatorListener{
-                    private MultiFragmentActivity activity;
-                    public AL(MultiFragmentActivity activity){
-                        this.activity = activity;
-                    }
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if(this.activity.frameContrasto != null)
-                            this.activity.frameContrasto.setVisibility(View.GONE);
-                        this.activity.getSupportFragmentManager()
-                                .beginTransaction()
-                                .remove(this.activity.fragmentAttivo)
-                                .commit();
-                        if(resetStatus){
-                            this.activity.fragmentVisible = false;
-                            this.activity.fragmentAttivo = null;
-                            this.activity.fragmentLayoutId = -1;
-                            this.activity.fragmentClassName = null;
-                        }
-                    }
-                }
-                this.closeFragmentAnimation.setTarget(this.fragmentLayout);
-                this.closeFragmentAnimation.removeAllListeners();
-                this.closeFragmentAnimation.addListener(new AL(this));
-                this.closeFragmentAnimation.start();
-            }else{
-                //Altrimenti nasconde semplicemente il fragment
-                if(this.frameContrasto != null)
-                    this.frameContrasto.setVisibility(View.GONE);
-                this.getSupportFragmentManager()
-                        .beginTransaction()
-                        .remove(this.fragmentAttivo)
-                        .commit();
-                if(resetStatus){
-                    this.fragmentVisible = false;
-                    this.fragmentAttivo = null;
-                    this.fragmentLayoutId = -1;
-                    this.fragmentClassName = null;
+                this.cambiaVisibilitaContainer(this.fragmentVisible);
+                if(showAnimation){
+                    this.animazioneAperturaFragment.setTarget(this.containerFragment);
+                    this.animazioneAperturaFragment.start();
                 }
             }
         }
     }
 
     /**
-     * Nasconde il fragment
-     * @param showAnimation Flag di visualizzazione dell'animazione
+     * Rimuove dal container il fragment attivo
      */
-    public void hideFragment(boolean showAnimation){
-        this.hideFragment(showAnimation, true);
+    private void rimuoviFragmentAttivo(){
+        Fragment fragmentAttivo = this.getSupportFragmentManager().findFragmentById(this.containerFragment.getId());
+        if(fragmentAttivo != null){
+            this.getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(fragmentAttivo)
+                    .commit();
+        }
     }
 
     /**
-     * Evento invocato ogni volta in cui il frame di contrasto viene toccato
-     * @param v Vista che viene toccata
-     * @param e Evento
+     * Nasconde il fragment attivo sul pannello
+     * @param showAnimation Flad di animazione visualizzata
      */
-    protected void onFrameContrastoTouched(View v, MotionEvent e){
-        if(v.equals(this.frameContrasto) && e.getAction() == MotionEvent.ACTION_UP)
-            this.hideFragment(true);
+    public void nascondiFragment(boolean showAnimation){
+        if(this.fragmentVisible){
+            if(!showAnimation){
+                this.rimuoviFragmentAttivo();
+                this.fragmentVisible = false;
+            }else{
+                this.animazioneChiusuraFragment.removeAllListeners();
+                this.animazioneChiusuraFragment.addListener(this);
+                this.animazioneChiusuraFragment.setTarget(this.containerFragment);
+                this.animazioneChiusuraFragment.start();
+            }
+        }
     }
+
+    /**
+     * Evento invocato quando viene toccato il frame di contrasto
+     * @param event Evento
+     */
+    public void frameContrastoToccato(MotionEvent event){}
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        this.onFrameContrastoTouched(v, event);
+        v.performClick();
+        if(v.equals(this.frameContrasto))
+            this.frameContrastoToccato(event);
         return true;
     }
+
+    //Gestione delle animazioni
+
+    @Override
+    public void onAnimationStart(Animator animation) {}
+
+    @Override
+    public void onAnimationEnd(Animator animation) {
+        this.rimuoviFragmentAttivo();
+        this.fragmentVisible = false;
+        this.cambiaVisibilitaContainer(this.fragmentVisible);
+    }
+
+    @Override
+    public void onAnimationCancel(Animator animation) {}
+
+    @Override
+    public void onAnimationRepeat(Animator animation) {}
 }

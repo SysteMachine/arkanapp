@@ -27,6 +27,7 @@ public class selezione_modalita_fragment extends Fragment implements View.OnTouc
         super.onViewCreated(view, savedInstanceState);
 
         this.modalitaClassicaButton = view.findViewById(R.id.pulsanteModalitaClassica);
+
         if(this.modalitaClassicaButton != null)
             this.modalitaClassicaButton.setOnClickListener(this);
     }

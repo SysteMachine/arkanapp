@@ -186,26 +186,4 @@
         android:translationZ="100dp"
         android:visibility="gone"/>
 
-    <FrameLayout
-        android:id="@+id/frameContrasto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#000000"
-        android:alpha="0.5"
-        android:visibility="gone"
-        android:translationZ="200dp" />
-
-    <FrameLayout
-        android:id="@+id/containerFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:translationZ="300dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="20dp">
-
-    </FrameLayout>
-
 </android.support.constraint.ConstraintLayout>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="frame_contrasto" type="id"></item>
+    <item name="container_fragment" type="id"></item>
+    <dimen name="ten_dp">10dp</dimen>
+</resources>

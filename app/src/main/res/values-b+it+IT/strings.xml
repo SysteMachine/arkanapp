@@ -16,7 +16,11 @@
     <string name="singin_fragment_registrazione">Registrati</string>
     <string name="singin_fragment_errore_registrazione">Errore di registrazione</string>
 
+    <string name="main_menu_logout">Messaggio logout</string>
+    <string name="main_menu_logout_descrizione">Sei sicuro?</string>
     <string name="main_menu_activity_gioca">Gioca</string>
+    <string name="main_menu_activity_multigiocatore">Multigiocatore</string>
+    <string name="main_menu_activity_crediti">Crediti</string>
     <string name="main_menu_activity_impostazioni">Impostazioni</string>
     <string name="main_menu_activity_creazioni">Creazioni</string>
     <string name="main_menu_activity_classifica">Classifica</string>

@@ -11,7 +11,7 @@
     tools:context=".main_menu_activity">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/titoloImmagine"
         android:layout_width="355dp"
         android:layout_height="41dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,13 +22,15 @@
         app:srcCompat="@drawable/arkanoid_scritta" />
 
     <TableLayout
+        android:id="@+id/tableContainer"
         android:layout_width="match_parent"
         android:layout_height="534dp"
-        android:weightSum="3"
+        android:weightSum="8"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.263"
-        tools:layout_editor_absoluteX="16dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titoloImmagine"
+        app:layout_constraintVertical_bias="0.25">
 
         <TableRow style="@style/main_menu_row_style">
 
@@ -36,25 +38,22 @@
                 android:id="@+id/pulsanteGioca"
                 style="@style/buttonStyle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/main_menu_activity_gioca"
                 android:textSize="25sp" />
         </TableRow>
 
-        <TableRow
-            style="@style/main_menu_row_style"
-            android:visibility="visible">
+        <TableRow style="@style/main_menu_row_style">
 
             <Button
-                android:id="@+id/pulsanteImpostazioni"
+                android:id="@+id/pulsanteMultigiocatore"
                 style="@style/buttonStyle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/main_menu_activity_impostazioni"
-                android:textSize="25sp"
-                android:visibility="visible" />
+                android:text="@string/main_menu_activity_multigiocatore"
+                android:textSize="25sp" />
         </TableRow>
 
         <TableRow style="@style/main_menu_row_style">
@@ -63,9 +62,21 @@
                 android:id="@+id/pulsanteCreazioni"
                 style="@style/buttonStyle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/main_menu_activity_creazioni"
+                android:textSize="25sp" />
+        </TableRow>
+
+        <TableRow style="@style/main_menu_row_style">
+
+            <Button
+                android:id="@+id/pulsanteEditor"
+                style="@style/buttonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Editor"
                 android:textSize="25sp" />
         </TableRow>
 
@@ -75,38 +86,49 @@
                 android:id="@+id/pulsanteClassifica"
                 style="@style/buttonStyle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="@string/main_menu_activity_classifica"
                 android:textSize="25sp" />
+        </TableRow>
 
+        <TableRow style="@style/main_menu_row_style">
+
+            <Button
+                android:id="@+id/pulsanteImpostazioni"
+                style="@style/buttonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/main_menu_activity_impostazioni"
+                android:textSize="25sp"
+                android:visibility="visible" />
+        </TableRow>
+
+        <TableRow style="@style/main_menu_row_style">
+
+            <Button
+                android:id="@+id/pulsanteCrediti"
+                style="@style/buttonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/main_menu_activity_crediti"
+                android:textSize="25sp"
+                android:visibility="visible" />
+        </TableRow>
+
+        <TableRow style="@style/main_menu_row_style">
+
+            <Button
+                android:id="@+id/pulsanteLogout"
+                style="@style/buttonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Logout"
+                android:textSize="25sp"
+                android:visibility="visible" />
         </TableRow>
     </TableLayout>
-
-    <FrameLayout
-        android:id="@+id/frameContrasto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.5"
-        android:background="#000000"
-        android:translationZ="100dp"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="10dp"
-        tools:layout_editor_absoluteY="166dp">
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/containerFragment"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:translationZ="200dp">
-
-    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

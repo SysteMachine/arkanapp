@@ -56,34 +56,66 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modalita);
-        this.loadEssentials(savedInstanceState);
-        if(savedInstanceState != null){
-            //Ripristiniamo lo stato della vista
-            this.difficoltaSelezionata = savedInstanceState.getInt("difficoltaSelezionata", 0);
-            this.modalitaControllo = savedInstanceState.getInt("modalitaControllo", 0);
-            this.codiceModalitaSelezionata = savedInstanceState.getInt("codiceModalitaSelezionata", 0);
-            this.inGame = savedInstanceState.getBoolean("inGame");
-            this.inPause = savedInstanceState.getBoolean("inPause");
-            this.gameOver = savedInstanceState.getBoolean("gameOver");
-        }else{
-            //Inizializzazione della vista
-            this.difficoltaSelezionata = 0;
-            this.modalitaControllo = 0;
-            this.codiceModalitaSelezionata = 0;
-            this.inGame = false;
-            this.inPause = false;
-            this.gameOver = false;
-            if(this.getIntent() != null)
-                this.codiceModalitaSelezionata = this.getIntent().getIntExtra(modalita_activity.EXTRA_MODALITA, 0);
-        }
 
-        this.impostaStatoComponentiGrafiche();
+        this.difficoltaSelezionata = 0;
+        this.modalitaControllo = 0;
+        this.codiceModalitaSelezionata = 0;
+        this.inGame = false;
+        this.inPause = false;
+        this.gameOver = false;
+        if(this.getIntent() != null)
+            this.codiceModalitaSelezionata = this.getIntent().getIntExtra(modalita_activity.EXTRA_MODALITA, 0);
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        this.difficoltaSelezionata = savedInstanceState.getInt("difficoltaSelezionata", 0);
+        this.modalitaControllo = savedInstanceState.getInt("modalitaControllo", 0);
+        this.codiceModalitaSelezionata = savedInstanceState.getInt("codiceModalitaSelezionata", 0);
+        this.inGame = savedInstanceState.getBoolean("inGame");
+        this.inPause = savedInstanceState.getBoolean("inPause");
+        this.gameOver = savedInstanceState.getBoolean("gameOver");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        caricaRiferimentoView();
+        this.impostaStatoComponentiGrafiche();
+
+        this.gameLoop = new GameLoop(this, 60, 720, 1280);
+        if(this.containerModalita != null)
+            this.containerModalita.addView(this.gameLoop);
+        this.gameLoop.start();
+
+        this.ripristinaUltimoStato();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.gameLoop.stop();
+        if(this.containerModalita != null)
+            this.containerModalita.removeView(this.gameLoop);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("codiceModalitaSelezionata", this.codiceModalitaSelezionata);
+        outState.putInt("difficoltaSelezionata", this.difficoltaSelezionata);
+        outState.putInt("modalitaControllo", this.modalitaControllo);
+        outState.putBoolean("inPause", this.inPause);
+        outState.putBoolean("inGame", this.inGame);
+        outState.putBoolean("gameOver", this.gameOver);
+    }
+
 
     /**
      * Carica il riferimento alle view presenti all'interno dell'activity
      */
-    protected void caricaRiferimentoView(){
+    private void caricaRiferimentoView(){
         this.labelModalita = this.findViewById(R.id.nomeModalitaLabel);
         this.modalitaFacileButton = this.findViewById(R.id.difficoltaFacileButton);
         this.modalitaNormaleButton = this.findViewById(R.id.difficoltaNormaleButton);
@@ -108,50 +140,11 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
         this.containerModalita = this.findViewById(R.id.containerModalita);
     }
 
-    @Override
-    protected void loadEssentials(Bundle savedInstanceState) {
-        //Viene caricato il fragment layout e il frame di contrasto
-        this.caricaRiferimentoView();
-        this.loadFragmentLayout(R.id.containerFragment);
-        this.loadFrameContrasto(R.id.frameContrasto);
-        super.loadEssentials(savedInstanceState);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        this.gameLoop = new GameLoop(this, 60, 720, 1280);
-        this.gameLoop.start();
-        if(this.containerModalita != null)
-            this.containerModalita.addView(this.gameLoop);
-        this.ripristinaUltimoStato();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.gameLoop.stop();
-        if(this.containerModalita != null)
-            this.containerModalita.removeView(this.gameLoop);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("codiceModalitaSelezionata", this.codiceModalitaSelezionata);
-        outState.putInt("difficoltaSelezionata", this.difficoltaSelezionata);
-        outState.putInt("modalitaControllo", this.modalitaControllo);
-        outState.putBoolean("inPause", this.inPause);
-        outState.putBoolean("inGame", this.inGame);
-        outState.putBoolean("gameOver", this.gameOver);
-    }
-
     /**
      * Ripristina l'ultimo stato del gioco
      */
     private void ripristinaUltimoStato(){
         if(this.inGame && this.gameLoop != null){
-            System.out.println("A");
             if(this.containerModalita != null)
                 this.containerModalita.setVisibility(View.VISIBLE);
             if(modalita_activity.modalita != null)
@@ -251,7 +244,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
      * Restituisce la classe della modalità che deve essere caricata
      * @return Restituisce la classe della modalità oppure null
      */
-    protected Class<? extends AbstractModalita> getModalita(){
+    private Class<? extends AbstractModalita> getClasseModalita(){
         Class<? extends AbstractModalita> classeModalita = null;
 
         switch (this.codiceModalitaSelezionata){
@@ -267,7 +260,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
      * Operazione di caricamento della modalità
      */
     public void caricaModalita(){
-        Class<? extends  AbstractModalita> classe = this.getModalita();
+        Class<? extends  AbstractModalita> classe = this.getClasseModalita();
         if(classe != null){
             try{
                 Constructor<? extends AbstractModalita> costruttore = classe.getConstructor(Stile.class, GameStatus.class);
@@ -290,10 +283,10 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     /**
      * Mostra il menu di GameOVer
      */
-    protected void mostraMenuGameOver(){
+    public void mostraMenuGameOver(){
         if(this.inGame && !this.gameOver){
-            this.hideFragment(false);
-            this.showFragment(game_over_fragment.class, true);
+            this.nascondiFragment(false);
+            this.mostraFragment(new game_over_fragment(), true);
             if(this.gameLoop != null)
                 this.gameLoop.setUpdateRunning(false);
             this.gameOver = true;
@@ -305,7 +298,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
      */
     public void nascondiMenuGameOver(){
         if(this.inGame && this.gameOver){
-            this.hideFragment(true);
+            this.nascondiFragment(true);
             if(this.gameLoop != null)
                 this.gameLoop.setUpdateRunning(true);
             this.gameOver = false;
@@ -315,10 +308,9 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     /**
      * Mostra il menu di pausa
      */
-    protected void mostraMenuPausa(){
+    public void mostraMenuPausa(){
         if(this.inGame && !this.inPause && !this.gameOver){
-            this.hideFragment(false);
-            this.showFragment(pausa_fragment.class, true);
+            this.mostraFragment(new pausa_fragment(), true);
             if(this.gameLoop != null)
                 this.gameLoop.setUpdateRunning(false);
             this.inPause = true;
@@ -330,7 +322,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
      */
     public void nascondiMenuPausa(){
         if(this.inPause && this.inGame){
-            this.hideFragment(true);
+            this.nascondiFragment(true);
             if(this.gameLoop != null)
                 this.gameLoop.setUpdateRunning(true);
             this.inPause = false;
@@ -369,7 +361,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     }
 
     @Override
-    protected void onFrameContrastoTouched(View v, MotionEvent e) {
+    public void frameContrastoToccato(MotionEvent event) {
         if(this.inPause && !this.gameOver)
             this.nascondiMenuPausa();
     }

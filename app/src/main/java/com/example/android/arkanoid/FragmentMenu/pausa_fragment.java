@@ -23,14 +23,15 @@ public class pausa_fragment extends Fragment implements View.OnClickListener, Vi
         view.setOnTouchListener(this);
 
         this.audioButton = view.findViewById(R.id.audioButton);
+        this.riprendiButton = view.findViewById(R.id.riprendiButton);
+        this.esciButton = view.findViewById(R.id.esciButton);
+
         if(this.audioButton != null) {
             this.audioButton.setOnClickListener(this);
             this.audioButton.setChecked(AudioUtil.getGlobalAudio() == 0);
         }
-        this.riprendiButton = view.findViewById(R.id.riprendiButton);
         if(this.riprendiButton != null)
             this.riprendiButton.setOnClickListener(this);
-        this.esciButton = view.findViewById(R.id.esciButton);
         if(this.esciButton != null)
             this.esciButton.setOnClickListener(this);
 
@@ -59,6 +60,7 @@ public class pausa_fragment extends Fragment implements View.OnClickListener, Vi
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        v.performClick();
         return true;
     }
 }

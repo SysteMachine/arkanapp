@@ -2,6 +2,7 @@ package com.example.android.arkanoid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,14 +24,6 @@ public class login_activity extends MultiFragmentActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_login);
-        this.loadEssentials(savedInstanceState);
-    }
-
-    @Override
-    protected void loadEssentials(Bundle savedInstanceState) {
-        this.loadFragmentLayout(R.id.fragmentRegistrazione);
-        this.loadFrameContrasto(R.id.frameContrasto);
-        super.loadEssentials(savedInstanceState);
     }
 
     /**
@@ -108,7 +101,7 @@ public class login_activity extends MultiFragmentActivity implements View.OnClic
         }
 
         if(v.equals(this.singinButton))
-            this.showFragment(singin_fragment.class, true);
+            this.mostraFragment(new singin_fragment(), true);
 
         if(v.equals(this.singinGuestButton)){
             //Entriamo come guest
@@ -116,6 +109,11 @@ public class login_activity extends MultiFragmentActivity implements View.OnClic
             intent.putExtra(LoginController.ACCOUNT_LOGIN_TYPE, LoginController.TYPE_GUEST);
             this.startActivity(intent);
         }
+    }
+
+    @Override
+    public void frameContrastoToccato(MotionEvent event) {
+        this.nascondiFragment(true);
     }
 
     @Override
