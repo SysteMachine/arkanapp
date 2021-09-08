@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 
 import com.example.android.arkanoid.ActivityUtil.MultiFragmentActivity;
 import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
@@ -80,9 +81,9 @@ public class main_menu_activity extends MultiFragmentActivity implements View.On
         RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this);
         if(!recordSalvataggio.isLogin()){
             //Se l'utente non ha fatto il login nascondiamo dei pulsanti
-            this.pulsanteMultigiocatore.setVisibility(View.GONE);
-            this.pulsanteEditor.setVisibility(View.GONE);
-            this.pulsanteLogout.setVisibility(View.GONE);
+            ((TableRow)this.pulsanteMultigiocatore.getParent()).setVisibility(View.GONE);
+            ((TableRow)this.pulsanteEditor.getParent()).setVisibility(View.GONE);
+            ((TableRow)this.pulsanteLogout.getParent()).setVisibility(View.GONE);
             TableLayout tl = this.findViewById(R.id.tableContainer);
             if(tl != null)
                 tl.setWeightSum(5);
