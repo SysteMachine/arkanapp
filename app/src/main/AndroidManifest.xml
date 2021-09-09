@@ -13,10 +13,15 @@
         android:roundIcon="@drawable/redball"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ActivityUtil.SoundControlActivity"></activity>
+        <activity
+            android:name=".crediti_activity"
+            android:theme="@style/fullScreenStyle"/>
+        <activity
+            android:name=".classifica_activity"
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".editor_activity"
-            android:theme="@style/fullScreenStyle"></activity>
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".main_menu_activity"
             android:theme="@style/fullScreenStyle" />

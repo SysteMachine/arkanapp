@@ -22,7 +22,8 @@ public class QueryExecutor {
     private static String QUERY_AGGIORNAMENTO_LIVELLO = "UPDATE creazioni SET creazioni_dati = DATI WHERE creazioni_nome LIKE NOME";
     private static String QUERY_CARICAMENTO_DATI_LIVELLO = "SELECT creazioni_dati AS DATI FROM creazioni WHERE creazioni_nome LIKE NOME";
     private static String QUERY_RECUPERO_LIVELLI_CREATI = "SELECT creazioni_nome AS NOME FROM creazioni WHERE creazioni_user_email LIKE EMAIL";
-
+    private static String QUERY_RECUPERO_CLASSIFICA = "SELECT punteggio_punteggio AS PUNTEGGIO, user_username AS USERNAME, punteggio_modalita AS MODALITA from punteggio INNER JOIN user ON punteggio_user_email = user_email ORDER BY punteggio_punteggio DESC LIMIT 20";
+    private static String QUERY_RECUPERO_PUNTEGGIO_MASSIMO_CLASSIFICA_GIOCATORE = "SELECT max(punteggio_punteggio) AS MASSIMO, punteggio_modalita AS MODALITA FROM punteggio WHERE punteggio_user_email LIKE EMAIL";
 
     public static boolean pubblicaPunteggio(int punteggio, int codiceModalita, String email) throws Exception{
         boolean esito = false;
@@ -186,5 +187,48 @@ public class QueryExecutor {
         }
 
         return esito.toArray(new String[0]);
+    }
+
+    /**
+     * Recupera la classifica e restituisce l'arraydegli elementi
+     */
+    public static String[] recuperaClassifica() throws Exception{
+        ArrayList<String> esito =  new ArrayList<>();
+
+        String esitoQuery = DBUtil.executeQuery(QueryExecutor.QUERY_RECUPERO_CLASSIFICA);
+        if(!esitoQuery.equals("ERROR")){
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(esitoQuery.getBytes()) ) );
+            String riga;
+            int contatore = 1;
+            while((riga = reader.readLine()) != null){
+                JSONObject jsonObject = new JSONObject(riga);
+                int punteggio = jsonObject.getInt("PUNTEGGIO");
+                String username = jsonObject.getString("USERNAME");
+                int modalita = jsonObject.getInt("MODALITA");
+
+                esito.add(contatore + ") " + username + " MOD(" + modalita + "):" + punteggio + "p");
+                contatore++;
+            }
+        }
+
+        return esito.toArray(new String[0]);
+    }
+
+    /**
+     * Restituisce il punteggio massimo del giocatore
+     */
+    public static String recuperoPunteggioMassimoGiocatore(String email) throws Exception{
+        String esito = null;
+
+        String query = DBUtil.repalceJolly(QueryExecutor.QUERY_RECUPERO_PUNTEGGIO_MASSIMO_CLASSIFICA_GIOCATORE, "EMAIL", email);
+        String esitoQuery = DBUtil.executeQuery(query);
+        if(!esitoQuery.equals("ERROR") && !esitoQuery.equals("")) {
+            JSONObject jsonObject = new JSONObject(esitoQuery);
+            int massimo = jsonObject.getInt("MASSIMO");
+            int modalita = jsonObject.getInt("MODALITA");
+            esito = "MOD(" + modalita + "): " + massimo + "p";
+        }
+
+        return esito;
     }
 }

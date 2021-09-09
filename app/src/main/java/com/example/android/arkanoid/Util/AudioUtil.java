@@ -36,6 +36,11 @@ public class AudioUtil {
             AudioUtil.audio.put(idAudio, mediaPlayer);
             AudioUtil.associazioneTipo.put(idAudio, tipoRisorsa);
 
+            if(tipoRisorsa == AudioUtil.MUSICA)
+                mediaPlayer.setVolume(AudioUtil.musicaAudio / 100.0f, AudioUtil.musicaAudio / 100.0f);
+            else
+                mediaPlayer.setVolume(AudioUtil.effettiAudio / 100.0f, AudioUtil.effettiAudio / 100.0f);
+
             esito = true;
         }
 

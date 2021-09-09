@@ -66,6 +66,7 @@
     <string name="editor_activity_caricamento_descrizione">Vuoi caricare questo livello?</string>
 
     <string name="info_fragment_nome_livello">Nome livello</string>
+    <string name="info_fragment_nome_layer">Stage</string>
     <string name="info_fragment_selected_layer">Strato selezionato</string>
     <string name="info_fragment_selected_style">Stile selzionato</string>
     <string name="info_fragment_livelli_creati">Creazioni</string>
@@ -82,4 +83,9 @@
     <string name="parametri_fragment_punti_partita">Punti per strato</string>
 
     <string name="test_fragment_riavvia">Riavvia</string>
+
+    <string name="crediti_activity_intro">App creata da:</string>
+
+    <string name="impostazioni_fragment_volume_musica">Volume musica</string>
+    <string name="impostazioni_fragment_volume_effetti">Volume effetti</string>
 </resources>

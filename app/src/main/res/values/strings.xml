@@ -84,4 +84,9 @@
 
     <string name="test_fragment_riavvia">Reload</string>
 
+    <string name="crediti_activity_intro">App created by:</string>
+
+    <string name="impostazioni_fragment_volume_musica">Music volume</string>
+    <string name="impostazioni_fragment_volume_effetti">Effects volume</string>
+
 </resources>

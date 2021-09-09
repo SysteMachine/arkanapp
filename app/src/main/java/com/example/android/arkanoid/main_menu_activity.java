@@ -12,6 +12,7 @@ import android.widget.TableRow;
 
 import com.example.android.arkanoid.ActivityUtil.MultiFragmentActivity;
 import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
+import com.example.android.arkanoid.FragmentMenu.impostazioni_fragment;
 import com.example.android.arkanoid.FragmentMenu.selezione_modalita_fragment;
 
 public class main_menu_activity extends MultiFragmentActivity implements View.OnClickListener, DialogInterface.OnClickListener {
@@ -123,6 +124,12 @@ public class main_menu_activity extends MultiFragmentActivity implements View.On
             this.dialogoLogout.show();
         if(v.equals(this.pulsanteEditor))
             this.startActivity(new Intent(this, editor_activity.class));
+        if(v.equals(this.pulsanteClassifica))
+            this.startActivity(new Intent(this, classifica_activity.class));
+        if(v.equals(this.pulsanteCrediti))
+            this.startActivity(new Intent(this, crediti_activity.class));
+        if(v.equals(this.pulsanteImpostazioni))
+            this.mostraFragment(new impostazioni_fragment(), true);
     }
 
     @Override
