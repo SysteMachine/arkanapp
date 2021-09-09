@@ -209,14 +209,13 @@ public class ModalitaClassica extends AbstractModalita{
     @Override
     protected void inizializzazioneAudio() {
         AudioUtil.clear();
-        AudioUtil.loadAudio("background", this.stile.getSuonoBackground(), this.owner.getContext());
-        AudioUtil.getMediaPlayer("background").setLooping(true);
-        AudioUtil.getMediaPlayer("background").start();
+        AudioUtil.loadAudio("background", this.stile.getSuonoBackground(), AudioUtil.MUSICA, true, this.owner.getContext());
+        AudioUtil.avviaAudio("background");
 
-        AudioUtil.loadAudio("hit_brick", this.stile.getSuonoHitBrick(), this.owner.getContext());
-        AudioUtil.loadAudio("hit_paddle", this.stile.getSuonoHitPaddle(), this.owner.getContext());
-        AudioUtil.loadAudio("level_complete", this.stile.getSuonoLevelComplete(), this.owner.getContext());
-        AudioUtil.loadAudio("life_lost", this.stile.getSuonoLifeLost(), this.owner.getContext());
+        AudioUtil.loadAudio("hit_brick", this.stile.getSuonoHitBrick(), AudioUtil.EFFETTO, false, this.owner.getContext());
+        AudioUtil.loadAudio("hit_paddle", this.stile.getSuonoHitPaddle(), AudioUtil.EFFETTO, false,this.owner.getContext());
+        AudioUtil.loadAudio("level_complete", this.stile.getSuonoLevelComplete(), AudioUtil.EFFETTO, false,this.owner.getContext());
+        AudioUtil.loadAudio("life_lost", this.stile.getSuonoLifeLost(), AudioUtil.EFFETTO, false,this.owner.getContext());
     }
 
     @Override

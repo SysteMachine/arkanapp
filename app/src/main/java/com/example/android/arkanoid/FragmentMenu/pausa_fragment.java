@@ -28,7 +28,7 @@ public class pausa_fragment extends Fragment implements View.OnClickListener, Vi
 
         if(this.audioButton != null) {
             this.audioButton.setOnClickListener(this);
-            this.audioButton.setChecked(AudioUtil.getGlobalAudio() == 0);
+            this.audioButton.setChecked(AudioUtil.getVolumeMusicaAudio() == 0);
         }
         if(this.riprendiButton != null)
             this.riprendiButton.setOnClickListener(this);
@@ -43,9 +43,9 @@ public class pausa_fragment extends Fragment implements View.OnClickListener, Vi
         if(v.equals(this.audioButton)){
             //Pulsante dell'audio
             if(this.audioButton.isChecked())
-                AudioUtil.setGlobalAudio(0);
+                AudioUtil.setVolumeAudioMusica(0);
             else
-                AudioUtil.setGlobalAudio(100);
+                AudioUtil.setVolumeAudioMusica(100);
         }
 
         if(v.equals(this.riprendiButton) && this.getActivity() != null){

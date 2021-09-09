@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,7 @@ import android.widget.FrameLayout;
 
 import com.example.android.arkanoid.R;
 
-public class MultiFragmentActivity extends AppCompatActivity implements View.OnTouchListener, Animator.AnimatorListener {
+public class MultiFragmentActivity extends SoundControlActivity implements View.OnTouchListener, Animator.AnimatorListener {
     private FrameLayout frameContrasto;                   //Frame di contrasto
     private FrameLayout containerFragment;                //Contenitore del fragment
 

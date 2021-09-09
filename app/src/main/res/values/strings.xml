@@ -66,6 +66,7 @@
     <string name="editor_activity_caricamento_descrizione">Do you want load this level?</string>
 
     <string name="info_fragment_nome_livello">Level name</string>
+    <string name="info_fragment_nome_layer">Stage</string>
     <string name="info_fragment_selected_layer">Selected layer</string>
     <string name="info_fragment_selected_style">Selected style</string>
     <string name="info_fragment_livelli_creati">Created</string>

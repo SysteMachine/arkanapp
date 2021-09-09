@@ -334,11 +334,10 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
      */
     public void tornaAlMenu(){
         Intent intent = new Intent(this, main_menu_activity.class);
-        AudioUtil.setGlobalAudio(100);
+        AudioUtil.setVolumeAudioMusica(100);
         AudioUtil.clear();
-        AudioUtil.loadAudio("background_music", R.raw.background_music, this);
-        AudioUtil.getMediaPlayer("background_music").setLooping(true);
-        AudioUtil.getMediaPlayer("background_music").start();
+        AudioUtil.loadAudio("background_music", R.raw.background_music, AudioUtil.MUSICA, true, this);
+        AudioUtil.avviaAudio("background_music");
         this.startActivity(intent);
     }
 

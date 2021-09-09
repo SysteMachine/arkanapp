@@ -6,8 +6,6 @@ import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,25 +25,16 @@ import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
 import com.example.android.arkanoid.R;
-import com.example.android.arkanoid.Util.DBUtil;
+import com.example.android.arkanoid.Util.QueryExecutor;
 import com.example.android.arkanoid.editor_activity;
-
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 public class info_fragment extends Fragment implements
         View.OnTouchListener,
         View.OnClickListener,
         AdapterView.OnItemSelectedListener,
         AdapterView.OnItemLongClickListener,
-        TextWatcher,
-        DialogInterface.OnClickListener{
-    private final String QUERY_CONTROLLO_NOME_LIVELLO = "SELECT COUNT(*) AS N FROM creazioni WHERE creazioni.creazioni_nome LIKE NAME AND creazioni_user_email <> EMAIL";
-    private final String QUERY_LIVELLI_CREATI = "SELECT creazioni_nome AS NOME FROM creazioni WHERE creazioni_user_email LIKE EMAIL";
+        DialogInterface.OnClickListener,
+        Runnable{
 
     private EditText nomeLivelloField;
     private Spinner spinnerLayer;
@@ -58,12 +47,31 @@ public class info_fragment extends Fragment implements
     private AlertDialog dialogoCaricamentoLivello;
 
     private String selectedLevel;                           //Livello da caricare selezionato
+    private boolean runningControllo;                       //Flag per il thread di controllo
+    private Thread threadControllo;                         //Thread di controllo
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        this.runningControllo = true;
+        this.threadControllo = new Thread(this);
+        this.threadControllo.start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        this.runningControllo = false;
+        try{
+            this.threadControllo.join();
+        }catch (Exception e){e.printStackTrace();}
     }
 
     @Override
@@ -105,10 +113,8 @@ public class info_fragment extends Fragment implements
             this.aggiungiButton.setOnClickListener(this);
         if (this.rimuoviButton != null)
             this.rimuoviButton.setOnClickListener(this);
-        if (this.nomeLivelloField != null) {
-            this.nomeLivelloField.addTextChangedListener(this);
+        if (this.nomeLivelloField != null)
             this.nomeLivelloField.setText(this.activity().getLivello().getNomeLivello());
-        }
 
         return view;
     }
@@ -135,7 +141,7 @@ public class info_fragment extends Fragment implements
             int numeroLivelli = activity.getLivello().getNLivelli();
             String[] layerString = new String[numeroLivelli];
             for (int i = 0; i < numeroLivelli; i++)
-                layerString[i] = "Layer: " + i;
+                layerString[i] = this.getResources().getString(R.string.info_fragment_nome_layer) + ": " + (i + 1);
             if (this.spinnerLayer != null) {
                 this.spinnerLayer.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, layerString));
                 this.spinnerLayer.setSelection(activity.getLayerCorrente());
@@ -170,17 +176,9 @@ public class info_fragment extends Fragment implements
     private void configuraListaLivelliCreati() {
         if (this.listaLivelliCreati != null) {
             RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this.getContext());
-            String query = DBUtil.repalceJolly(this.QUERY_LIVELLI_CREATI, "EMAIL", recordSalvataggio.getEmail());
             try{
-                String esito = DBUtil.executeQuery(query);
-                if(!esito.equals("ERROR")){
-                    BufferedReader reader = new BufferedReader(new InputStreamReader( new ByteArrayInputStream(esito.getBytes()) ) );
-                    ArrayList<String> righe = new ArrayList<>();
-                    String riga;
-                    while((riga = reader.readLine()) != null)
-                        righe.add(new JSONObject(riga).getString("NOME"));
-                    this.listaLivelliCreati.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, righe.toArray(new String[0])));
-                }
+                String[] livelliCreati = QueryExecutor.recuperoLivelliCreati(recordSalvataggio.getEmail());
+                this.listaLivelliCreati.setAdapter(new ArrayAdapter<String>(this.getContext(), R.layout.spinner_layout, livelliCreati));
             }catch (Exception e){e.printStackTrace();}
         }
     }
@@ -198,8 +196,10 @@ public class info_fragment extends Fragment implements
 
         if (v.equals(this.aggiungiButton) && activity != null) {
             LayerLivello ll = activity.getLivello().creaLayerLivello();
-            activity.setLayerCorrente(ll.getPosizioneLivello());
-            this.configuraSpinnerLayer();
+            if(ll != null){
+                activity.setLayerCorrente(ll.getPosizioneLivello());
+                this.configuraSpinnerLayer();
+            }
         }
 
         if (v.equals(this.rimuoviButton) && activity != null) {
@@ -234,39 +234,6 @@ public class info_fragment extends Fragment implements
     public void onNothingSelected(AdapterView<?> parent) { }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        //Eseguiamo un controllo sul testo inserito come nome per verificare che non sia inserito nel database
-        RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this.getContext());
-        String testo = this.nomeLivelloField.getText().toString();
-        String query = DBUtil.repalceJolly(this.QUERY_CONTROLLO_NOME_LIVELLO, "NAME", testo);
-        query = DBUtil.repalceJolly(query, "EMAIL", recordSalvataggio.getEmail());
-        try{
-            String esitoQuery = DBUtil.executeQuery(query);
-            if(!esitoQuery.equals("ERROR")){
-                JSONObject jsonObject = new JSONObject(esitoQuery);
-                if(jsonObject.getInt("N") == 0){
-                    //Se il nome non è mai stato utilizzato allora effettua la modifica
-                    this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontAviableColor));
-                    editor_activity activity = this.activity();
-                    if(activity != null)
-                        activity.getLivello().setNomeLivello(testo);
-                }else{
-                    this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontErrorColor));
-                    editor_activity activity = this.activity();
-                    if(activity != null)
-                        activity.getLivello().setNomeLivello("");
-                }
-            }
-        }catch (Exception e){e.printStackTrace();}
-    }
-
-    @Override
     public void onClick(DialogInterface dialog, int which) {
         if(dialog.equals(this.dialogoEliminazioneLayer)){
             editor_activity activity = this.activity();
@@ -281,6 +248,30 @@ public class info_fragment extends Fragment implements
             editor_activity activity = this.activity();
             if(activity != null)
                 activity.caricaLivello(this.selectedLevel);
+        }
+    }
+
+    @Override
+    public void run() {
+        //Eseguiamo un controllo sul testo inserito come nome per verificare che non sia inserito nel database
+        RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this.getContext());
+        while (this.runningControllo){
+            String nomeLivello= this.nomeLivelloField.getText().toString();
+            try{
+                if(this.nomeLivelloField != null){
+                    editor_activity activity = this.activity();
+                    if(QueryExecutor.controlloEsistenzaNomeLivelloLocale(nomeLivello, recordSalvataggio.getEmail())){
+                        this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontAviableColor));
+                        if(activity != null)
+                            activity.getLivello().setNomeLivello(nomeLivello);
+                    }else{
+                        this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontErrorColor));
+                        if(activity != null)
+                            activity.getLivello().setNomeLivello("");
+                    }
+                }
+                Thread.sleep(200);
+            }catch (Exception e){e.printStackTrace();}
         }
     }
 }

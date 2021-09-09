@@ -2,29 +2,40 @@ package com.example.android.arkanoid.Util;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.provider.MediaStore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AudioUtil {
-    private static int globalAudio = 100;
-    private final static HashMap<String, MediaPlayer> audio = new HashMap<>();
-    private final static ArrayList<String> chiavi = new ArrayList<>();
+    public static int MUSICA = 1;
+    public static int EFFETTO = 2;
+
+    private static int musicaAudio = 100;                                                   //Volume della musica
+    private static int effettiAudio = 100;                                                  //Volume dell'audio
+    private final static HashMap<String, MediaPlayer> audio = new HashMap<>();              //Contenitore degli audio
+    private final static HashMap<String, Integer> associazioneTipo = new HashMap<>();       //Associazioni per il tipo di audio
+    private final static ArrayList<String> stopRecord = new ArrayList<>();                  //Lista dei record stoppati per il ripristino
 
     /**
-     * Carica un audio
-     * @param idAudio Identificativo dell'audio
-     * @param idRisorsa Id della risorsa
-     * @param context Contesto
-     * @return Restituisce l'esito del caricamento della musica
+     * Carica un audio all'interno della scena
+     * @param idAudio Id dell'audio da inserire
+     * @param idRisorsa Id della risorsa da caricare
+     * @param tipoRisorsa Il tipo di risorsa caricata
+     * @param loop Flag di loop della risorsa
+     * @param context Contesto per il caricamento
+     * @return Restituisce true se il caricamento avviene con successo, altrimenti restituisce false
      */
-    public static boolean loadAudio(String idAudio, int idRisorsa, Context context){
+    public static boolean loadAudio(String idAudio, int idRisorsa, int tipoRisorsa, boolean loop, Context context){
         boolean esito = false;
 
         if(!AudioUtil.audio.containsKey(idAudio)){
-            AudioUtil.chiavi.add(idAudio);
             MediaPlayer mediaPlayer = MediaPlayer.create(context, idRisorsa);
+
+            mediaPlayer.setLooping(loop);
             AudioUtil.audio.put(idAudio, mediaPlayer);
+            AudioUtil.associazioneTipo.put(idAudio, tipoRisorsa);
+
             esito = true;
         }
 
@@ -32,18 +43,12 @@ public class AudioUtil {
     }
 
     /**
-     * Restituisce il madiaplayer associato all'id del mediaplayer
-     * @param idMediaPlayer Id del mediaplayer
-     * @return Restituisce il mediaplayer associato all'id o null in caso di mancato valore
+     * Controlla l'esistenza di una chiave all'interno della lista
+     * @param idAudio Id dell'audio da controllare
+     * @return Restituisce l'esito del controllo
      */
-    public static MediaPlayer getMediaPlayer(String idMediaPlayer){
-        MediaPlayer esito = null;
-
-        if(AudioUtil.audio.containsKey(idMediaPlayer)){
-            esito = AudioUtil.audio.get(idMediaPlayer);
-        }
-
-        return esito;
+    public static boolean exists(String idAudio){
+        return AudioUtil.audio.containsKey(idAudio);
     }
 
     /**
@@ -51,7 +56,7 @@ public class AudioUtil {
      * @param idAudio Audio da eseguire
      */
     public static void avviaAudio(String idAudio){
-        MediaPlayer mediaPlayer = AudioUtil.getMediaPlayer(idAudio);
+        MediaPlayer mediaPlayer = AudioUtil.audio.get(idAudio);
         if(mediaPlayer != null){
             if(mediaPlayer.isPlaying()){
                 mediaPlayer.pause();
@@ -66,7 +71,7 @@ public class AudioUtil {
      * @param idAudio Id dell'audio da fermare
      */
     public static void fermaAudio(String idAudio){
-        MediaPlayer mediaPlayer = AudioUtil.getMediaPlayer(idAudio);
+        MediaPlayer mediaPlayer = AudioUtil.audio.get(idAudio);
         if(mediaPlayer != null){
             if(mediaPlayer.isPlaying()){
                 mediaPlayer.pause();
@@ -79,7 +84,7 @@ public class AudioUtil {
      * Ferma tutti i mediaPlayer
      */
     public static void fermaIMediaPlayer(){
-        for(String k : AudioUtil.chiavi){
+        for(String k : AudioUtil.audio.keySet()){
             AudioUtil.fermaAudio(k);
         }
     }
@@ -88,34 +93,79 @@ public class AudioUtil {
      * Elimina tutti i mediaplayer
      */
     public static void clear(){
-        for(String k : AudioUtil.chiavi){
+        for(String k : AudioUtil.audio.keySet()){
             try{
                 AudioUtil.audio.get(k).release();
             }catch (Exception e){e.printStackTrace();}
         }
         AudioUtil.audio.clear();
-        AudioUtil.chiavi.clear();
+        AudioUtil.associazioneTipo.clear();
+        AudioUtil.stopRecord.clear();
     }
 
     /**
-     * Imposta il valore dell'audio globale
-     * @param globalAudio Valore dell'audio globale
+     * Imposta il volume dell'audio della musica
+     * @param volume Volume della musica
      */
-    public static void setGlobalAudio(int globalAudio){
-        AudioUtil.globalAudio = globalAudio;
-        for(String c : AudioUtil.chiavi){
-            MediaPlayer mp = AudioUtil.audio.get(c);
-            try{
-                mp.setVolume(AudioUtil.getGlobalAudio() / 100.0f, AudioUtil.getGlobalAudio() / 100.0f);
-            }catch (Exception e){e.printStackTrace();}
+    public static void setVolumeAudioMusica(int volume){
+        AudioUtil.musicaAudio = volume;
+        for(String c : AudioUtil.associazioneTipo.keySet()){
+            if(AudioUtil.associazioneTipo.get(c) == AudioUtil.MUSICA){
+                MediaPlayer mp = AudioUtil.audio.get(c);
+                try{
+                    mp.setVolume(volume / 100.0f, volume / 100.0f);
+                }catch (Exception e){e.printStackTrace();}
+            }
         }
     }
 
     /**
-     * Restituisce il valore dell'audio globale
-     * @return Restituisce l'audio globale dell'applicazione
+     * Imposta il volume dell'audio degli effetti
+     * @param volume Volume delgli effetti
      */
-    public static int getGlobalAudio(){
-        return AudioUtil.globalAudio;
+    public static void setVolumeAudioEffetti(int volume){
+        AudioUtil.effettiAudio = volume;
+        for(String c : AudioUtil.associazioneTipo.keySet()){
+            if(AudioUtil.associazioneTipo.get(c) == AudioUtil.EFFETTO){
+                MediaPlayer mp = AudioUtil.audio.get(c);
+                try{
+                    mp.setVolume(volume / 100.0f, volume / 100.0f);
+                }catch (Exception e){e.printStackTrace();}
+            }
+        }
+    }
+
+    /**
+     * Ferma tutti i suoni in riproduzione
+     */
+    public static void pause(){
+        for(String s : AudioUtil.audio.keySet()){
+            MediaPlayer mp = AudioUtil.audio.get(s);
+            if(mp != null && mp.isPlaying()){
+                mp.pause();
+                AudioUtil.stopRecord.add(s);
+            }
+        }
+    }
+
+    /**
+     * Fa riprendere tutti i suoni in pausa
+     */
+    public static void resume(){
+        for(String s : AudioUtil.stopRecord){
+            MediaPlayer mp = AudioUtil.audio.get(s);
+            if(mp != null)
+                mp.start();
+        }
+        AudioUtil.stopRecord.clear();
+    }
+
+    //Beam
+    public static int getVolumeMusicaAudio() {
+        return musicaAudio;
+    }
+
+    public static int getVolumeEffettiAudio() {
+        return effettiAudio;
     }
 }

@@ -13,10 +13,10 @@
         android:roundIcon="@drawable/redball"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ActivityUtil.SoundControlActivity"></activity>
         <activity
             android:name=".editor_activity"
-            android:theme="@style/fullScreenStyle">
-        </activity>
+            android:theme="@style/fullScreenStyle"></activity>
         <activity
             android:name=".main_menu_activity"
             android:theme="@style/fullScreenStyle" />
@@ -36,6 +36,7 @@
             android:theme="@style/fullScreenStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -1,9 +1,14 @@
 package com.example.android.arkanoid.Util;
+import android.widget.ArrayAdapter;
+
+import com.example.android.arkanoid.R;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class QueryExecutor {
     private static String QUERY_PUBBLICAZIONE_PUNTEGGIO = "INSERT INTO punteggio (punteggio_punteggio, punteggio_modalita, punteggio_user_email) VALUES (PUNTEGGIO, MODALITA, EMAIL)";
@@ -11,10 +16,13 @@ public class QueryExecutor {
     private static String QUERY_REGISTRAZIONE_UTENTE = "INSERT INTO user VALUES (EMAIL, USERNAME, Password(PASSWORD))";
     private static String QUERY_LOGIN_UTENTE = "SELECT user_username AS USERNAME FROM user WHERE user_email LIKE EMAIL AND user_password LIKE Password(PASSWORD)";
     private static String QUERY_CONTROLLO_NOME_LIVELLO = "SELECT COUNT(*) AS N FROM creazioni WHERE creazioni_nome LIKE NOME";
+    private static String QUERY_CONTROLLO_NOME_LIVELLO_LOCALE = "SELECT COUNT(*) AS N FROM creazioni WHERE creazioni.creazioni_nome LIKE NOME AND creazioni_user_email <> EMAIL";
     private static String QUERY_CONTROLLO_PROPRIETARIO_LIVELLO = "SELECT creazioni_user_email AS EMAIL FROM creazioni WHERE creazioni_nome LIKE NOME";
     private static String QUERY_INSERIMENTO_LIVELLO = "INSERT INTO creazioni VALUES(NOME, DATI, EMAIL)";
     private static String QUERY_AGGIORNAMENTO_LIVELLO = "UPDATE creazioni SET creazioni_dati = DATI WHERE creazioni_nome LIKE NOME";
     private static String QUERY_CARICAMENTO_DATI_LIVELLO = "SELECT creazioni_dati AS DATI FROM creazioni WHERE creazioni_nome LIKE NOME";
+    private static String QUERY_RECUPERO_LIVELLI_CREATI = "SELECT creazioni_nome AS NOME FROM creazioni WHERE creazioni_user_email LIKE EMAIL";
+
 
     public static boolean pubblicaPunteggio(int punteggio, int codiceModalita, String email) throws Exception{
         boolean esito = false;
@@ -94,6 +102,19 @@ public class QueryExecutor {
         return esito;
     }
 
+    public static boolean controlloEsistenzaNomeLivelloLocale(String nome, String email) throws Exception{
+        boolean esito = false;
+
+        String query = DBUtil.repalceJolly(QueryExecutor.QUERY_CONTROLLO_NOME_LIVELLO_LOCALE, "NOME", nome);
+        query = DBUtil.repalceJolly(query, "EMAIL", email);
+
+        String esitoQuery = DBUtil.executeQuery(query);
+        if(!esitoQuery.equals("ERROR") && new JSONObject(esitoQuery).getInt("N") == 0)
+            esito = true;
+
+        return esito;
+    }
+
     /**
      * Esegue il controllo sul proprietario del livello e restituisce l'email del proprietario o null
      */
@@ -147,5 +168,23 @@ public class QueryExecutor {
             esito = new JSONObject(esitoQuery).getString("DATI");
 
         return esito;
+    }
+
+    /**
+     * Restotiosce un'array di stringhe con il livelli creati
+     */
+    public static String[] recuperoLivelliCreati(String email) throws Exception{
+        ArrayList<String> esito = new ArrayList<>();
+
+        String query = DBUtil.repalceJolly(QueryExecutor.QUERY_RECUPERO_LIVELLI_CREATI, "EMAIL", email);
+        String esitoQuery = DBUtil.executeQuery(query);
+        if(!esitoQuery.equals("ERROR")){
+            BufferedReader reader = new BufferedReader(new InputStreamReader( new ByteArrayInputStream(esitoQuery.getBytes()) ) );
+            String riga;
+            while((riga = reader.readLine()) != null)
+                esito.add(new JSONObject(riga).getString("NOME"));
+        }
+
+        return esito.toArray(new String[0]);
     }
 }

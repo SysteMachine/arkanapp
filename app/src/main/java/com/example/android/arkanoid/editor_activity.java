@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.android.arkanoid.ActivityUtil.SoundControlActivity;
 import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
 import com.example.android.arkanoid.Editor.Fragment.info_fragment;
 import com.example.android.arkanoid.Editor.Fragment.mappa_fragment;
@@ -21,7 +21,7 @@ import com.example.android.arkanoid.Editor.Livello;
 import com.example.android.arkanoid.Util.AudioUtil;
 import com.example.android.arkanoid.Util.QueryExecutor;
 
-public class editor_activity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener{
+public class editor_activity extends SoundControlActivity implements View.OnClickListener, DialogInterface.OnClickListener{
     private ToggleButton infoButton;
     private ToggleButton mappaButton;
     private ToggleButton parametriButton;
@@ -56,11 +56,10 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
      * Avvia l'audio dell'editor
      */
     private void avviaAudio(){
-        if(AudioUtil.getMediaPlayer("editor_background") == null){
+        if(!AudioUtil.exists("editor_background")){
             AudioUtil.clear();
-            AudioUtil.loadAudio("editor_background", R.raw.editor_background, this);
-            AudioUtil.getMediaPlayer("editor_background").setLooping(true);
-            AudioUtil.getMediaPlayer("editor_background").start();
+            AudioUtil.loadAudio("editor_background", R.raw.editor_background, AudioUtil.MUSICA, true, this);
+            AudioUtil.avviaAudio("editor_background");
         }
     }
 
@@ -208,9 +207,8 @@ public class editor_activity extends AppCompatActivity implements View.OnClickLi
     private void tornaAlMenu(){
         Intent intent = new Intent(this, main_menu_activity.class);
         AudioUtil.clear();
-        AudioUtil.loadAudio("background_music", R.raw.background_music, this);
-        AudioUtil.getMediaPlayer("background_music").setLooping(true);
-        AudioUtil.getMediaPlayer("background_music").start();
+        AudioUtil.loadAudio("background_music", R.raw.background_music, AudioUtil.MUSICA, true, this);
+        AudioUtil.avviaAudio("background_music");
         this.startActivity(intent);
     }
 
