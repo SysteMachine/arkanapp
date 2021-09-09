@@ -2,12 +2,12 @@ package com.example.android.arkanoid.GameElements.SceneDefinite;
 
 import com.example.android.arkanoid.Editor.LayerLivello;
 import com.example.android.arkanoid.Editor.Livello;
-import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Brick;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Map;
 import com.example.android.arkanoid.R;
+import com.example.android.arkanoid.Util.AudioUtil;
 import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.SpriteUtil.MultiSprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
@@ -45,33 +45,51 @@ public class ModalitaCreazione extends ModalitaClassica{
 
     @Override
     protected void logicaAvanzamentoLivello() {
-        boolean incrementoLivello = this.logicaAvanzamentoAggiuntiva();
-        super.logicaAvanzamentoLivello();
-        if(incrementoLivello){
-            this.cambiaParametriPerLayer();
-            this.creaEInserisciMappa();
+        if(this.status != null && this.mappa.getTotalHealth() == 0 && this.status.getHealth() > 0){
+            //Se la vita totale dei blocchi presenti nella scena è 0 allora il giocatore ha terminato il livello
+            this.status.incrementaVita(this.VITA_PER_PARTITA);
+            this.status.incrementaPunteggio(this.PUNTI_PER_PARTITA);
+
+            try{
+                //Eliminamo i blocchi non distruttibili rimasti
+                Brick brick;
+                this.mappa.azzeraContatori();
+                while((brick = this.mappa.getNextBrick()) != null){
+                    this.removeEntita(brick);
+                }
+
+                this.logicaAvanzamentoLayer();
+                this.creaMappaLayer();
+
+                //Generiamo il prossimo livello della mappa
+                this.mappa.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneMappa", int.class, int.class), this);
+
+                //Aggiunta dei nuovi brick alla scena
+                this.mappa.azzeraContatori();
+                while((brick = this.mappa.getNextBrick()) != null){
+                    this.addEntita(brick);
+                }
+            }catch (Exception e){e.printStackTrace();}
+
+            //Ripristina la posizione post mote
+            this.logicaRipristinoPosizioni();
+            AudioUtil.avviaAudio("level_complete");
         }
     }
 
     /**
-     * Logica di avanzamento aggiunta
-     * @return Restitusce true se il livello è stato incrementato
+     * Logica di avanzamento del layer
      */
-    private boolean logicaAvanzamentoAggiuntiva(){
-        boolean esito = false;
-        if(this.mappa.getTotalHealth() == 0 && this.status.getHealth() > 0){
-            if(this.livello != null){
-                if(this.layerAttuale + 1 < this.livello.getNLivelli()) {
-                    this.layerAttuale ++;
-                    esito = true;
-                }else if(this.gameOverListener != null){
-                    this.gameOverListener.gameOver(this.status);
-                }
+    private void logicaAvanzamentoLayer(){
+        if(this.livello != null){
+            if(this.layerAttuale + 1 < this.livello.getNLivelli()) {
+                this.layerAttuale ++;
             }else if(this.gameOverListener != null){
                 this.gameOverListener.gameOver(this.status);
             }
+        }else if(this.gameOverListener != null){
+            this.gameOverListener.gameOver(this.status);
         }
-        return esito;
     }
 
     /**
@@ -96,50 +114,20 @@ public class ModalitaCreazione extends ModalitaClassica{
     }
 
     /**
-     * Rimuove tutti i brick dalla scena
-     */
-    private void rimuoviBrickScena(){
-        Entity[] entita = this.getEntityByName("brick");
-        for(Entity e : entita)
-            this.removeEntita(e);
-    }
-
-    /**
-     * Crea e inserisce i brick all'interno della scena dalla mappa
-     */
-    private void creaEInserisciMappa(){
-        if(this.mappa != null){
-            try{
-                this.mappa.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneMappa", int.class, int.class), this);
-                this.mappa.azzeraContatori();
-                Brick b;
-                while( (b = this.mappa.getNextBrick()) != null )
-                    this.addEntita(b);
-            }catch (Exception e){e.printStackTrace();}
-        }
-    }
-
-    /**
      * Cambia i parametri sulla base del layer attuale
      */
     private void cambiaParametriPerLayer(){
         if(this.livello != null){
             LayerLivello layerLivello = this.livello.getLayerLivello(this.layerAttuale);
             if(layerLivello != null){
-                this.rimuoviBrickScena();
                 this.creaMappaLayer();
                 this.stile.setIncrementoVelocitaPallaLivello(1);
                 this.stile.setDecrementoVelocitaPaddleLivello(1);
-
                 //Impostazione degli elementi su palla e paddle
-                if(this.palla != null){
+                if(this.palla != null)
                     this.palla.setSpeed(new Vector2D(this.stile.getVelocitaInizialePalla(), this.stile.getVelocitaInizialePalla()).prodottoPerScalare(layerLivello.getPercentualeIncrementoVelocitaPalla()));
-                }
-
-                if(this.paddle != null){
+                if(this.paddle != null)
                     this.paddle.setSpeed(new Vector2D(this.stile.getVelocitaInizialePaddle(), this.stile.getVelocitaInizialePaddle()).prodottoPerScalare(layerLivello.getPercentualeIncrementoVelocitaPaddle()));
-                }
-
                 //Modifica dei parametri della partita
                 this.PUNTI_PER_COLPO = layerLivello.getPuntiPerColpo();
                 this.PUNTI_PER_PARTITA = layerLivello.getPuntiTerminazione();
@@ -151,6 +139,7 @@ public class ModalitaCreazione extends ModalitaClassica{
     protected void iniziallizzazioneEntita(int screenWidth, int screenHeight) {
         super.iniziallizzazioneEntita(screenWidth, screenHeight);
         this.cambiaParametriPerLayer();
+        //Ricreiamo la mappa usando il metodo di questa classe
         if(this.mappa != null){
             try{
                 this.mappa.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneMappa", int.class, int.class), this);
