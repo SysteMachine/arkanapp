@@ -201,12 +201,13 @@ public class Entity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Entity that = (Entity) o;
-        return id == that.id;
+        Entity entity = (Entity) o;
+        return id == entity.id &&
+                canBeDeleted == entity.canBeDeleted;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, canBeDeleted);
     }
 }

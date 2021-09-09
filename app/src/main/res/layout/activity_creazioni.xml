@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splashscreen_background"
+    tools:context=".creazioni_activity">
+
+    <TableRow
+        android:id="@+id/containerPulsantiSezione"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.08">
+
+        <ToggleButton
+            android:id="@+id/creazioniGlobaliButton"
+            style="@style/labelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/editor_button"
+            android:checked="true"
+            android:textOff="@string/creazioni_activity_creazioni"
+            android:textOn="@string/creazioni_activity_creazioni"
+            android:textSize="20sp" />
+
+        <ToggleButton
+            android:id="@+id/creazioniLocaliButton"
+            style="@style/labelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/editor_button"
+            android:textOff="@string/creazioni_cativity_mie_creazioni"
+            android:textOn="@string/creazioni_cativity_mie_creazioni"
+            android:textSize="20sp"
+            android:visibility="visible" />
+    </TableRow>
+
+    <EditText
+        android:id="@+id/barraRicercaField"
+        style="@style/textInputStyle"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/barra_ricerca"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerPulsantiSezione"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ListView
+        android:id="@+id/listaPartite"
+        android:layout_width="match_parent"
+        android:layout_height="460dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/barraRicercaField"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+    <TableRow
+        android:id="@+id/containerPulsantiModalitaControllo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:weightSum="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listaPartite"
+        app:layout_constraintVertical_bias="0.01999998">
+
+        <ToggleButton
+            android:id="@+id/touchButton"
+            style="@style/buttonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/pulsante_con_stato"
+            android:checked="true"
+            android:textOff="@string/modalita_activity_seleziona_controllo_touch"
+            android:textOn="@string/modalita_activity_seleziona_controllo_touch"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.08"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/difficoltaNormaleButton"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ToggleButton
+            android:id="@+id/gyroButton"
+            style="@style/buttonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/pulsante_con_stato"
+            android:textOff="@string/modalita_activity_seleziona_controllo_gyro"
+            android:textOn="@string/modalita_activity_seleziona_controllo_gyro"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/difficoltaDifficileButton"
+            app:layout_constraintHorizontal_bias="0.489"
+            app:layout_constraintStart_toEndOf="@+id/difficoltaFacileButton"
+            app:layout_constraintTop_toBottomOf="@+id/difficoltaLabel"
+            app:layout_constraintVertical_bias="0.05" />
+
+    </TableRow>
+
+    <FrameLayout
+        android:translationZ="100dp"
+        android:id="@+id/containerModalita"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="30dp"
+        tools:layout_editor_absoluteY="601dp">
+
+    </FrameLayout>
+</android.support.constraint.ConstraintLayout>

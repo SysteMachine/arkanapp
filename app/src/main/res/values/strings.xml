@@ -89,4 +89,8 @@
     <string name="impostazioni_fragment_volume_musica">Music volume</string>
     <string name="impostazioni_fragment_volume_effetti">Effects volume</string>
 
+    <string name="creazioni_activity_creazioni">Creations</string>
+    <string name="creazioni_cativity_mie_creazioni">My creations</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

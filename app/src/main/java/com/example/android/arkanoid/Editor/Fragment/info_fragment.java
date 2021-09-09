@@ -270,7 +270,7 @@ public class info_fragment extends Fragment implements
                             activity.getLivello().setNomeLivello("");
                     }
                 }
-                Thread.sleep(200);
+                Thread.sleep(1000);
             }catch (Exception e){e.printStackTrace();}
         }
     }

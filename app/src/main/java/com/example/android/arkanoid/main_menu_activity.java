@@ -130,6 +130,8 @@ public class main_menu_activity extends MultiFragmentActivity implements View.On
             this.startActivity(new Intent(this, crediti_activity.class));
         if(v.equals(this.pulsanteImpostazioni))
             this.mostraFragment(new impostazioni_fragment(), true);
+        if(v.equals(this.pulsanteCreazioni))
+            this.startActivity(new Intent(this, creazioni_activity.class));
     }
 
     @Override
