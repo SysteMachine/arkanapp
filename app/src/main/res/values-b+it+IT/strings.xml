@@ -26,6 +26,7 @@
     <string name="main_menu_activity_classifica">Classifica</string>
 
     <string name="fragment_selezione_modalita_modalita_classica">Modalità classica</string>
+    <string name="fragment_selezione_modalita_modalita_chaos">Modalità chaos</string>
 
     <string name="modalita_activity_seleziona_difficolta">Difficoltà</string>
     <string name="modalita_activity_seleziona_difficolta_semplice">Facile</string>
