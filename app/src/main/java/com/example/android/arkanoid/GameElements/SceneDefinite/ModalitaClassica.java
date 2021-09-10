@@ -1,6 +1,8 @@
 package com.example.android.arkanoid.GameElements.SceneDefinite;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -243,7 +245,17 @@ public class ModalitaClassica extends AbstractModalita{
 
     @Override
     public void orientationChanged(float degree) {
-        System.out.println(degree);
+        if(this.status != null && this.status.getModalitaControllo() == GameStatus.GYRO){
+            //Se il giroscopio è attivo
+            if(degree >= -40 && degree <= 40){
+                float peso = Math.abs(degree) / 20.0f;
+                float mezzoWidth = this.screenWidth * 0.5f;
+
+                float targetX = mezzoWidth - ((degree / Math.abs(degree)) * peso * mezzoWidth);
+                if(this.paddle != null)
+                    this.paddle.setTargetX(targetX);
+            }
+        }
     }
 
     //EventiModalita

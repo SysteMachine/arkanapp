@@ -1,10 +1,12 @@
 package com.example.android.arkanoid.GameElements.SceneDefinite;
 
 import android.app.Service;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -340,14 +342,35 @@ public abstract class AbstractModalita extends AbstractScene implements View.OnT
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        this.touchEvent(
-                new Vector2D(
-                        event.getX() * (this.screenWidth / (float)v.getWidth() ),
-                        event.getY() * (this.screenHeight / (float)v.getHeight() )
-                ),
-                v,
-                event
-        );
+        if(this.owner.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            System.out.println("1");
+            this.touchEvent(
+                    new Vector2D(
+                            event.getX() * (this.screenWidth / (float) v.getWidth()),
+                            event.getY() * (this.screenHeight / (float) v.getHeight())
+                    ),
+                    v,
+                    event
+            );
+        }else{
+            float realWidth = v.getHeight() * (9.0f / 16.0f);                   //Calcola la larghezza della canvas
+            float startX = (v.getWidth() * 0.5f) - (realWidth * 0.5f);          //Calcola la posizione di start
+            if(event.getX() >= startX && event.getX() <= startX + realWidth){
+                //Se il tocco avviene all'interno tra startX e startX + realWidth
+
+                float allineataX = event.getX() - startX;                                //Calcola la posizione X allineata
+                float posX = (allineataX / realWidth) * 720.0f;
+                float posY = (event.getY() / (float)v.getHeight()) * 1280.0f;
+                this.touchEvent(
+                        new Vector2D(
+                                posX,
+                                posY
+                        ),
+                        v,
+                        event
+                );
+            }
+        }
         return true;
     }
 
