@@ -1,9 +1,14 @@
 package com.example.android.arkanoid;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,6 +22,7 @@ import com.example.android.arkanoid.ActivityUtil.MultiFragmentActivity;
 import com.example.android.arkanoid.ActivityUtil.PausaEventListener;
 import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
 import com.example.android.arkanoid.Editor.Livello;
+import com.example.android.arkanoid.FragmentMenu.pausa_generica_fragment;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameOverListener;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
@@ -25,9 +31,10 @@ import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaCreazione
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
+import com.example.android.arkanoid.Util.AudioUtil;
 import com.example.android.arkanoid.Util.QueryExecutor;
 
-public class creazioni_activity extends MultiFragmentActivity implements View.OnClickListener, AdapterView.OnItemLongClickListener, TextWatcher, GameOverListener, PausaEventListener {
+public class creazioni_activity extends MultiFragmentActivity implements View.OnClickListener, AdapterView.OnItemLongClickListener, TextWatcher, GameOverListener, PausaEventListener, DialogInterface.OnClickListener {
     private ToggleButton pulsanteCreazioni;
     private ToggleButton pulsanteCreazioniLocale;
     private ToggleButton pulsanteTouch;
@@ -36,7 +43,10 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
     private EditText barraRicerca;
 
     private FrameLayout containerModalita;
+    private static String nomeLivello;
+    private static ModalitaCreazione modalita;
     private GameLoop gameLoop;
+    private AlertDialog dialogoCaricamentoLivello;
 
     private int vistaAttiva;
     private int modalitaControllo;
@@ -59,6 +69,13 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
         this.inPause = false;
         this.gameOver = false;
         this.raccogliRiferimenti();
+
+        this.dialogoCaricamentoLivello = new AlertDialog.Builder(this)
+                .setTitle(this.getResources().getString(R.string.editor_activity_caricamento))
+                .setMessage(this.getResources().getString(R.string.editor_activity_caricamento_descrizione))
+                .setPositiveButton(android.R.string.yes, this)
+                .setNegativeButton(android.R.string.no, null)
+                .create();
     }
 
     @Override
@@ -210,10 +227,18 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
      */
     private void ripristinaUltimoStato(){
         if(this.inGame){
-            if(this.containerModalita != null)
+            this.gameLoop.start();
+            this.gameLoop.addGameComponentNoSetup(creazioni_activity.modalita);
+            if(this.containerModalita != null) {
                 this.containerModalita.setVisibility(View.VISIBLE);
+            }
             if(this.inPause || this.gameOver)
                 this.gameLoop.setUpdateRunning(false);
+            creazioni_activity.modalita.setGameOverListener(this);
+        }
+        Fragment fragmentAttivo = this.getSupportFragmentManager().findFragmentById(this.containerFragment.getId());
+        if(fragmentAttivo != null){
+            ((pausa_generica_fragment)fragmentAttivo).setListener(this);
         }
     }
 
@@ -224,9 +249,11 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
         try{
             String datiLivello = QueryExecutor.caricaLivello(nomeLivello);
             if(!datiLivello.equals("")){
+                creazioni_activity.nomeLivello = nomeLivello;
                 Livello livello = new Livello(datiLivello, true);
-                ModalitaCreazione modalitaCreazione = new ModalitaCreazione(this.getStile(livello), new GameStatus(5, 0, this.modalitaControllo), livello);
-                gameLoop.addGameComponent(modalitaCreazione);
+                creazioni_activity.modalita = new ModalitaCreazione(this.getStile(livello), new GameStatus(5, 0, this.modalitaControllo), livello);
+                creazioni_activity.modalita.setGameOverListener(this);
+                gameLoop.addGameComponent(creazioni_activity.modalita);
                 gameLoop.setShowFPS(true);
                 gameLoop.start();
 
@@ -234,6 +261,89 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
                 this.inGame = true;
             }
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    /**
+     * Mostra il menu della pausa
+     */
+    private void mostraMenuPausa(){
+        if(this.inGame && !this.inPause && !this.gameOver){
+            pausa_generica_fragment fragment = new pausa_generica_fragment();
+            Bundle params = new Bundle();
+            params.putInt("tipoPausa", pausa_generica_fragment.PAUSA);
+            fragment.setArguments(params);
+            fragment.setListener(this);
+            this.mostraFragment(fragment, true);
+
+            this.gameLoop.setUpdateRunning(false);
+            this.inPause = true;
+        }
+    }
+
+    /**
+     * Nasconde il menu della pausa
+     */
+    private void nascondiMenuPausa(){
+        if(this.inPause){
+            this.nascondiFragment(true);
+
+            this.gameLoop.setUpdateRunning(true);
+            this.inPause = false;
+        }
+    }
+
+    /**
+     * Mostra il menu di gameOver
+     */
+    private void mostraMenuGameOver(){
+        if(this.inGame && !this.gameOver){
+            if(this.inPause) {
+                this.nascondiFragment(false);
+                this.inPause = false;
+            }
+
+            pausa_generica_fragment fragment = new pausa_generica_fragment();
+            Bundle params = new Bundle();
+            params.putInt("tipoPausa", pausa_generica_fragment.GAMEOVER);
+            fragment.setArguments(params);
+            fragment.setListener(this);
+            this.mostraFragment(fragment, true);
+
+            this.gameLoop.setUpdateRunning(false);
+            this.gameOver = true;
+        }
+    }
+
+    /**
+     * Nasconde il menu di gameover
+     */
+    private void nascondiMenuGameOver(){
+        if(this.gameOver) {
+            this.nascondiFragment(true);
+
+            this.gameLoop.setUpdateRunning(true);
+            this.gameOver = false;
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(this.inGame){
+            if(!this.gameOver){
+                if(!this.inPause)
+                    this.mostraMenuPausa();
+                else this.nascondiMenuPausa();
+            }
+        }else{
+            this.startActivity(new Intent(this, main_menu_activity.class));
+        }
+    }
+
+    @Override
+    public void frameContrastoToccato(MotionEvent event) {
+        if(this.inPause && !this.gameOver)
+            this.nascondiMenuPausa();
     }
 
     @Override
@@ -251,11 +361,20 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
         this.inserisciElementiLista();
     }
 
+    /**
+     * Ripristina l'audio
+     */
+    private void ripristinaAudio(){
+        AudioUtil.clear();
+        AudioUtil.loadAudio("background_music", R.raw.background_music, AudioUtil.MUSICA, true, this);
+        AudioUtil.avviaAudio("background_music");
+    }
+
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if(parent.equals(this.listaModalita)){
-            String nomeLivello = ((TextView)view).getText().toString();
-            this.caricaModalita(nomeLivello);
+            creazioni_activity.nomeLivello = ((TextView)view).getText().toString();
+            this.dialogoCaricamentoLivello.show();
         }
 
         return true;
@@ -273,11 +392,44 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
 
     @Override
     public void gameOver(GameStatus status) {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mostraMenuGameOver();
+            }
+        });
     }
 
     @Override
     public void event(String eventId) {
+        if(this.inPause){
+            if(eventId.equals("PRIMO"))
+                this.nascondiMenuPausa();
+        }
+        if(this.gameOver){
+            if(eventId.equals("PRIMO")){
+                this.nascondiMenuGameOver();
+                this.caricaModalita(creazioni_activity.nomeLivello);
+            }
+        }
 
+        if(eventId.equals("SECONDO")){
+            this.gameOver = false;
+            this.inPause = false;
+            this.inGame = false;
+            this.nascondiFragment(false);
+            this.ripristinaAudio();
+            this.gameLoop.stop();
+            this.gameLoop.setUpdateRunning(true);
+            if(this.containerModalita != null)
+                this.containerModalita.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if(dialog.equals(this.dialogoCaricamentoLivello)){
+            this.caricaModalita(nomeLivello);
+        }
     }
 }

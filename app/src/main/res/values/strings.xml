@@ -91,6 +91,9 @@
 
     <string name="creazioni_activity_creazioni">Creations</string>
     <string name="creazioni_cativity_mie_creazioni">My creations</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="pausa_generica_fragment_pausa_primo_pulsante">Continue</string>
+    <string name="pausa_generica_fragment_pausa_secondo_pulsante">Menu</string>
+    <string name="pausa_generica_fragment_gameover_primo_pulsante">Play again</string>
+    <string name="pausa_generica_fragment_gameover_secondo_pulsante">Menu</string>
 </resources>

@@ -151,6 +151,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
                 this.gameLoop.addGameComponentNoSetup(modalita_activity.modalita);
             if(this.inPause || this.gameOver)
                 this.gameLoop.setUpdateRunning(false);
+            modalita_activity.modalita.setGameOverListener(this);
         }
     }
 

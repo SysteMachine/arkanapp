@@ -14,8 +14,8 @@ import android.widget.FrameLayout;
 import com.example.android.arkanoid.R;
 
 public class MultiFragmentActivity extends SoundControlActivity implements View.OnTouchListener, Animator.AnimatorListener {
-    private FrameLayout frameContrasto;                   //Frame di contrasto
-    private FrameLayout containerFragment;                //Contenitore del fragment
+    protected FrameLayout frameContrasto;                   //Frame di contrasto
+    protected FrameLayout containerFragment;                //Contenitore del fragment
 
     private boolean fragmentVisible;                      //Flag per il controllo della visibilità del fragment
 
@@ -149,10 +149,11 @@ public class MultiFragmentActivity extends SoundControlActivity implements View.
         if(!this.fragmentVisible){
             if(fragment != null){
                 fragment.setRetainInstance(true);
+                System.out.println("commit aggiunto");
                 this.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(this.containerFragment.getId(), fragment)
-                        .commit();
+                        .commitNow();
                 this.fragmentVisible = true;
                 this.cambiaVisibilitaContainer(this.fragmentVisible);
                 if(showAnimation){
@@ -169,10 +170,11 @@ public class MultiFragmentActivity extends SoundControlActivity implements View.
     private void rimuoviFragmentAttivo(){
         Fragment fragmentAttivo = this.getSupportFragmentManager().findFragmentById(this.containerFragment.getId());
         if(fragmentAttivo != null){
+            System.out.println("commit rimosso");
             this.getSupportFragmentManager()
                     .beginTransaction()
                     .remove(fragmentAttivo)
-                    .commit();
+                    .commitNow();
         }
     }
 
@@ -185,6 +187,7 @@ public class MultiFragmentActivity extends SoundControlActivity implements View.
             if(!showAnimation){
                 this.rimuoviFragmentAttivo();
                 this.fragmentVisible = false;
+                this.cambiaVisibilitaContainer(this.fragmentVisible);
             }else{
                 this.animazioneChiusuraFragment.removeAllListeners();
                 this.animazioneChiusuraFragment.addListener(this);
