@@ -89,4 +89,12 @@
 
     <string name="impostazioni_fragment_volume_musica">Volume musica</string>
     <string name="impostazioni_fragment_volume_effetti">Volume effetti</string>
+
+    <string name="creazioni_activity_creazioni">Creazioni</string>
+    <string name="creazioni_cativity_mie_creazioni">Mie creazioni</string>
+
+    <string name="pausa_generica_fragment_pausa_primo_pulsante">Continua</string>
+    <string name="pausa_generica_fragment_pausa_secondo_pulsante">Menu</string>
+    <string name="pausa_generica_fragment_gameover_primo_pulsante">Gioca ancora</string>
+    <string name="pausa_generica_fragment_gameover_secondo_pulsante">Menu</string>
 </resources>
