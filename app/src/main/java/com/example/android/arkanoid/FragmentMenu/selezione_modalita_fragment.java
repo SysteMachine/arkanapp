@@ -14,6 +14,7 @@ import com.example.android.arkanoid.modalita_activity;
 
 public class selezione_modalita_fragment extends Fragment implements View.OnTouchListener, View.OnClickListener {
     private Button modalitaClassicaButton;
+    private Button modalitaChaosButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,9 +28,13 @@ public class selezione_modalita_fragment extends Fragment implements View.OnTouc
         super.onViewCreated(view, savedInstanceState);
 
         this.modalitaClassicaButton = view.findViewById(R.id.pulsanteModalitaClassica);
+        this.modalitaChaosButton = view.findViewById(R.id.pulsanteModalitaChaos);
 
         if(this.modalitaClassicaButton != null)
             this.modalitaClassicaButton.setOnClickListener(this);
+
+        if(this.modalitaChaosButton != null)
+            this.modalitaChaosButton.setOnClickListener(this);
     }
 
     @Override
@@ -45,8 +50,15 @@ public class selezione_modalita_fragment extends Fragment implements View.OnTouc
             intent.putExtra(modalita_activity.EXTRA_MODALITA, modalita_activity.CODICE_MODALITA_CLASSICA);
         }
 
+        if(v.equals(this.modalitaChaosButton)){
+            intent = new Intent(this.getContext(), modalita_activity.class);
+            intent.putExtra(modalita_activity.EXTRA_MODALITA, modalita_activity.CODICE_MODALITA_CHAOS);
+        }
+
         if(intent != null)
             this.startActivity(intent);
 
     }
+
+
 }

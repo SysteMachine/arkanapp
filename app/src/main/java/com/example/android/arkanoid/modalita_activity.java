@@ -17,6 +17,7 @@ import com.example.android.arkanoid.GameElements.ElementiBase.GameOverListener;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.SceneDefinite.AbstractModalita;
+import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaChaos;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
@@ -29,6 +30,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     public static String EXTRA_MODALITA = "MODALITA";
 
     public static final int CODICE_MODALITA_CLASSICA = 0;                           //Codice per avviare la modalità classica
+    public static final int CODICE_MODALITA_CHAOS = 1;
     private final float[] MOLTIPLICATORI_PER_DIFFICOLTA = {0.8f, 1, 1.2f};          //Moltiplicatori per le difficoltà
 
     public static AbstractModalita modalita;                                       //Modalita caricata
@@ -197,6 +199,10 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
                 case modalita_activity.CODICE_MODALITA_CLASSICA:
                     this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_classica));
                     break;
+                case modalita_activity.CODICE_MODALITA_CHAOS:
+                    this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_chaos));
+                    break;
+
             }
         }
     }
@@ -252,6 +258,10 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
             case 0:
                 classeModalita = ModalitaClassica.class;
                 break;
+            case 1:
+                classeModalita = ModalitaChaos.class;
+                break;
+
         }
 
         return classeModalita;
