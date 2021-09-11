@@ -30,7 +30,6 @@ public class Timer implements Runnable{
      */
     public void aggiungiSecondi(int secondi){
         if(this.thread != null) {
-            this.timeStamp += secondi * 1000;
             this.intervallo += secondi;
         }
     }

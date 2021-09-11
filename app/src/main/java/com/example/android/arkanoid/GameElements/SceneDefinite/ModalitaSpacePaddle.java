@@ -145,13 +145,18 @@ public class ModalitaSpacePaddle extends AbstractModalita implements Runnable{
         if(this.giocoPartito){
             if(System.currentTimeMillis() - this.timeStampAsteroide > this.intervalloSpawnAsteroidi){
                 this.timeStampAsteroide = System.currentTimeMillis();
-                float posX = 100 + (float)(Math.random() * this.screenWidth - 200);
-                float posY = -200;
-                this.addEntita(new Asteroide(
-                        new Vector2D(posX, posY),
+                Asteroide asteroide = new Asteroide(
+                        new Vector2D(0, 0),
                         new Vector2D(0, this.velocitaElementi),
                         new MultiSprite(R.drawable.space_paddle_asteroidi, this.owner, 5)
-                ));
+                );
+                float width = asteroide.getSize().getPosX();
+                float height = asteroide.getSize().getPosY();
+                float posX = (width * 0.5f) + ((float)Math.random() * (this.screenWidth - width));
+                float posY = -height * 0.5f;
+
+                asteroide.setPosition(new Vector2D(posX, posY));
+                this.addEntita(asteroide);
             }
         }else
             this.timeStampAsteroide = System.currentTimeMillis();
