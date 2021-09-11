@@ -4,75 +4,59 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.CountDownTimer;
+
 
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
+import com.example.android.arkanoid.GameElements.ElementiGioco.Brick;
+import com.example.android.arkanoid.GameElements.PowerUpMalusDefiniti.TimeRecover;
+import com.example.android.arkanoid.Util.AudioUtil;
 import com.example.android.arkanoid.Util.ParamList;
+import com.example.android.arkanoid.Util.Timer;
 
-public class ModalitaTimeAttack extends ModalitaClassica{
+public class ModalitaTimeAttack extends ModalitaClassica {
 
-    protected int DIMENSIONE_ZONA_TIMER = 60;
+    protected static int DIMENSIONE_ZONA_TIMER = 60;
 
-    private CountDownTimer timer;
-    private Boolean timerRunning;
-    String tempoRimanente = "";
-    private long msTime = 180000; //3 minuti in millisecondi
-    int secondi;
-    long secondiRimanenti = 180000;
+    private final int TEMPO_INIZIALE = 180; //3 minuti iniziali
+    private final int SECONDI_BONUS_ROTTURA_BLOCCO = 2; //2 secondi bonus ogni volta che si rompe un blocco
+    private final int SECONDI_PERSI_MORTE = -30;
+    private final int SECONDI_BONUS_COMPLETAMENTO_LIVELLO = 60;
+    public static String PARAMETRI_ALTERAZIONI_TIMER = "TIMER";
+
+    private Timer timer;
+    private String tempoRimanente = "";
+
 
     public ModalitaTimeAttack(Stile stile, GameStatus status) {
         super(stile, status);
+        this.timer = new Timer(TEMPO_INIZIALE);
+        timer.avviaTimer();
         this.inizializzaPowerUP();
         this.registraEventi();
-        this.codiceModalita = 2;
-        startTimer();
+        this.codiceModalita = 3;
+        this.status.setHealth(0);
+
     }
 
     @Override
     protected void inizializzaPowerUP() {
         super.inizializzaPowerUP();
+        this.listaPowerUP.addPowerupMalus(TimeRecover.class, 15);
     }
 
-    protected void startStop(){
-        if(timerRunning)
-            stopTimer();
+
+    private void updateTimer(){
+
+        int secondi = timer.getTimerAttuale();
+
+        if(secondi < 10)
+            tempoRimanente = "0" + secondi;
         else
-            startTimer();
+            tempoRimanente = "" + secondi;
+
     }
 
-
-    protected void startTimer(){
-        timerRunning = true;
-        timer = new CountDownTimer(msTime, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                msTime = millisUntilFinished;
-                secondiRimanenti = millisUntilFinished;
-                updateTimer();
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        }.start();
-    }
-
-
-    protected void stopTimer(){
-        timer.cancel();
-        timerRunning = false;
-    }
-
-    protected void updateTimer(){
-            secondi = (int) msTime / 1000; //conversione da millisecondi a secondi
-
-            if (secondi < 10)
-                tempoRimanente = "0" + secondi;
-            else
-                tempoRimanente = "" + secondi;
-    }
 
     @Override
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
@@ -84,7 +68,10 @@ public class ModalitaTimeAttack extends ModalitaClassica{
         float lastSize = paint.getTextSize();
         paint.setTextSize(screenHeight * this.PERCENTUALE_DIMENSIONE_FONT);
 
-        String messaggio = this.tempoRimanente; ;
+        updateTimer();
+        String messaggio = tempoRimanente;
+        if (timer.getTimerAttuale() <= 0)
+            messaggio = "00";
         Rect bound = new Rect();
         paint.getTextBounds(messaggio, 0, messaggio.length(), bound);
 
@@ -111,19 +98,9 @@ public class ModalitaTimeAttack extends ModalitaClassica{
     @Override
     protected void eventoRotturaBlocco(ParamList parametri) {
         super.eventoRotturaBlocco(parametri);
-
-        msTime = secondiRimanenti;
-        msTime += 5000;
-
+        timer.aggiungiSecondi(SECONDI_BONUS_ROTTURA_BLOCCO);
     }
 
-    public int getSecondi() {
-        return secondi;
-    }
-
-    public void setSecondi(int secondi) {
-        this.secondi = secondi;
-    }
 
     @Override
     protected void eventoRimozioneParticella(ParamList parametri) {
@@ -150,7 +127,64 @@ public class ModalitaTimeAttack extends ModalitaClassica{
         return super.metodoGenerazioneMappa(i, j);
     }
 
+    @Override
+    protected void logicaEliminazioneVita() {
+        if(this.palla != null && this.status != null){
+            if(this.palla.getPosition().getPosY() > this.PERCENTUALE_DEATH_ZONE * this.screenHeight){
+                this.timer.aggiungiSecondi(SECONDI_PERSI_MORTE);
+                this.logicaRipristinoPosizioni();
+                AudioUtil.avviaAudio("life_lost");
+            }
+        }
+    }
 
+    @Override
+    protected void logicaAvanzamentoLivello() {
+        if(this.status != null && this.mappa.getTotalHealth() == 0 && this.status.getHealth() > 0){
+            //Se la vita totale dei blocchi presenti nella scena è 0 allora il giocatore ha terminato il livello
+            this.timer.aggiungiSecondi(SECONDI_BONUS_COMPLETAMENTO_LIVELLO);
+            this.status.incrementaPunteggio(this.PUNTI_PER_PARTITA);
 
+            this.paddle.setSpeed(this.paddle.getSpeed().prodottoPerScalare(this.stile.getDecrementoVelocitaPaddleLivello()));
+            this.palla.setSpeed(this.palla.getSpeed().prodottoPerScalare(this.stile.getIncrementoVelocitaPallaLivello()));
+            this.mappa.setVitaBlocchi(this.mappa.getVitaBlocchi() + this.stile.getTassoIncrementoVitaBlocchi());
+
+            try{
+                //Eliminamo i blocchi non distruttibili rimasti
+                Brick brick;
+                this.mappa.azzeraContatori();
+                while((brick = this.mappa.getNextBrick()) != null){
+                    this.removeEntita(brick);
+                }
+
+                //Generiamo il prossimo livello della mappa
+                this.mappa.generaMappa(this.getClass().getDeclaredMethod("metodoGenerazioneMappa", int.class, int.class), this);
+                this.mappa.inserisciOstacoli(this.stile.getNumeroBlocchiIndistruttibili());
+
+                //Aggiunta dei nuovi brick alla scena
+                this.mappa.azzeraContatori();
+                while((brick = this.mappa.getNextBrick()) != null){
+                    this.addEntita(brick);
+                }
+            }catch (Exception e){e.printStackTrace();}
+
+            //Ripristina la posizione post mote
+            this.logicaRipristinoPosizioni();
+            AudioUtil.avviaAudio("level_complete");
+        }
+    }
+
+    @Override
+    protected ParamList creaParametriAlterazioni() {
+        ParamList parametri = super.creaParametriAlterazioni();
+        parametri.add(PARAMETRI_ALTERAZIONI_TIMER, this.timer);
+        return parametri;
+    }
+
+    @Override
+    protected void logicaTerminazionePartita(){
+        if(timer.getTimerAttuale() <= 0 && this.gameOverListener != null)
+            this.gameOverListener.gameOver(this.status);
+    }
 }
 
