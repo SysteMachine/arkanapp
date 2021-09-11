@@ -20,9 +20,9 @@ import com.example.android.arkanoid.GameElements.ElementiBase.GameOverListener;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.SceneDefinite.AbstractModalita;
+import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaTimeAttack;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaSpacePaddle;
-import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaTimeAttack;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
@@ -34,7 +34,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
     public static String EXTRA_MODALITA = "MODALITA";
 
     public static final int CODICE_MODALITA_CLASSICA = 0;                           //Codice per avviare la modalità classica
-    public static final int CODICE_MODALITA_CHAOS = 1;
+    public static final int CODICE_MODALITA_TIME_ATTACK = 1;
     public static final int CODICE_MODALITA_SPACE_PADDLE = 2;
 
     private final float[] MOLTIPLICATORI_PER_DIFFICOLTA = {0.8f, 1, 1.2f};          //Moltiplicatori per le difficoltà
@@ -205,8 +205,8 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
                 case modalita_activity.CODICE_MODALITA_CLASSICA:
                     this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_classica));
                     break;
-                case modalita_activity.CODICE_MODALITA_CHAOS:
-                    this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_chaos));
+                case modalita_activity.CODICE_MODALITA_TIME_ATTACK:
+                    this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_time_attack));
                     break;
                 case modalita_activity.CODICE_MODALITA_SPACE_PADDLE:
                     this.labelModalita.setText(this.getResources().getText(R.string.fragment_selezione_modalita_modalita_space_paddle));

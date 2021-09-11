@@ -29,7 +29,7 @@ public class selezione_modalita_fragment extends Fragment implements View.OnTouc
         super.onViewCreated(view, savedInstanceState);
 
         this.modalitaClassicaButton = view.findViewById(R.id.pulsanteModalitaClassica);
-        this.modalitaChaosButton = view.findViewById(R.id.pulsanteModalitaChaos);
+        this.modalitaChaosButton = view.findViewById(R.id.pulsanteModalitaTimeAttack);
         this.modalitaSpacePaddle = view.findViewById(R.id.pulsanteModalitaSpacePaddle);
 
         if(this.modalitaClassicaButton != null)
@@ -55,7 +55,7 @@ public class selezione_modalita_fragment extends Fragment implements View.OnTouc
 
         if(v.equals(this.modalitaChaosButton)){
             intent = new Intent(this.getContext(), modalita_activity.class);
-            intent.putExtra(modalita_activity.EXTRA_MODALITA, modalita_activity.CODICE_MODALITA_CHAOS);
+            intent.putExtra(modalita_activity.EXTRA_MODALITA, modalita_activity.CODICE_MODALITA_TIME_ATTACK);
         }
 
         if(v.equals(this.modalitaSpacePaddle)){

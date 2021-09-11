@@ -3,7 +3,7 @@
 
     <string name="splash_screen_tabButtonMessage">Tap to start</string>
     <string name="login_login">Login</string>
-    <string name="login_registrati">Sing in</string>
+    <string name="login_registrati">Sign in</string>
     <string name="login_login_guest">Login as Guest</string>
 
     <string name="login_messaggio_errore_campi_vuoti">Fields can\'t be empty</string>
@@ -12,8 +12,8 @@
     <string name="logout_messaggio_conferma">"Disconnected"</string>
 
     <string name="singin_fragment_ripeti_password">Repeat password:</string>
-    <string name="singin_fragment_registrazione">Sing-in</string>
-    <string name="singin_fragment_errore_registrazione">Sing-in error</string>
+    <string name="singin_fragment_registrazione">Sign-in</string>
+    <string name="singin_fragment_errore_registrazione">Sign-in error</string>
 
     <string name="main_menu_logout">Logout message</string>
     <string name="main_menu_logout_descrizione">Are you sure?</string>
@@ -25,13 +25,13 @@
     <string name="main_menu_activity_classifica">Leaderboard</string>
 
     <string name="fragment_selezione_modalita_modalita_classica">Classic mode</string>
-    <string name="fragment_selezione_modalita_modalita_chaos">Chaos mode</string>
+    <string name="fragment_selezione_modalita_modalita_time_attack">Time attack mode</string>
     <string name="fragment_selezione_modalita_modalita_space_paddle">Space paddle</string>
 
     <string name="modalita_activity_seleziona_difficolta">Difficulty</string>
     <string name="modalita_activity_seleziona_difficolta_semplice">Easy</string>
     <string name="modalita_activity_seleziona_difficolta_normale">Normal</string>
-    <string name="modalita_activity_seleziona_difficolta_difficile">Hard</string>
+    <string name="modalita_activity_seleziona_difficolta_difficile">Extreme</string>
     <string name="modalita_activity_seleziona_controllo">Control mode</string>
     <string name="modalita_activity_seleziona_controllo_touch">Touch</string>
     <string name="modalita_activity_seleziona_controllo_gyro">Gyro</string>
@@ -46,8 +46,8 @@
     <string name="fragment_game_over_nuova_partita">Play again</string>
     <string name="fragment_game_over_pubblica_risultato">Share results</string>
     <string name="fragment_game_over_torna_menu">Main menu</string>
-    <string name="fragment_game_over_pubblicato">Your result is now online</string>
-    <string name="fragment_game_over_non_pubblicato">Something goes wrong</string>
+    <string name="fragment_game_over_pubblicato">Result published</string>
+    <string name="fragment_game_over_non_pubblicato">Something went wrong</string>
 
 
     <string name="editor_activity_modifica_info">Info</string>
@@ -55,21 +55,21 @@
     <string name="editor_activity_modifica_parametri">Params</string>
     <string name="editor_activity_prova_livello">Test</string>
     <string name="editor_activity_salva_livello">Save level</string>
-    <string name="editor_activity_reset_layer">Reset layer</string>
+    <string name="editor_activity_reset_layer">Reset level</string>
     <string name="editor_activity_conferma_salvataggio">Level saved</string>
     <string name="editor_activity_errore_salvataggio">Level not saved</string>
     <string name="editor_activity_sovrascrizione">Override message</string>
-    <string name="editor_activity_sovrascrizione_descrizione">Do you want override previous level?</string>
+    <string name="editor_activity_sovrascrizione_descrizione">Do you want to override previous level?</string>
     <string name="editor_activity_reset">Reset message</string>
-    <string name="editor_activity_reset_descrizione">Do you want reset this layer?</string>
+    <string name="editor_activity_reset_descrizione">Do you want to reset this layer?</string>
     <string name="editor_activity_cancellazione">Delete message</string>
-    <string name="editor_activity_cancellazione_descrizione">Do you want delete this layer?</string>
+    <string name="editor_activity_cancellazione_descrizione">Do you want to delete this layer?</string>
     <string name="editor_activity_caricamento">Load message</string>
-    <string name="editor_activity_caricamento_descrizione">Do you want load this level?</string>
+    <string name="editor_activity_caricamento_descrizione">Do you want to load this level?</string>
 
     <string name="info_fragment_nome_livello">Level name</string>
     <string name="info_fragment_nome_layer">Stage</string>
-    <string name="info_fragment_selected_layer">Selected layer</string>
+    <string name="info_fragment_selected_layer">Selected stage</string>
     <string name="info_fragment_selected_style">Selected style</string>
     <string name="info_fragment_livelli_creati">Created</string>
 
