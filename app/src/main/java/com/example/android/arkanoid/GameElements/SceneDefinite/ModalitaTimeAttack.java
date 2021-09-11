@@ -62,6 +62,7 @@ public class ModalitaTimeAttack extends ModalitaClassica {
     public void render(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
         super.render(dt, screenWidth, screenHeight, canvas, paint);
         this.disegnaTimer(dt, screenWidth, screenHeight, canvas, paint);
+        this.timer.setLockTime(!this.owner.isUpdateRunning());
     }
 
     protected void disegnaTimer(float dt, int screenWidth, int screenHeight, Canvas canvas, Paint paint) {
@@ -137,6 +138,8 @@ public class ModalitaTimeAttack extends ModalitaClassica {
             }
         }
     }
+
+
 
     @Override
     protected void logicaAvanzamentoLivello() {
