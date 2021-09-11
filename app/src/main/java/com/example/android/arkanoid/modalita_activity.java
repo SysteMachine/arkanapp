@@ -20,9 +20,9 @@ import com.example.android.arkanoid.GameElements.ElementiBase.GameOverListener;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.SceneDefinite.AbstractModalita;
-import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaChaos;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaClassica;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaSpacePaddle;
+import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaTimeAttack;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileAtzeco;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileFuturistico;
 import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
@@ -267,7 +267,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
                 classeModalita = ModalitaClassica.class;
                 break;
             case 1:
-                classeModalita = ModalitaChaos.class;
+                classeModalita = ModalitaTimeAttack.class;
                 break;
             case 2:
                 classeModalita = ModalitaSpacePaddle.class;
