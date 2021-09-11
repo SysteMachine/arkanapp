@@ -76,7 +76,8 @@ public class Background extends Entity {
         for(Vector3D stella : this.posizioniStelle){
             stella.setPosY(stella.getPosY() + (this.velocitaStelle * dt));
             if(stella.getPosY() > screenHeight + (stella.getPosZ() * 0.5f) ) {
-                stella.setPosY(-(stella.getPosZ() * 0.5f));
+                float distnace = Math.abs(stella.getPosY() - screenHeight);
+                stella.setPosY(-(stella.getPosZ() * 0.5f) + distnace);
                 stella.setPosX((float)Math.random() * screenWidth);
             }
         }
