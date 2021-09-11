@@ -26,7 +26,6 @@ public class QueryExecutor {
     private static String QUERY_RECUPERO_LIVELLI_CON_FILTRO = "SELECT creazioni_nome AS NOME FROM creazioni WHERE creazioni_nome LIKE FILTRO ORDER BY creazioni_nome";
     private static String QUERY_RECUPERO_CLASSIFICA = "SELECT punteggio_punteggio AS PUNTEGGIO, user_username AS USERNAME, punteggio_modalita AS MODALITA from punteggio INNER JOIN user ON punteggio_user_email = user_email ORDER BY punteggio_punteggio DESC LIMIT 20";
     private static String QUERY_RECUPERO_PUNTEGGIO_MASSIMO_CLASSIFICA_GIOCATORE = "SELECT max(punteggio_punteggio) AS MASSIMO FROM punteggio WHERE punteggio_user_email LIKE EMAIL";
-
     public static boolean pubblicaPunteggio(int punteggio, int codiceModalita, String email) throws Exception{
         boolean esito = false;
 

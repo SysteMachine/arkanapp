@@ -55,7 +55,7 @@
     <string name="editor_activity_modifica_parametri">Params</string>
     <string name="editor_activity_prova_livello">Test</string>
     <string name="editor_activity_salva_livello">Save level</string>
-    <string name="editor_activity_reset_layer">Reset level</string>
+    <string name="editor_activity_reset_layer">Reset layer</string>
     <string name="editor_activity_conferma_salvataggio">Level saved</string>
     <string name="editor_activity_errore_salvataggio">Level not saved</string>
     <string name="editor_activity_sovrascrizione">Override message</string>

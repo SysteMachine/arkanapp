@@ -55,13 +55,13 @@
     <string name="editor_activity_modifica_parametri">Parametri</string>
     <string name="editor_activity_prova_livello">Test</string>
     <string name="editor_activity_salva_livello">Salva livello</string>
-    <string name="editor_activity_reset_layer">Resetta livello</string>
+    <string name="editor_activity_reset_layer">Resetta quadro</string>
     <string name="editor_activity_conferma_salvataggio">Livello salvato</string>
     <string name="editor_activity_errore_salvataggio">Livello non salvato</string>
     <string name="editor_activity_sovrascrizione">Messaggio sovrascrittura</string>
     <string name="editor_activity_sovrascrizione_descrizione">Vuoi sostituire questo livello?</string>
     <string name="editor_activity_reset">Messaggio reset</string>
-    <string name="editor_activity_reset_descrizione">Vuoi resettare questo livello?</string>
+    <string name="editor_activity_reset_descrizione">Vuoi resettare questo quadro?</string>
     <string name="editor_activity_cancellazione">Messaggio cancellazione</string>
     <string name="editor_activity_cancellazione_descrizione">Vuoi cancellare questo livello?</string>
     <string name="editor_activity_caricamento">Messaggio caricamento</string>

@@ -16,7 +16,7 @@ public class Agente implements Runnable{
 
     private  final ArrayList<Compito> compitiAgente;        //Compiti inseriti all'interno dell'agente
 
-    private Agente(String nomeAgente){
+    public Agente(String nomeAgente){
         this.idAgente = Agente.idCounter++;
         this.nomeAgente = nomeAgente;
 
