@@ -10,30 +10,29 @@ import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.Util.ParamList;
 
-public class ModalitaChaos extends ModalitaClassica{
+public class ModalitaTimeAttack extends ModalitaClassica{
 
-    protected int DIMENSIONE_ZONA_TIMER = 40;
+    protected int DIMENSIONE_ZONA_TIMER = 60;
 
     private CountDownTimer timer;
     private Boolean timerRunning;
     String tempoRimanente = "";
-    private long msTime = 30000; //30s in millisecondi
+    private long msTime = 180000; //3 minuti in millisecondi
+    int secondi;
+    long secondiRimanenti = 180000;
 
-    public ModalitaChaos(Stile stile, GameStatus status) {
+    public ModalitaTimeAttack(Stile stile, GameStatus status) {
         super(stile, status);
         this.inizializzaPowerUP();
         this.registraEventi();
         this.codiceModalita = 2;
         startTimer();
-        timerRunning = true;
     }
 
-    protected void InizializzaChaos(){
-        startTimer();
-        timerRunning = true;
-
+    @Override
+    protected void inizializzaPowerUP() {
+        super.inizializzaPowerUP();
     }
-
 
     protected void startStop(){
         if(timerRunning)
@@ -44,10 +43,12 @@ public class ModalitaChaos extends ModalitaClassica{
 
 
     protected void startTimer(){
+        timerRunning = true;
         timer = new CountDownTimer(msTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 msTime = millisUntilFinished;
+                secondiRimanenti = millisUntilFinished;
                 updateTimer();
             }
 
@@ -56,9 +57,8 @@ public class ModalitaChaos extends ModalitaClassica{
 
             }
         }.start();
-
-        timerRunning = true;
     }
+
 
     protected void stopTimer(){
         timer.cancel();
@@ -66,13 +66,12 @@ public class ModalitaChaos extends ModalitaClassica{
     }
 
     protected void updateTimer(){
-        int secondi = (int) msTime % 30000 / 1000; //conversione da millisecondi a secondi
+            secondi = (int) msTime / 1000; //conversione da millisecondi a secondi
 
-        if (secondi < 10)
-            tempoRimanente = "0" + secondi;
-        else
-            tempoRimanente = "" + secondi;
-
+            if (secondi < 10)
+                tempoRimanente = "0" + secondi;
+            else
+                tempoRimanente = "" + secondi;
     }
 
     @Override
@@ -112,6 +111,18 @@ public class ModalitaChaos extends ModalitaClassica{
     @Override
     protected void eventoRotturaBlocco(ParamList parametri) {
         super.eventoRotturaBlocco(parametri);
+
+        msTime = secondiRimanenti;
+        msTime += 5000;
+
+    }
+
+    public int getSecondi() {
+        return secondi;
+    }
+
+    public void setSecondi(int secondi) {
+        this.secondi = secondi;
     }
 
     @Override
@@ -128,5 +139,18 @@ public class ModalitaChaos extends ModalitaClassica{
     protected void eventoRaccoltaPowerup(ParamList parametri) {
         super.eventoRaccoltaPowerup(parametri);
     }
+
+    @Override
+    protected void registraEventi() {
+        super.registraEventi();
+    }
+
+    @Override
+    public boolean metodoGenerazioneMappa(int i, int j) {
+        return super.metodoGenerazioneMappa(i, j);
+    }
+
+
+
 }
 
