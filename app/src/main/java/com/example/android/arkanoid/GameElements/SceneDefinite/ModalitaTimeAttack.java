@@ -140,7 +140,7 @@ public class ModalitaTimeAttack extends ModalitaClassica {
 
     @Override
     protected void logicaAvanzamentoLivello() {
-        if(this.status != null && this.mappa.getTotalHealth() == 0 && this.status.getHealth() > 0){
+        if(this.status != null && this.mappa.getTotalHealth() == 0){
             //Se la vita totale dei blocchi presenti nella scena è 0 allora il giocatore ha terminato il livello
             this.timer.aggiungiSecondi(SECONDI_BONUS_COMPLETAMENTO_LIVELLO);
             this.status.incrementaPunteggio(this.PUNTI_PER_PARTITA);
