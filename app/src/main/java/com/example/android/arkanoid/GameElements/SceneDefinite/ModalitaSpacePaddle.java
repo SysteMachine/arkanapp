@@ -171,6 +171,7 @@ public class ModalitaSpacePaddle extends AbstractModalita implements Runnable{
                 this.timeStampBrick = System.currentTimeMillis();
 
                 SpaceBrick brick = this.bufferBrick.remove(0);
+                brick.setSpeed(new Vector2D(0, this.velocitaElementi));
                 this.addEntita(brick);
             }
         }else
