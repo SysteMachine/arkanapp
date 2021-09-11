@@ -17,6 +17,7 @@ import android.view.View;
 import com.example.android.arkanoid.GameCore.GameLoop;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractAlterazione;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
+import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameOverListener;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
@@ -268,6 +269,16 @@ public abstract class AbstractModalita extends AbstractScene implements View.OnT
      */
     protected abstract void inserimentoEntita();
 
+    /**
+     * Esegue il setup delle entità inserite nel buffer
+     * @param screenWidth Larghezza dello schermo
+     * @param screenHeight Altezza dello schermo
+     */
+    protected void setupEntita(int screenWidth, int screenHeight){
+        for(Entity e : this.bufferEntita)
+            e.setup(screenWidth, screenHeight, this.creaParametriEntita());
+    }
+
     @Override
     public void setup(int screenWidth, int screenHeight) {
         this.risorseCaricate = false;
@@ -278,6 +289,7 @@ public abstract class AbstractModalita extends AbstractScene implements View.OnT
         this.iniziallizzazioneEntita(screenWidth, screenHeight);
         this.inizializzazioneAudio();
         this.inserimentoEntita();
+        this.setupEntita(screenWidth, screenHeight);
 
         this.risorseCaricate = true;
     }
@@ -343,7 +355,6 @@ public abstract class AbstractModalita extends AbstractScene implements View.OnT
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if(this.owner.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            System.out.println("1");
             this.touchEvent(
                     new Vector2D(
                             event.getX() * (this.screenWidth / (float) v.getWidth()),

@@ -26,6 +26,7 @@
 
     <string name="fragment_selezione_modalita_modalita_classica">Classic mode</string>
     <string name="fragment_selezione_modalita_modalita_chaos">Chaos mode</string>
+    <string name="fragment_selezione_modalita_modalita_space_paddle">Space paddle</string>
 
     <string name="modalita_activity_seleziona_difficolta">Difficulty</string>
     <string name="modalita_activity_seleziona_difficolta_semplice">Easy</string>

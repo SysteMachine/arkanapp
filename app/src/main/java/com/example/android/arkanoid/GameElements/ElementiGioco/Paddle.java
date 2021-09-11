@@ -9,10 +9,10 @@ import com.example.android.arkanoid.Util.SpriteUtil.Sprite;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 public class Paddle extends Entity {
-    private final float TOLLERANZA = 25;                //Tolleranza della distanza nel raggiungimento della posizione target
+    protected final float TOLLERANZA = 25;                //Tolleranza della distanza nel raggiungimento della posizione target
 
-    private Vector2D startPosition;                     //Posizione iniziale del paddle
-    private float targetX;                              //Posizione target da raggiongere del paddle
+    protected Vector2D startPosition;                     //Posizione iniziale del paddle
+    protected float targetX;                              //Posizione target da raggiongere del paddle
 
     public Paddle(Vector2D position, Vector2D size, Vector2D speed, Sprite sprite) {
         super(

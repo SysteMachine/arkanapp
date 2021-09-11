@@ -20,8 +20,8 @@ public class Brick extends Entity {
     private int shakeDuration;                      //Durata dello shake
     private int msShake;                            //Ms di riferimento dello shake
 
-    private final int maxHealth;                    //Vita massima del brick
-    private int health;                             //Vita attuale del brick
+    protected int maxHealth;                    //Vita massima del brick
+    protected int health;                             //Vita attuale del brick
 
     private final MultiSprite spriteCrepe;          //Sprite delle crepe
 

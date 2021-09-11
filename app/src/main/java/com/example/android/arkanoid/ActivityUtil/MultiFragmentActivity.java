@@ -149,7 +149,6 @@ public class MultiFragmentActivity extends SoundControlActivity implements View.
         if(!this.fragmentVisible){
             if(fragment != null){
                 fragment.setRetainInstance(true);
-                System.out.println("commit aggiunto");
                 this.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(this.containerFragment.getId(), fragment)
@@ -170,7 +169,6 @@ public class MultiFragmentActivity extends SoundControlActivity implements View.
     private void rimuoviFragmentAttivo(){
         Fragment fragmentAttivo = this.getSupportFragmentManager().findFragmentById(this.containerFragment.getId());
         if(fragmentAttivo != null){
-            System.out.println("commit rimosso");
             this.getSupportFragmentManager()
                     .beginTransaction()
                     .remove(fragmentAttivo)

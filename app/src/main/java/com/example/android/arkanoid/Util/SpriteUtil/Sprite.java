@@ -209,6 +209,6 @@ public class Sprite {
     }
 
     public int getHeight(){
-        return this.aviable ? this.immagine.getWidth() : 0;
+        return this.aviable ? this.immagine.getHeight() : 0;
     }
 }
