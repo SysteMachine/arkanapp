@@ -6,6 +6,7 @@ public class KeepAssociationAgent extends Agente{
     public KeepAssociationAgent() {
         super("KeepAssociationAgent");
         this.addCompito(new MantieniConnessioneCompito());
+        this.MS_DELAY = 5000;
     }
 
     private class MantieniConnessioneCompito extends Compito{
@@ -15,10 +16,9 @@ public class KeepAssociationAgent extends Agente{
 
         @Override
         public void action() {
-            RecordSalvataggio recordSalvataggio = new RecordSalvataggio(GA.contesto);
-            if(recordSalvataggio.isLogin()){
+            if(GA.salvataggio.isLogin()){
                 MessageBox messageBox = new MessageBox(
-                        recordSalvataggio.getEmail(),
+                        GA.salvataggio.getEmail(),
                         this.myAgent.getNomeAgente(),
                         MessageBox.BROADCAST_MESSAGE,
                         this.myAgent.getNomeAgente(),

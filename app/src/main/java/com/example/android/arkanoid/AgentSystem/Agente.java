@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 public class Agente implements Runnable{
-    public final int MS_DELAY = 16;                //Tempo di attesa tra l'esecuzione dei compiti dell'agente
+    protected int MS_DELAY = 16;                            //Tempo di attesa tra l'esecuzione dei compiti dell'agente
 
     private static int idCounter;
 

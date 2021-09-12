@@ -76,7 +76,7 @@ public class multiplayer_activity extends AppCompatActivity implements View.OnCl
         }
 
         public void inviaMessaggio(String messaggio) {
-            RecordSalvataggio recordSalvataggio = new RecordSalvataggio(GA.contesto);
+            RecordSalvataggio recordSalvataggio = GA.salvataggio;
             MessageBox message = new MessageBox(
                     recordSalvataggio.getEmail(),
                     this.getNomeAgente(),

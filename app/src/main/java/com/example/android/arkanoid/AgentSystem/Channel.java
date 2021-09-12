@@ -39,7 +39,7 @@ public class Channel implements Runnable{
 
         if(rc != null){
             String stringaMessaggio = messaggio.getStringaMessaggio();
-            String ipMessaggio = rc.getIp();
+            String ipMessaggio = rc.getClientip().equals(rc.getIp()) ? rc.getLocalIp() : rc.getIp(); //Se chi invia e chi riceve appartengono allo stesso network, allora si invia usando l'ip locale
             int portaMessaggio = rc.getPorta();
 
             byte[] bufferMessaggio = stringaMessaggio.getBytes();  //Preleva il buffer dei byte per il messaggio
@@ -66,16 +66,21 @@ public class Channel implements Runnable{
         boolean esito = true;
 
         DF df =  (DF)GA.container.findAgenteByName("DF");
+        RecordClient[] listaRecordClient = df.getListaClient();
 
-        for(RecordClient rc : df.getListaClient()){
-            MessageBox nuovoMessaggio = new MessageBox(messaggio.getStringaMessaggio());
-            nuovoMessaggio.setTo(rc.getEmail());
+        if(listaRecordClient != null){
+            for(RecordClient rc : listaRecordClient){
+                MessageBox nuovoMessaggio = new MessageBox(messaggio.getStringaMessaggio());
+                nuovoMessaggio.setTo(rc.getEmail());
 
-            if(!nuovoMessaggio.getFrom().equals(nuovoMessaggio.getTo()) || !nuovoMessaggio.getFromAgentName().equals(nuovoMessaggio.getToAgentName())){
-                //Se il ricevitore è lo stesso che ha inviato il messaggio non lo invia
-                esito = esito && this.inviaMessaggio(nuovoMessaggio);
+                if(!nuovoMessaggio.getFrom().equals(nuovoMessaggio.getTo()) || !nuovoMessaggio.getFromAgentName().equals(nuovoMessaggio.getToAgentName())){
+                    //Se il ricevitore è lo stesso che ha inviato il messaggio non lo invia
+                    esito = esito && this.inviaMessaggio(nuovoMessaggio);
+                }
             }
         }
+
+
 
         return esito;
     }
@@ -99,10 +104,11 @@ public class Channel implements Runnable{
      */
     private void instradaMessaggio(MessageBox messaggio){
         if(!messaggio.getMessageType().equals(MessageBox.TYPE_IM_ALIVE)) {
-            System.out.println("Messaggio: " + messaggio.getContent());
             Agente agente = GA.container.findAgenteByName(messaggio.getToAgentName());
-            if (agente != null)
+            if (agente != null) {
+                System.out.println("L'agente " + agente.getNomeAgente() + " riceve: " + messaggio);
                 agente.riceviMessaggio(messaggio);
+            }
         }
     }
 
