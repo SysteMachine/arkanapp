@@ -6,6 +6,7 @@ public class Compito {
 
     public Compito(String nomeCompito){
         this.nomeCompito = nomeCompito;
+        System.out.println("Creato un compito: " + this.nomeCompito);
     }
 
     /**

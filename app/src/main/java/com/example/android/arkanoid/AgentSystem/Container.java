@@ -45,4 +45,12 @@ public class Container {
         }
         return esito;
     }
+
+    /**
+     * Restituisce la lista degli agenti nel container
+     * @return Lista degli agenti nel container
+     */
+    public Agente[] getListaAgenti(){
+        return this.agentiLocali.toArray(new Agente[0]);
+    }
 }

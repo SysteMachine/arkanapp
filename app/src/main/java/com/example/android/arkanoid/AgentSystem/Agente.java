@@ -14,31 +14,16 @@ public class Agente implements Runnable{
     private boolean agenteVivo;                             //Flag di vita dell'agente, se true l'agente è vivo ed esegue il thread
     private Thread threadAgente;                            //Thread di esecuzione dei compiti
 
-    private  final ArrayList<Compito> compitiAgente;        //Compiti inseriti all'interno dell'agente
+    private final ArrayList<Compito> compitiAgente;        //Compiti inseriti all'interno dell'agente
+    private final ArrayList<MessageBox> bufferMessaggi;    //Buffer dei messaggi in ingresso
 
     public Agente(String nomeAgente){
         this.idAgente = Agente.idCounter++;
         this.nomeAgente = nomeAgente;
 
         this.compitiAgente = new ArrayList<>();
+        this.bufferMessaggi = new ArrayList<>();
         this.setupCore();
-    }
-
-    /**
-     * Crea un nuovo agente
-     * @param nomeAgente Nome dell'agente da creare
-     * @return Restituisce l'esito della creazione, in caso di problemi restituisce null
-     */
-    public static Agente newAgente(String nomeAgente){
-        Agente esito = null;
-
-        if(!nomeAgente.equals("")) {
-            esito = new Agente(nomeAgente);
-            if(!GA.container.addAgente(esito))
-                esito = null;
-        }
-
-        return esito;
     }
 
     /**
@@ -98,6 +83,37 @@ public class Agente implements Runnable{
      */
     protected void takedonw(){}
 
+    /**
+     * Invia il messaggio
+     * @param messaggio Messaggio da inviare
+     */
+    public void inviaMessaggio(MessageBox messaggio){
+        if(messaggio.getTo().equals(MessageBox.BROADCAST_MESSAGE))
+            GA.channel.inviaBroadcast(messaggio);
+        else
+            GA.channel.inviaMessaggio(messaggio);
+    }
+
+    /**
+     * Riceve e gestisce un messaggio
+     * @param messaggio Messaggio da gestire
+     */
+    public void riceviMessaggio(MessageBox messaggio){
+        this.bufferMessaggi.add(messaggio);
+    }
+
+    /**
+     * Preleva il prossimo messaggio nella coda
+     * @return Restituisce un messaggio o null nel caso non ci siano messaggi in sospeso
+     */
+    public MessageBox prelevaMessaggio(){
+        MessageBox esito = null;
+
+        if(this.bufferMessaggi.size() > 0)
+            esito = this.bufferMessaggi.remove(0);
+
+        return esito;
+    }
 
 
     //Beam
@@ -125,6 +141,7 @@ public class Agente implements Runnable{
 
     @Override
     public void run() {
+        System.out.println("Avviato l'agente: " + this.nomeAgente);
         while(this.agenteVivo){
             for(Iterator<Compito> it = this.compitiAgente.iterator(); it.hasNext();) {
                 Compito compito = it.next();

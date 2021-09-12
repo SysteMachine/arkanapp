@@ -14,8 +14,11 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".multiplayer_activity"
+            android:theme="@style/fullScreenStyle" />
+        <activity
             android:name=".creazioni_activity"
-            android:theme="@style/fullScreenStyle"/>
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".crediti_activity"
             android:theme="@style/fullScreenStyle" />

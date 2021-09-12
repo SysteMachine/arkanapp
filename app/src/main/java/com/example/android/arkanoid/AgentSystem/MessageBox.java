@@ -6,6 +6,8 @@ public class MessageBox {
     public static String TYPE_PROPOSE = "PROPROSE";
     public static String TYPE_ACCEPT = "ACCEPT";
     public static String TYPE_REFUSE = "REFUSE";
+    public static String TYPE_IM_ALIVE = "IM_ALIVE";
+    public static String TYPE_TEXT_MESSAGE = "TEXT_MESSAGE";
 
     private String from;                    //Da chi arriva il messaggio
     private String fromAgentName;           //NOme dell'agente che invia il messaggio
@@ -30,7 +32,7 @@ public class MessageBox {
     public MessageBox(String inMessage){
         String[] partiMessaggio = inMessage.split(":");
         this.from = partiMessaggio[0];
-        this.toAgentName = partiMessaggio[1];
+        this.fromAgentName = partiMessaggio[1];
         this.to = partiMessaggio[2];
         this.toAgentName = partiMessaggio[3];
         this.messageType = partiMessaggio[4];

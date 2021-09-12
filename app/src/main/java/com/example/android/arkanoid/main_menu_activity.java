@@ -132,6 +132,8 @@ public class main_menu_activity extends MultiFragmentActivity implements View.On
             this.mostraFragment(new impostazioni_fragment(), true);
         if(v.equals(this.pulsanteCreazioni))
             this.startActivity(new Intent(this, creazioni_activity.class));
+        if(v.equals(this.pulsanteMultigiocatore))
+            this.startActivity(new Intent(this, multiplayer_activity.class));
     }
 
     @Override

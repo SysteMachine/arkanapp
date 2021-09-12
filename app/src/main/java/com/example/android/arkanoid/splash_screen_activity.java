@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.android.arkanoid.ActivityUtil.SoundControlActivity;
+import com.example.android.arkanoid.AgentSystem.GA;
 import com.example.android.arkanoid.Util.AudioUtil;
 
 public class splash_screen_activity extends SoundControlActivity implements View.OnClickListener {
@@ -17,6 +18,7 @@ public class splash_screen_activity extends SoundControlActivity implements View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GA.setup(this);
         this.setContentView(R.layout.activity_splash_screen);
     }
 
