@@ -37,19 +37,22 @@ public class Channel implements Runnable{
         DF df =  (DF)GA.container.findAgenteByName("DF");
         RecordClient rc = df.getClient(messaggio.getTo());
 
-        String stringaMessaggio = messaggio.getStringaMessaggio();
-        String ipMessaggio = rc.getIp();
-        int portaMessaggio = rc.getPorta();
+        if(rc != null){
+            String stringaMessaggio = messaggio.getStringaMessaggio();
+            String ipMessaggio = rc.getIp();
+            int portaMessaggio = rc.getPorta();
 
-        byte[] bufferMessaggio = stringaMessaggio.getBytes();  //Preleva il buffer dei byte per il messaggio
-        try{
-            InetAddress address = Inet4Address.getByName(ipMessaggio);
-            DatagramPacket pacchetto = new DatagramPacket(bufferMessaggio, bufferMessaggio.length, address, portaMessaggio);
-            if(this.socket != null) {
-                this.socket.send(pacchetto);
-                esito = true;
-            }
-        }catch (Exception e){e.printStackTrace();}
+            byte[] bufferMessaggio = stringaMessaggio.getBytes();  //Preleva il buffer dei byte per il messaggio
+            try{
+                InetAddress address = Inet4Address.getByName(ipMessaggio);
+                DatagramPacket pacchetto = new DatagramPacket(bufferMessaggio, bufferMessaggio.length, address, portaMessaggio);
+                if(this.socket != null) {
+                    this.socket.send(pacchetto);
+                    esito = true;
+                }
+            }catch (Exception e){e.printStackTrace();}
+        }
+
 
         return esito;
     }
