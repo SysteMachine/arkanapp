@@ -75,13 +75,14 @@ public class Agente implements Runnable{
         try{
             this.threadAgente.join();
         }catch (Exception e){e.printStackTrace();}
-        this.takedonw();
+        this.takedown();
+        System.out.println("Fermato l'agente: " + this.getNomeAgente());
     }
 
     /**
      * Operazioni di takedown aggiuntive
      */
-    protected void takedonw(){}
+    protected void takedown(){}
 
     /**
      * Invia il messaggio

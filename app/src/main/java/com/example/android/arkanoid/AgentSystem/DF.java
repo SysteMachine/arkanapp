@@ -28,7 +28,7 @@ public class DF extends Agente{
         StrictMode.setThreadPolicy(policy);
 
         this.client = new ArrayList<>();
-        this.MS_DELAY = 5000;
+        this.MS_DELAY = 2000;
 
         this.addCompito(new CompitoAggiornamentoStatoConnessione());
     }
@@ -166,7 +166,6 @@ public class DF extends Agente{
                 query = DBUtil.repalceJolly(query, "LOCAL", this.getMyLocalIp());
                 query = DBUtil.repalceJolly(query, "PORT", GA.channel.getPorta());
                 query = DBUtil.repalceJolly(query, "EMAIL", GA.salvataggio.getEmail());
-                System.out.println(query);
                 try{
                     DBUtil.executeQuery(query);
                 }catch (Exception e){e.printStackTrace();}
@@ -240,6 +239,8 @@ public class DF extends Agente{
             super.action();
             if(this.controlloPrimoRiferimento())
                 this.aggiornaRiferimento();
+            else
+                this.aggiungiPrimoRiferimento();
             this.recuperaConnessioni();
         }
     }

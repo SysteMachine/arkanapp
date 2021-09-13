@@ -32,8 +32,6 @@ public class Channel implements Runnable{
     public boolean inviaMessaggio(MessageBox messaggio){
         boolean esito = false;
 
-        System.out.println("Invio: " + messaggio.getStringaMessaggio());
-
         DF df =  (DF)GA.container.findAgenteByName("DF");
         RecordClient rc = df.getClient(messaggio.getTo());
 
@@ -106,7 +104,6 @@ public class Channel implements Runnable{
         if(!messaggio.getMessageType().equals(MessageBox.TYPE_IM_ALIVE)) {
             Agente agente = GA.container.findAgenteByName(messaggio.getToAgentName());
             if (agente != null) {
-                System.out.println("L'agente " + agente.getNomeAgente() + " riceve: " + messaggio);
                 agente.riceviMessaggio(messaggio);
             }
         }

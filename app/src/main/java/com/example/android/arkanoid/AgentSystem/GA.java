@@ -20,7 +20,19 @@ public class GA {
             GA.setup = true;
             GA.container.addAgente(new DF());
             GA.container.addAgente(new KeepAssociationAgent());
-            GA.channel = new Channel();
+            if(GA.channel == null)
+                GA.channel = new Channel();
+        }
+    }
+
+    /**
+     * Reset del GA
+     */
+    public static void cancel(){
+        if(GA.setup){
+            for(Agente a : GA.container.getListaAgenti())
+                a.doDelete();
+            GA.setup = false;
         }
     }
 }

@@ -11,6 +11,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import com.example.android.arkanoid.ActivityUtil.MultiFragmentActivity;
+import com.example.android.arkanoid.AgentSystem.GA;
 import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
 import com.example.android.arkanoid.FragmentMenu.impostazioni_fragment;
 import com.example.android.arkanoid.FragmentMenu.selezione_modalita_fragment;
@@ -32,6 +33,10 @@ public class main_menu_activity extends MultiFragmentActivity implements View.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
+        //Avvia il sistema ad agenti
+        RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this);
+        if(recordSalvataggio.isLogin())
+            GA.setup(this);
         this.prendiRiferimenti();
         this.cambiaMenuPrincipale();
     }
@@ -102,8 +107,10 @@ public class main_menu_activity extends MultiFragmentActivity implements View.On
         recordSalvataggio.setEmail("");
 
         Intent intent = new Intent(this, login_activity.class);
-        if(wasLogged)
+        if(wasLogged) {
+            GA.cancel();    //Ferma il sistema ad agenti
             intent.putExtra(login_activity.ERROR_MESSAGE, this.getResources().getString(R.string.logout_messaggio_conferma));
+        }
         this.startActivity(intent);
     }
 

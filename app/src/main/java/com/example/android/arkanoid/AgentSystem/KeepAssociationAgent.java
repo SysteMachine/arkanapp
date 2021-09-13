@@ -6,7 +6,7 @@ public class KeepAssociationAgent extends Agente{
     public KeepAssociationAgent() {
         super("KeepAssociationAgent");
         this.addCompito(new MantieniConnessioneCompito());
-        this.MS_DELAY = 5000;
+        this.MS_DELAY = 2000;
     }
 
     private class MantieniConnessioneCompito extends Compito{

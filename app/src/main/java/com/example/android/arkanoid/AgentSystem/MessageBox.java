@@ -2,10 +2,10 @@ package com.example.android.arkanoid.AgentSystem;
 
 public class MessageBox {
     public static String BROADCAST_MESSAGE = "MESSAGE_BOX_BROADCAST";
-    public static String TYPE_REQUEST = "REQUEST";
+    public static String TYPE_CALL_FOR_PROPOSAL = "CALL_FOR_PROPOSAL";
     public static String TYPE_PROPOSE = "PROPROSE";
+    public static String TYPE_REJECT = "REJECT";
     public static String TYPE_ACCEPT = "ACCEPT";
-    public static String TYPE_REFUSE = "REFUSE";
     public static String TYPE_IM_ALIVE = "IM_ALIVE";
     public static String TYPE_TEXT_MESSAGE = "TEXT_MESSAGE";
 
