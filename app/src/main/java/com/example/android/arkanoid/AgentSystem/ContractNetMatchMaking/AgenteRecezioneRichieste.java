@@ -1,4 +1,9 @@
 package com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking;
 
-public class AgenteRecezioneRichieste {
+import com.example.android.arkanoid.AgentSystem.Agente;
+
+public class AgenteRecezioneRichieste extends Agente {
+    public AgenteRecezioneRichieste() {
+        super("AgenteRecezioneRichieste");
+    }
 }

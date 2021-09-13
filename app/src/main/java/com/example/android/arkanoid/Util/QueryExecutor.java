@@ -1,6 +1,7 @@
 package com.example.android.arkanoid.Util;
 import android.widget.ArrayAdapter;
 
+import com.example.android.arkanoid.AgentSystem.GA;
 import com.example.android.arkanoid.R;
 
 import org.json.JSONObject;
@@ -26,6 +27,8 @@ public class QueryExecutor {
     private static String QUERY_RECUPERO_LIVELLI_CON_FILTRO = "SELECT creazioni_nome AS NOME FROM creazioni WHERE creazioni_nome LIKE FILTRO ORDER BY creazioni_nome";
     private static String QUERY_RECUPERO_CLASSIFICA = "SELECT punteggio_punteggio AS PUNTEGGIO, user_username AS USERNAME, punteggio_modalita AS MODALITA from punteggio INNER JOIN user ON punteggio_user_email = user_email ORDER BY punteggio_punteggio DESC LIMIT 20";
     private static String QUERY_RECUPERO_PUNTEGGIO_MASSIMO_CLASSIFICA_GIOCATORE = "SELECT max(punteggio_punteggio) AS MASSIMO FROM punteggio WHERE punteggio_user_email LIKE EMAIL";
+    private static String QUERY_RECUPERO_MEDIA_MASSIMO_PUNTEGGIO = "SELECT MAX(punteggio_punteggio) AS MASSIMO, AVG(punteggio_punteggio) AS MEDIA, punteggio_user_email AS USER FROM punteggio WHERE punteggio_user_email LIKE EMAIL";
+
     public static boolean pubblicaPunteggio(int punteggio, int codiceModalita, String email) throws Exception{
         boolean esito = false;
 
@@ -265,5 +268,30 @@ public class QueryExecutor {
         }
 
         return esito;
+    }
+
+    /**
+     * Restituisce i parametri dell'account
+     * @param email Email dell'account
+     * @return Parametri dell'account
+     */
+    public static float[] getParametriAccount(String email){
+        float[] parametri = new float[2];
+
+        if(GA.salvataggio.isLogin()){
+            String query = DBUtil.repalceJolly(QueryExecutor.QUERY_RECUPERO_MEDIA_MASSIMO_PUNTEGGIO, "EMAIL", email);
+            try{
+                String esitoQuery = DBUtil.executeQuery(query);
+                if(!esitoQuery.equals("ERROR") && !esitoQuery.contains("null")){
+                    JSONObject jsonObject = new JSONObject(esitoQuery);
+                    parametri[0] = (float)jsonObject.getDouble("MASSIMO");
+                    parametri[1] = (float)jsonObject.getDouble("MEDIA");
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return parametri;
     }
 }
