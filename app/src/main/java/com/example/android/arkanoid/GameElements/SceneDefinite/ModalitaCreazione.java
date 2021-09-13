@@ -1,5 +1,8 @@
 package com.example.android.arkanoid.GameElements.SceneDefinite;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
 import com.example.android.arkanoid.Editor.LayerLivello;
 import com.example.android.arkanoid.Editor.Livello;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
@@ -41,6 +44,13 @@ public class ModalitaCreazione extends ModalitaClassica{
         }
 
         return esito;
+    }
+
+    @Override
+    protected void logicaTerminazionePartita() {
+        if(this.status.getHealth() == 0){
+            this.gameOverListener.gameOver(this.status);
+        }
     }
 
     @Override

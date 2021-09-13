@@ -251,6 +251,10 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
             if(!datiLivello.equals("")){
                 creazioni_activity.nomeLivello = nomeLivello;
                 Livello livello = new Livello(datiLivello, true);
+                if(creazioni_activity.modalita != null) {
+                    creazioni_activity.modalita.setGameOverListener(null);
+                    this.gameLoop.removeAll();
+                }
                 creazioni_activity.modalita = new ModalitaCreazione(this.getStile(livello), new GameStatus(5, 0, this.modalitaControllo), livello);
                 creazioni_activity.modalita.setGameOverListener(this);
                 gameLoop.addGameComponent(creazioni_activity.modalita);
@@ -394,12 +398,14 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
 
     @Override
     public void gameOver(GameStatus status) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mostraMenuGameOver();
-            }
-        });
+        if(!this.gameOver){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mostraMenuGameOver();
+                }
+            });
+        }
     }
 
     @Override
@@ -410,6 +416,7 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
         }
         if(this.gameOver){
             if(eventId.equals("PRIMO")){
+                this.gameLoop.stop();
                 this.nascondiMenuGameOver();
                 this.caricaModalita(creazioni_activity.nomeLivello);
             }

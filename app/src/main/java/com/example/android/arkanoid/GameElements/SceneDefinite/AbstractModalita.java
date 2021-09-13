@@ -49,6 +49,7 @@ public abstract class AbstractModalita extends AbstractScene implements View.OnT
     protected boolean risorseCaricate;                                  //Flag di caricamento delle risorse
 
     protected GameOverListener gameOverListener;                        //Listener per il gameOver
+    protected boolean gameOverLanciato;                                 //Indica se ha mai lanciato il gameOver
 
     //Gestione dei sensori
     protected float rotazioneAsseZ;                                     //Rotazione sull'asseZ del disposititvo
@@ -198,8 +199,10 @@ public abstract class AbstractModalita extends AbstractScene implements View.OnT
      * Controlla le azioni e le condizioni che portano alla conclusione della partita
      */
     protected void logicaTerminazionePartita(){
-        if(this.status.getHealth() == 0 && this.gameOverListener != null)
+        if(this.status.getHealth() == 0 && this.gameOverListener != null && !this.gameOverLanciato){
+            this.gameOverLanciato = true;
             this.gameOverListener.gameOver(this.status);
+        }
     }
 
     /**
