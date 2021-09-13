@@ -98,4 +98,6 @@
     <string name="pausa_generica_fragment_pausa_secondo_pulsante">Menu</string>
     <string name="pausa_generica_fragment_gameover_primo_pulsante">Play again</string>
     <string name="pausa_generica_fragment_gameover_secondo_pulsante">Menu</string>
+
+    <string name="multiplayer_activity_matchmaking_messaggio">Match making</string>
 </resources>

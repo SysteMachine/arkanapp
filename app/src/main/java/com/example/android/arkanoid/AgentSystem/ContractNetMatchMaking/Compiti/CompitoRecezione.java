@@ -17,25 +17,23 @@ public class CompitoRecezione extends Compito {
 
     public CompitoRecezione() {
         super("CompitoRecezione");
-        this.canAccept = true;
+        this.canAccept = false;
     }
-
 
     @Override
     public void action() {
         MessageBox messaggio = this.myAgent.prelevaMessaggio();
         if(messaggio != null && !messaggio.getFrom().equals(GA.salvataggio.getEmail())){
-            if(messaggio.getMessageType().equals(MessageBox.TYPE_CALL_FOR_PROPOSAL)){
-                System.out.println("Ricevuta una richiesta da " + messaggio.getFrom());
+            if(messaggio.getMessageType().equals(MessageBox.TYPE_CALL_FOR_PROPOSAL) && this.canAccept){
+                System.out.println("Ricevuta una richiesta di proposta da " + messaggio.getFrom());
                 float[] params = QueryExecutor.getParametriAccount(GA.salvataggio.getEmail());
-                String content = "PARAMETRI=" + params[0] + "-" + params[1];
                 MessageBox risposta = new MessageBox(
                         GA.salvataggio.getEmail(),
                         this.myAgent.getNomeAgente(),
                         messaggio.getFrom(),
                         messaggio.getFromAgentName(),
                         MessageBox.TYPE_PROPOSE,
-                        content
+                        "PARAMETRI=" + params[0] + "-" + params[1]
                 );
                 System.out.println("Invio una proposta a " + messaggio.getFrom());
                 this.myAgent.inviaMessaggio(risposta);
@@ -50,28 +48,27 @@ public class CompitoRecezione extends Compito {
                         this.canAccept ? MessageBox.TYPE_ACCEPT : MessageBox.TYPE_REJECT,
                         "RESPONSE"
                 );
-                System.out.println("Ricevuta una richiesta da: " + messaggio.getFrom() + "ed io posso: " + this.canAccept);
+                System.out.println("Ricevuta una conferma da: " + messaggio.getFrom() + " la mia risposta sarà: " + this.canAccept);
                 this.myAgent.inviaMessaggio(risposta);
                 if(this.canAccept && this.listener != null) {
                     this.canAccept = false;
-                    this.listener.match(messaggio.getFrom());
+                    this.listener.match(this.myAgent, messaggio.getFrom());
                 }
             }
         }
     }
-
-    /**
-     * Ripristina lo stato di accettazione
-     */
-    public void reset(){
-        this.canAccept = true;
-    }
-
     //Beam
+
+
+    public void setCanAccept(boolean canAccept) {
+        this.canAccept = canAccept;
+    }
 
     public void setListener(MatchListener listener) {
         this.listener = listener;
     }
 
-
+    public boolean isCanAccept() {
+        return canAccept;
+    }
 }

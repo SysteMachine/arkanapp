@@ -4,6 +4,7 @@ import android.os.StrictMode;
 
 import com.example.android.arkanoid.DataStructure.RecordSalvataggio;
 import com.example.android.arkanoid.Util.DBUtil;
+import com.example.android.arkanoid.Util.Util;
 
 import org.json.JSONObject;
 
@@ -102,25 +103,6 @@ public class DF extends Agente{
         }
 
         /**
-         * Preleva l'indirrizzo ip globale del client
-         * @return Restituisce una stringa che contiente l'ip del dispositivo
-         */
-        private String getMyIp(){
-            String ip = "";
-
-            try{
-                HttpURLConnection connection = (HttpURLConnection) new URL(this.URL_MY_IP).openConnection();
-                connection.setDoOutput(true);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                ip = reader.readLine();
-                reader.close();
-                connection.disconnect();
-            }catch (Exception e){e.printStackTrace();}
-
-            return ip;
-        }
-
-        /**
          * Preleva l'indirrizzo ip locale del client
          * @return Restituisce una stringa che contiente l'ip del dispositivo
          */
@@ -160,9 +142,9 @@ public class DF extends Agente{
          * Aggiunge il nuovo riferimento nella df_table
          */
         private void aggiungiPrimoRiferimento(){
-            String indirizzoIp = this.getMyIp();
+            String indirizzoIp = Util.getMyIp();
             if(GA.salvataggio.isLogin() && !indirizzoIp.equals("")){
-                String query = DBUtil.repalceJolly(this.QUERY_INSERIMENTO_GIOCATORE, "IP", this.getMyIp());
+                String query = DBUtil.repalceJolly(this.QUERY_INSERIMENTO_GIOCATORE, "IP", indirizzoIp);
                 query = DBUtil.repalceJolly(query, "LOCAL", this.getMyLocalIp());
                 query = DBUtil.repalceJolly(query, "PORT", GA.channel.getPorta());
                 query = DBUtil.repalceJolly(query, "EMAIL", GA.salvataggio.getEmail());
@@ -179,7 +161,7 @@ public class DF extends Agente{
         private boolean controlloPrimoRiferimento(){
             boolean esito = false;
 
-            String indirizzoIp = this.getMyIp();
+            String indirizzoIp = Util.getMyIp();
             if(GA.salvataggio.isLogin() && !indirizzoIp.equals("")){
                 String query = DBUtil.repalceJolly(this.QUERY_CONTROLLO_ESISTENZA_RIFERIMENTO, "EMAIL", GA.salvataggio.getEmail());
                 try{
@@ -196,9 +178,9 @@ public class DF extends Agente{
          * Aggiorna il riferimento all'interno della df_table
          */
         private void aggiornaRiferimento(){
-            String indirizzoIp = this.getMyIp();
+            String indirizzoIp = Util.getMyIp();
             if(GA.salvataggio.isLogin() && !indirizzoIp.equals("")){
-                String query = DBUtil.repalceJolly(this.QUERY_AGGIORNAMENTO_QUERY, "IP", this.getMyIp());
+                String query = DBUtil.repalceJolly(this.QUERY_AGGIORNAMENTO_QUERY, "IP", Util.getMyIp());
                 query = DBUtil.repalceJolly(query, "LOCAL", this.getMyLocalIp());
                 query = DBUtil.repalceJolly(query, "PORTA", GA.channel.getPorta());
                 query = DBUtil.repalceJolly(query, "EMAIL", GA.salvataggio.getEmail());
@@ -218,7 +200,7 @@ public class DF extends Agente{
                     String esitoQuery = DBUtil.executeQuery(query);
                     if(!esitoQuery.equals("ERROR")){
                         //Se la query viene eseguita correttamente
-                        String mioip = this.getMyIp();
+                        String mioip = Util.getMyIp();
 
                         DF df = (DF)this.myAgent;
                         df.resetClient();

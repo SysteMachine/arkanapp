@@ -2,6 +2,7 @@ package com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking.Compiti;
 
 import com.example.android.arkanoid.AgentSystem.Compito;
 import com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking.MatchListener;
+import com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking.RecordProposta;
 import com.example.android.arkanoid.AgentSystem.GA;
 import com.example.android.arkanoid.AgentSystem.MessageBox;
 import com.example.android.arkanoid.Util.QueryExecutor;
@@ -9,7 +10,7 @@ import com.example.android.arkanoid.Util.QueryExecutor;
 import java.util.ArrayList;
 
 public class CompitoRichiesta extends Compito {
-    private final float[] pesiRichieste = {0.1f, 0.9f};
+    private final float[] pesiRichieste = {0.1f, 0.9f};             //Pesi dei valori di proposta
 
     private final int TEMPO_MASSIMO_ATTESA_PROPOSTE = 5000;         //Tempo massimo di attesa per le proposte
     private final int TEMPO_MASSIMO_ATTESA_CONFERMA_FINALE = 2000;  //Tempo massimo di conferma finale
@@ -26,15 +27,25 @@ public class CompitoRichiesta extends Compito {
 
     public CompitoRichiesta() {
         super("CompitoRichiesta");
+
         this.proposte = new ArrayList<>();
-        this.canAccept = true;
-        this.fase = 0;
+        this.canAccept = false;
+        this.fase = -1;
     }
 
-    @Override
-    public void action() {
-        if(this.fase == 0){
-            //Fase di richiesta
+    /**
+     * Fase di stallo
+     */
+    private void fasem1(){
+        if(this.canAccept)
+            this.fase = 0;
+    }
+
+    /**
+     * Fase di invio delle richieste
+     */
+    private void fase0(){
+        if(this.canAccept){
             System.out.println("Invio una richiesta di match");
             MessageBox message = new MessageBox(
                     GA.salvataggio.getEmail(),
@@ -45,106 +56,128 @@ public class CompitoRichiesta extends Compito {
                     "EMPTY");
             this.myAgent.inviaMessaggio(message);
             this.timeStampInizioAttesaRispote = System.currentTimeMillis();
-            this.fase = 1;
             this.proposte.clear();
-        }
-        if(this.fase == 1){
-            //Fase di accettazione
-            System.out.println("Inizio a ricevere le connessioni");
+            System.out.println("Inizio a ricevere le risposte");
+            this.fase = 1;
+        }else this.fase = -1;
+    }
+
+    /**
+     * Fase 1 di accettazione delle richieste
+     */
+    private void fase1(){
+        if(this.canAccept){
             if(System.currentTimeMillis() - this.timeStampInizioAttesaRispote < this.TEMPO_MASSIMO_ATTESA_PROPOSTE){
-                //Se il tempo trascorso non supera il massimo definito
                 MessageBox messaggio = this.myAgent.prelevaMessaggio();
                 if(messaggio != null && messaggio.getMessageType().equals(MessageBox.TYPE_PROPOSE)){
-                    System.out.println("Ricevuta una proposta da " + messaggio.getFrom());
+                    System.out.println("Ricevuta una risposta dall'agente dell'utente " + messaggio.getFrom() + ":" + messaggio.getFromAgentName());
                     this.proposte.add(this.generaRecordProposta(messaggio));
                 }
             }else{
-                System.out.println("Terminata la recezione, arrivate: " + this.proposte.size() + " richieste. Inizio controllo");
+                System.out.println("Fase di recezione delle risposte conclusa");
                 this.fase = 2;
             }
-        }
-        if(this.fase == 2){
-            //Fase di scelta
-            System.out.println("Inizamo a scegliere");
+        }else this.fase = -1;
+    }
+
+    /**
+     * Fase di selezione del migliore agente da contattare
+     */
+    private void fase2(){
+        if(this.canAccept){
+            System.out.println("Fase di ricerca della migliore associazzione");
             if(this.proposte.size() != 0){
+                //Se sono state ricevute delle richieste
                 float[] statistiche = QueryExecutor.getParametriAccount(GA.salvataggio.getEmail());
                 float mioPunteggio = this.getPunteggio(new RecordProposta(GA.salvataggio.getEmail(), statistiche[0], statistiche[1]));
 
                 RecordProposta recordProposta = this.proposte.get(0);
                 float primaDistanza = Math.abs(mioPunteggio - this.getPunteggio(recordProposta));
                 for(int i = 1; i < this.proposte.size(); i++){
-                    //Controlliamo tutte le proposte
-
+                    //Controlliamo tutte le proposte e se la distanza tra i punteggi è minore di quella presente viene fatto lo scambio
                     float distanza = Math.abs(mioPunteggio - this.getPunteggio(this.proposte.get(i)));
                     if(distanza < primaDistanza) {
                         primaDistanza = distanza;
                         recordProposta = this.proposte.get(i);
                     }
                 }
-                System.out.println("Scelto: " + recordProposta.getEmail());
+                System.out.println("L'utente migliore per il match è: " + recordProposta.getEmail());
                 this.propostaTarget = recordProposta;
                 this.fase = 3;
-            }else this.fase = 0;
-        }
-        if(this.fase == 3){
-            //Fase di conferma
-            if(this.propostaTarget != null){
-                if(this.canAccept){
-                    System.out.println("Invio conferma a " + this.propostaTarget.getEmail());
-                    MessageBox messggio = new MessageBox(
-                            GA.salvataggio.getEmail(),
-                            this.myAgent.getNomeAgente(),
-                            this.propostaTarget.email,
-                            "AgenteRecezioneRichieste",
-                            MessageBox.TYPE_ACCEPT,
-                            "ACCEPT"
-                    );
-                    this.myAgent.inviaMessaggio(messggio);
-                    this.timeStampInizioAttesaFinale = System.currentTimeMillis();
-                    this.fase = 4;
-                }else this.fase = 6;//Non trova il match e si chiude
-            }else this.fase = 0;
-        }
-        if(this.fase == 4){
-            //Fase finale di conferma
-            if(System.currentTimeMillis() - this.timeStampInizioAttesaFinale < this.TEMPO_MASSIMO_ATTESA_CONFERMA_FINALE){
-                MessageBox messaggio = this.myAgent.prelevaMessaggio();
-                if(messaggio != null){
-                    if(messaggio.getMessageType().equals(MessageBox.TYPE_ACCEPT))
-                        this.fase = 5;//Abbiamo terminato e possiamo consegnare il match
-                    else if(messaggio.getMessageType().equals(MessageBox.TYPE_REJECT))
-                        this.fase = 0;//l'agente non può più unirsi e restituisce reject, ricominciamo a cercare
-                }
-            }else this.fase = 0;
-        }
-    }
-
-    @Override
-    public boolean done() {
-        boolean esito = false;
-        if(this.fase == 5){
-            System.out.println("Trovato il match con: " + this.getMatch());
-            esito = true;
-            if(this.listener != null)
-                this.listener.match(this.getMatch());
-        }
-        if(this.fase == 6){
-            esito = true;
-        }
-        return esito;
+            }else {
+                System.out.println("Non sono state ricevute proposte, ritorno alla fase 0");
+                this.fase = 0;
+            }
+        }else this.fase = -1;
     }
 
     /**
-     * Restituisce il match migliore
-     * @return Restituisce la mail del giocatore in caso di avvenuto match, altrimenti restituisce null
+     * Fase di conferma dell'associazione
      */
-    public String getMatch(){
-        String esito = null;
+    private void fase3(){
+        if(this.canAccept){
+            if(this.propostaTarget != null){
+                System.out.println("Invio conferma a " + this.propostaTarget.getEmail());
+                MessageBox messggio = new MessageBox(
+                        GA.salvataggio.getEmail(),
+                        this.myAgent.getNomeAgente(),
+                        this.propostaTarget.getEmail(),
+                        "AgenteRecezioneRichieste",
+                        MessageBox.TYPE_ACCEPT,
+                        "ACCEPT"
+                );
+                this.timeStampInizioAttesaFinale = System.currentTimeMillis();
+                this.myAgent.inviaMessaggio(messggio);
+                System.out.println("Attendo la conferma finale da " + this.propostaTarget.getEmail());
+                this.fase = 4;
+            }else{
+                System.out.println("La proposta target è vuota, ritorno alla fase 0");
+                this.fase = 0;
+            }
+        }else this.fase = -1;
+    }
 
-        if(this.fase == 5 && this.propostaTarget != null)
-            esito = this.propostaTarget.email;
+    /**
+     * Fase conclusiva di risposta dall'altro agente
+     */
+    private void fase4(){
+        if(this.canAccept){
+            if(System.currentTimeMillis() - this.timeStampInizioAttesaFinale < this.TEMPO_MASSIMO_ATTESA_CONFERMA_FINALE){
+                MessageBox messaggio = this.myAgent.prelevaMessaggio();
+                if(messaggio != null){
+                    if(messaggio.getMessageType().equals(MessageBox.TYPE_ACCEPT)){
+                        System.out.println(propostaTarget.getEmail() + " Ha accettato la nostra richiesta match avvenuto!");
+                        if(this.listener != null){
+                            this.fase = -1;
+                            this.canAccept = false;
+                            this.listener.match(this.myAgent, this.propostaTarget.getEmail());
+                        }
+                    }else if(messaggio.getMessageType().equals(MessageBox.TYPE_REJECT)){
+                        System.out.println(propostaTarget.getEmail() + " non ha accettato la nostra richiesta, ritorno alla fase 0");
+                        this.fase = 0;
+                    }
+                }
+            }else{
+                System.out.println("Tempo di attesa per la riposta finale conluso, ritorno alla fase 0");
+                this.fase = 0;
+            }
+        }else this.fase = -1;
+    }
 
-        return esito;
+    @Override
+    public void action() {
+        if(this.fase == -1)
+            this.fasem1();
+        if(this.fase == 0)
+            this.fase0();
+        if(this.fase == 1)
+            this.fase1();
+        if(this.fase == 2)
+            this.fase2();
+        if(this.fase == 3)
+            this.fase3();
+        if(this.fase == 4)
+            this.fase4();
     }
 
     /**
@@ -165,12 +198,10 @@ public class CompitoRichiesta extends Compito {
      * @return Restituisce un RecordProposta
      */
     private RecordProposta generaRecordProposta(MessageBox messaggio){
-        System.out.println(messaggio.getStringaMessaggio());
         String email = messaggio.getFrom();
         String[] content = messaggio.getContent().split("=")[1].split("-");
         float massimo = Float.valueOf(content[0]);
         float media = Float.valueOf(content[1]);
-
         return new RecordProposta(email, massimo, media);
     }
 
@@ -183,28 +214,7 @@ public class CompitoRichiesta extends Compito {
         this.canAccept = canAccept;
     }
 
-    //Reconrd che contiene la risposta dell'agente
-    private class RecordProposta{
-        private String email;
-        private float punteggioMassimo;
-        private float punteggioMedio;
-
-        public RecordProposta(String email, float punteggioMassimo, float punteggioMedio) {
-            this.email = email;
-            this.punteggioMassimo = punteggioMassimo;
-            this.punteggioMedio = punteggioMedio;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public float getPunteggioMassimo() {
-            return punteggioMassimo;
-        }
-
-        public float getPunteggioMedio() {
-            return punteggioMedio;
-        }
+    public boolean isCanAccept() {
+        return canAccept;
     }
 }

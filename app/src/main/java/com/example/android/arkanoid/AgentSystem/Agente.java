@@ -24,6 +24,11 @@ public class Agente implements Runnable{
         this.compitiAgente = new ArrayList<>();
         this.bufferMessaggi = new ArrayList<>();
         this.setupCore();
+
+        Agente vecchioAgente = GA.container.findAgenteByName(nomeAgente);
+        if(vecchioAgente != null)
+            vecchioAgente.doDelete();
+        GA.container.addAgente(this);
     }
 
     /**
@@ -50,6 +55,7 @@ public class Agente implements Runnable{
      */
     public void doDelete(){
         this.takedownCore();
+        GA.container.removeAgente(this);
     }
 
     /**
@@ -147,8 +153,10 @@ public class Agente implements Runnable{
             for(Iterator<Compito> it = this.compitiAgente.iterator(); it.hasNext();) {
                 Compito compito = it.next();
                 compito.action();
-                if(compito.done())
+                if(compito.done()) {
                     it.remove();
+                    System.out.println("Rimosso il compito " + compito.getNomeCompito() + " dall'agente: " + this.nomeAgente);
+                }
             }
 
             try{

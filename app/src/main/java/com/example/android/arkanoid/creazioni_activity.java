@@ -259,6 +259,8 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
 
                 this.containerModalita.setVisibility(View.VISIBLE);
                 this.inGame = true;
+                this.inPause = false;
+                this.gameOver = false;
             }
         }catch (Exception e){e.printStackTrace();}
     }

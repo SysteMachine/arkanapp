@@ -18,8 +18,8 @@ public class GA {
         if(!GA.setup){
             GA.salvataggio = new RecordSalvataggio(context);
             GA.setup = true;
-            GA.container.addAgente(new DF());
-            GA.container.addAgente(new KeepAssociationAgent());
+            new DF();
+            new KeepAssociationAgent();
             if(GA.channel == null)
                 GA.channel = new Channel();
         }

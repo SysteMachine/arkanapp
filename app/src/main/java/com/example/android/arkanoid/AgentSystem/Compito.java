@@ -34,4 +34,10 @@ public class Compito {
      * @return Restituisce l'esito della conclusione delle attivita
      */
     public boolean done(){return false;};
+
+
+    //Beam
+    public String getNomeCompito() {
+        return nomeCompito;
+    }
 }

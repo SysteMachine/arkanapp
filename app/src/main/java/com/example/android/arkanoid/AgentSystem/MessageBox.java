@@ -8,6 +8,8 @@ public class MessageBox {
     public static String TYPE_ACCEPT = "ACCEPT";
     public static String TYPE_IM_ALIVE = "IM_ALIVE";
     public static String TYPE_TEXT_MESSAGE = "TEXT_MESSAGE";
+    public static String CONFIRM_REQUEST = "CONFIRM_REQUEST";
+    public static String CONFIRM = "CONFIRM";
 
     private String from;                    //Da chi arriva il messaggio
     private String fromAgentName;           //NOme dell'agente che invia il messaggio
