@@ -4,8 +4,12 @@ import com.example.android.arkanoid.AgentSystem.Agente;
 import com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking.Compiti.CompitoConferma;
 import com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking.Compiti.CompitoRecezione;
 import com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking.Compiti.CompitoRichiesta;
+import com.example.android.arkanoid.AgentSystem.DF;
 import com.example.android.arkanoid.AgentSystem.GA;
+import com.example.android.arkanoid.AgentSystem.RecordClient;
 import com.example.android.arkanoid.Multiplayer.ServerMultiplayer;
+import com.example.android.arkanoid.Util.Util;
+import com.example.android.arkanoid.multiplayer_activity;
 
 public class AgenteDiMatching extends Agente implements MatchListener{
     private AgenteRichiesta agenteRichiesta;                            //Agente di richiesta
@@ -15,9 +19,11 @@ public class AgenteDiMatching extends Agente implements MatchListener{
     private CompitoRecezione compitoRecezione;                          //Compito dell'agente di recezione
 
     private String emailMatch;                                          //Email di match
+    private multiplayer_activity activity;                              //Activity di multiplayer
 
-    public AgenteDiMatching() {
+    public AgenteDiMatching(multiplayer_activity activity) {
         super("AgenteMatching");
+        this.activity = activity;
         this.agenteRichiesta = new AgenteRichiesta();
         this.agenteRecezioneRichieste = new AgenteRecezioneRichieste();
 
@@ -55,7 +61,26 @@ public class AgenteDiMatching extends Agente implements MatchListener{
         }
 
         if(statoConferma){
-            //TODO: avviare il client con una chiamata di callback
+            //Avviamo il client con una chiamata di callback all'activity
+            DF df = (DF)GA.container.findAgenteByName("DF");
+            String ip = "";
+            int porta = -1;
+            if(host){
+                //Se l'host è questo giocatore
+                RecordClient client = df.getClient(GA.salvataggio.getEmail());
+                if(client != null)
+                    ip = client.getLocalIp();
+                    porta = GA.channel.getPorta() + 2;
+            }else{
+                //Se l'host è l'altro giocatore
+                RecordClient client = df.getClient(this.emailMatch);
+                if(client != null) {
+                    ip = client.getClientip().equals(client.getIp()) ? client.getLocalIp() : client.getIp();
+                    porta = client.getPorta() + 2;
+                }
+            }
+            this.activity.avviaModalita(ip, porta);
+            //String ipServer
         }else{
             //Se non c'è stata la conferma si ritorna a fare il matchmaking
             System.out.println("Nessuna conferma di connessione, riavviamo il matchmaking");

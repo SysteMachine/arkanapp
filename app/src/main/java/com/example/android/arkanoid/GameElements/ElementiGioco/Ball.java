@@ -15,13 +15,13 @@ public class Ball extends Entity {
     public final static String EVENTO_PADDLE_COLPITO = "BALL_PADDLE_COLPITO";                //Evento per la collisione con il paddle
 
     //Costanti
-    private final int DISTURBO_PADDLE = 20;     //Angolo massimo di disturbo dopo aver colpito il paddle
+    protected final int DISTURBO_PADDLE = 20;     //Angolo massimo di disturbo dopo aver colpito il paddle
 
     //Parametri
-    private int angoloLancioMassimo;            //Angolo massimo di rotazione della palla nel momento del lancio
-    private Vector2D startPosition;             //Posizione iniziale della palla
-    private boolean isMoving;                   //Flag di controllo del movimento della palla
-    private int offsetCollisioneSuperiore;      //Numero sotto il quale la posizione y della palla non può essere impostato
+    protected int angoloLancioMassimo;            //Angolo massimo di rotazione della palla nel momento del lancio
+    protected Vector2D startPosition;             //Posizione iniziale della palla
+    protected boolean isMoving;                   //Flag di controllo del movimento della palla
+    protected int offsetCollisioneSuperiore;      //Numero sotto il quale la posizione y della palla non può essere impostato
 
     public Ball(Vector2D position, Vector2D speed, Sprite sprite, int raggio, int angoloLancioMassimo) {
         super(
@@ -62,7 +62,7 @@ public class Ball extends Entity {
      * @param screenHeight Altezza dello schermo
      * @return Restituisce la nuova direzione della palla in caso di collisione
      */
-    private Vector2D controllaCollisioneSchermo(Vector2D posizione, int screenWidth, int screenHeight){
+    protected Vector2D controllaCollisioneSchermo(Vector2D posizione, int screenWidth, int screenHeight){
         float xLeft = posizione.getPosX() - (this.size.getPosX() * 0.5f);
         float xRight = posizione.getPosX() + (this.size.getPosX() * 0.5f);
         float yUp = posizione.getPosY() - (this.size.getPosY() * 0.5f);
@@ -75,7 +75,7 @@ public class Ball extends Entity {
         return new Vector2D(dirX, dirY);
     }
 
-    private Vector2D controllaCollisionePaddle(Vector2D posizione, AbstractScene scena){
+    protected Vector2D controllaCollisionePaddle(Vector2D posizione, AbstractScene scena){
         Vector2D esito = this.direction;
 
         Entity[] listaEntita = scena.getEntityByName("paddle");
@@ -118,7 +118,7 @@ public class Ball extends Entity {
      * @param scena Scena di gioco
      * @return Restituisce la nuova direzione in caso di collisione
      */
-    private Vector2D controllaCollisioneBrick(Vector2D posizione, AbstractScene scena){
+    protected Vector2D controllaCollisioneBrick(Vector2D posizione, AbstractScene scena){
         Vector2D esito = this.direction;
 
         Entity[] listaBrick = scena.getEntityByName("brick");
