@@ -322,10 +322,11 @@ public class ServerMultiplayer implements Runnable, TimerListener {
                         this.inviaMessaggioSingoloClient("YOU LOST", 1000, this.ipGiocatore1, this.portaGiocatore1);
                     }
                     Thread.sleep(1000);
+
                     byte[] buffer = ServerMultiplayer.FINE_PARTITA.getBytes();
                     DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
                     this.socket.send(pacchetto);
-                    pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore1);
+                    pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
                     this.socket.send(pacchetto);
                     this.running = false;
                 }else

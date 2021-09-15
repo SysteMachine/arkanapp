@@ -93,7 +93,7 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
     @Override
     protected void iniziallizzazioneEntita(int screenWidth, int screenHeight) {
         this.palla = new Ball(
-                new Vector2D(400, 400),
+                new Vector2D(screenWidth / 2, screenHeight / 2),
                 new Vector2D(this.stile.getVelocitaInizialePalla(), this.stile.getVelocitaInizialePalla()),
                 this.stile.getImmaginePallaStile(this.owner),
                 (int)(this.stile.getPercentualeRaggioPalla() * screenWidth),
