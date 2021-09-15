@@ -85,7 +85,7 @@ public class ServerMultiplayer implements Runnable{
         this.posizionePalla = new Vector2D(this.SCREEN_WIDTH * 0.5f, this.ZONA_PUNTEGGIO + schermoAvviabile * 0.5f);
         this.direzionePalla = new Vector2D(1, 0).ruotaVettore((int)(Math.random() * 360));
         this.puntiGiocatore1 = 0;
-        this.portaGiocatore2 = 0;
+        this.puntiGiocatore2 = 0;
 
         //Creiamo il thread per non bloccare l'esecuzione
         new Thread(){
