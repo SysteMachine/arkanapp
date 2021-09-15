@@ -45,10 +45,12 @@
         <item quantity="other">punti</item>
     </plurals>
     <string name="fragment_game_over_nuova_partita">Gioca ancora</string>
-    <string name="fragment_game_over_pubblica_risultato">Condividi risultati</string>
+    <string name="fragment_game_over_pubblica_risultato">Pubblica risultati</string>
     <string name="fragment_game_over_torna_menu">Menù principale</string>
     <string name="fragment_game_over_pubblicato">Il tuo risultato è online</string>
     <string name="fragment_game_over_non_pubblicato">Qualcosa è andato storto</string>
+    <string name="fragment_game_over_condividi">Messaggio condivisione</string>
+    <string name="fragment_game_over_condividi_descrizione">Condividi risultati</string>
 
     <string name="editor_activity_modifica_info">Info</string>
     <string name="editor_activity_modifica_mappa">Mappa</string>

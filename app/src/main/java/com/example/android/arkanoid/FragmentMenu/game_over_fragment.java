@@ -1,8 +1,11 @@
 package com.example.android.arkanoid.FragmentMenu;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,18 +19,26 @@ import com.example.android.arkanoid.R;
 import com.example.android.arkanoid.Util.QueryExecutor;
 import com.example.android.arkanoid.modalita_activity;
 
-public class game_over_fragment extends Fragment implements View.OnTouchListener, View.OnClickListener {
+public class game_over_fragment extends Fragment implements View.OnTouchListener, View.OnClickListener, DialogInterface.OnClickListener {
     private TextView riepilogoView;
     private Button nuovaPartitaButton;
     private Button condividiButton;
     private Button menuButton;
 
     private boolean risulatoPubblicato;                  //Flag per controllare che il risultato sia stato pubblicato
+    private AlertDialog dialogoCondivisioneRisultato;    //Dialogo condivisione risulato app esterne
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game_over_fragment, container, false);
         view.setOnTouchListener(this);
+
+        this.dialogoCondivisioneRisultato = new android.support.v7.app.AlertDialog.Builder(this.getContext())
+                .setTitle(this.getResources().getString(R.string.fragment_game_over_condividi))
+                .setMessage(this.getResources().getString(R.string.fragment_game_over_condividi_descrizione))
+                .setPositiveButton(android.R.string.yes, this)
+                .setNegativeButton(android.R.string.no, null)
+                .create();
 
         if(savedInstanceState != null)
             risulatoPubblicato = savedInstanceState.getBoolean("risultatoPubblicato");
@@ -89,6 +100,7 @@ public class game_over_fragment extends Fragment implements View.OnTouchListener
                             Toast.makeText(this.getContext(), this.getResources().getString(R.string.fragment_game_over_pubblicato), Toast.LENGTH_LONG).show();
                             this.condividiButton.setVisibility(View.GONE);
                             this.risulatoPubblicato = true;
+                            this.dialogoCondivisioneRisultato.show();
                         }else
                             Toast.makeText(this.getContext(), this.getResources().getString(R.string.fragment_game_over_non_pubblicato), Toast.LENGTH_LONG).show();
 
@@ -104,5 +116,15 @@ public class game_over_fragment extends Fragment implements View.OnTouchListener
     public boolean onTouch(View v, MotionEvent event) {
         v.performClick();
         return true;
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, this.getResources().getString(R.string.app_name) + ": " + (modalita_activity.modalita.getStatus().getPunteggio()) + "p");
+        intent.setType("text/plain");
+        Intent chooser = Intent.createChooser(intent, "");
+        startActivity(chooser);
     }
 }

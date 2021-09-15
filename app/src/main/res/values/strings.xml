@@ -44,10 +44,12 @@
         <item quantity="other">points</item>
     </plurals>
     <string name="fragment_game_over_nuova_partita">Play again</string>
-    <string name="fragment_game_over_pubblica_risultato">Share results</string>
+    <string name="fragment_game_over_pubblica_risultato">Publish results</string>
     <string name="fragment_game_over_torna_menu">Main menu</string>
     <string name="fragment_game_over_pubblicato">Result published</string>
     <string name="fragment_game_over_non_pubblicato">Something went wrong</string>
+    <string name="fragment_game_over_condividi">Share message</string>
+    <string name="fragment_game_over_condividi_descrizione">Share result</string>
 
 
     <string name="editor_activity_modifica_info">Info</string>
