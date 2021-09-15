@@ -323,9 +323,12 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
      */
     public void riceviFinePartita(String message){
         if(message.equals(ServerMultiplayer.FINE_PARTITA)) {
+            System.out.println("FINISCO LA PARTITA");
             this.client.stopClient();
-            if(this.gameOverListener != null)
+            if(this.gameOverListener != null) {
+                this.timerAggiornamentoPalla.stop();
                 this.gameOverListener.gameOver(null);
+            }
         }
     }
 
