@@ -262,7 +262,8 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
      */
     private void controlloPunteggio(){
         if(this.isBallOwner){
-            if(this.palla != null){
+            if(this.palla != null && this.palla.isMoving()){
+                this.palla.stopPalla();
                 if(this.palla.getPosition().getPosY() > this.screenHeight - 40)
                     this.client.inviaMessaggioServer(ServerMultiplayer.PUNTO + "=false");
                 if(this.palla.getPosition().getPosY() < this.DIMENSIONE_ZONA_PUNTEGGIO + 40)

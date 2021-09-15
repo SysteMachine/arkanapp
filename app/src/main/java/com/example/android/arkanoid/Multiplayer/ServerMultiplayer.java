@@ -237,7 +237,7 @@ public class ServerMultiplayer implements Runnable, TimerListener {
      * Invia il segnale di start ai client
      */
     private void inviaStop(){
-        String dati  = ServerMultiplayer.INVIO_START;
+        String dati  = ServerMultiplayer.INVIO_STOP;
         byte[] buffer = dati.getBytes();
 
         try{

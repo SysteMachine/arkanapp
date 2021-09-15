@@ -48,6 +48,12 @@ public class multiplayer_activity extends MultiFragmentActivity implements GameO
             this.agenteMatching = new AgenteDiMatching(this);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.gameLoop.stop();
+    }
+
     /**
      * Avvia la modlità multiplayer
      * @param ipServer Ip del server
