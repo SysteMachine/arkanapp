@@ -11,10 +11,13 @@ import android.widget.ListView;
 import com.example.android.arkanoid.ActivityUtil.MultiFragmentActivity;
 import com.example.android.arkanoid.AgentSystem.ContractNetMatchMaking.AgenteDiMatching;
 import com.example.android.arkanoid.GameCore.GameLoop;
+import com.example.android.arkanoid.GameElements.ElementiBase.GameOverListener;
+import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.SceneDefinite.ModalitaMultiplayer;
 import com.example.android.arkanoid.Multiplayer.ClientMultiplayer;
+import com.example.android.arkanoid.Util.AudioUtil;
 
-public class multiplayer_activity extends MultiFragmentActivity {
+public class multiplayer_activity extends MultiFragmentActivity implements GameOverListener {
     private FrameLayout containerModalita;
     private GameLoop gameLoop;
 
@@ -57,6 +60,7 @@ public class multiplayer_activity extends MultiFragmentActivity {
 
         this.client = new ClientMultiplayer(ipServer, portaServer);
         this.modalita = new ModalitaMultiplayer(this.client);
+        this.modalita.setGameOverListener(this);
         if(this.containerModalita != null){
             this.gameLoop.removeAll();
             this.gameLoop.addGameComponent(this.modalita);
@@ -77,6 +81,23 @@ public class multiplayer_activity extends MultiFragmentActivity {
         this.agenteMatching.doDelete();
         if(this.inGame)
             this.client.stopClient();
-        this.startActivity(new Intent(this, main_menu_activity.class));
+        this.tornaAlMenu();
+    }
+
+    /**
+     * Torna al menu principale
+     */
+    public void tornaAlMenu(){
+        Intent intent = new Intent(this, main_menu_activity.class);
+        AudioUtil.setVolumeAudioMusica(100);
+        AudioUtil.clear();
+        AudioUtil.loadAudio("background_music", R.raw.background_music, AudioUtil.MUSICA, true, this);
+        AudioUtil.avviaAudio("background_music");
+        this.startActivity(intent);
+    }
+
+    @Override
+    public void gameOver(GameStatus status) {
+        this.tornaAlMenu();
     }
 }

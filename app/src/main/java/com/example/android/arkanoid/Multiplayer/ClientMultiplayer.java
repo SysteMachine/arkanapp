@@ -114,6 +114,7 @@ public class ClientMultiplayer implements Runnable, TimerListener {
                 this.running = false;
         }
         System.out.println("Terminato il ciclo di running del client");
+        this.timerIsAlive.stop();
         this.socket.close();
     }
 

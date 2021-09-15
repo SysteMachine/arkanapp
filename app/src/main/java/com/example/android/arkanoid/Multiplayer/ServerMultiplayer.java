@@ -30,6 +30,8 @@ public class ServerMultiplayer implements Runnable, TimerListener {
     public final static String AGGIORNA_TARGET_X_PADDLE = "AGGIORNA_TARGET_X_PADDLE";
     public final static String TARGET_X_AVVERSARIO = "TARGET_X_AVVERSARIO";
     public final static String ESITO_PUNTEGGIO = "ESITO_PUNTEGGIO";
+    public final static String PUNTO = "PUNTO";
+    public final static String FINE_PARTITA = "FINE_PARTITA";
 
     private final int MASSIMO_TEMPO_VITA = 10000;     //Tampo massimo entro il quale un giocatore può essere giudicato vivo
 
@@ -172,6 +174,7 @@ public class ServerMultiplayer implements Runnable, TimerListener {
                 this.richiestaPosizionePalla(pacchetto);
                 this.aggiornaPosizioneDirezionePalla(pacchetto);
                 this.aggiornamentoTargetXGiocatore(pacchetto);
+                this.riceviPunto(pacchetto);
 
             }catch (SocketTimeoutException e){}
             catch (Exception e){e.printStackTrace();}
@@ -181,6 +184,7 @@ public class ServerMultiplayer implements Runnable, TimerListener {
                 this.running = false;
         }
         System.out.println("Terminato thread interno del server");
+        this.timerIsAlive.stop();
         this.socket.close();
     }
 
@@ -230,6 +234,21 @@ public class ServerMultiplayer implements Runnable, TimerListener {
     }
 
     /**
+     * Invia il segnale di start ai client
+     */
+    private void inviaStop(){
+        String dati  = ServerMultiplayer.INVIO_START;
+        byte[] buffer = dati.getBytes();
+
+        try{
+            DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
+            this.socket.send(pacchetto);
+            pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
+            this.socket.send(pacchetto);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    /**
      * Invia il segnale di start owner ad un client
      * @param ipOwner Ip del client
      * @param portaOwner porta del client
@@ -253,6 +272,41 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
             this.socket.send(pacchetto);
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    /**
+     * Qualcuno fa un punto
+     * @param messaggio
+     */
+    private void riceviPunto(DatagramPacket messaggio){
+        String dati = new String(messaggio.getData()).substring(0, messaggio.getLength()).trim();
+        if(dati.startsWith(ServerMultiplayer.PUNTO)){
+            this.inviaStop();
+            boolean esito = Boolean.valueOf(dati.split("=")[1]);
+            if(esito){
+                this.puntiGiocatore1 ++;
+                this.inviaMessaggioClient(this.emailGiocatore1 + " POINT", 2000);
+            }else {
+                this.portaGiocatore2++;
+                this.inviaMessaggioClient(this.emailGiocatore2 + " POINT", 2000);
+            }
+            try{
+                this.inviaPosizioneDirezionePalla(this.ipGiocatore1, this.portaGiocatore1);
+                this.inviaPosizioneDirezionePalla(this.ipGiocatore2, this.portaGiocatore2);
+                Thread.sleep(2000);
+                if(this.puntiGiocatore1 == 3 || this.puntiGiocatore2 == 3){
+                    this.inviaMessaggioClient("THE END", 1000);
+                    Thread.sleep(1000);
+                    byte[] buffer = ServerMultiplayer.FINE_PARTITA.getBytes();
+                    DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
+                    this.socket.send(pacchetto);
+                    pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore1);
+                    this.socket.send(pacchetto);
+                    this.running = false;
+                }else
+                    this.inviaStart();
+            }catch (Exception e){e.printStackTrace();}
+        }
     }
 
     /**
