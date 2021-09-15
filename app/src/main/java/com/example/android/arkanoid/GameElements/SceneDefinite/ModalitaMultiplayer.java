@@ -257,7 +257,6 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
         if(message.startsWith(ServerMultiplayer.TARGET_X_AVVERSARIO)){
             float targetX = Float.valueOf(message.split("=")[1]);
             this.paddleAvversario.setTargetX(targetX);
-            System.out.println("Ricevuto");
         }
     }
 
