@@ -33,7 +33,7 @@ public class ServerMultiplayer implements Runnable, TimerListener {
     public final static String PUNTO = "PUNTO";
     public final static String FINE_PARTITA = "FINE_PARTITA";
 
-    private final int MASSIMO_TEMPO_VITA = 10000;     //Tampo massimo entro il quale un giocatore può essere giudicato vivo
+    private final int MASSIMO_TEMPO_VITA = 3000;     //Tampo massimo entro il quale un giocatore può essere giudicato vivo
 
     private String emailGiocatore1;             //Email del giocatore1
     private String emailGiocatore2;             //Email del giocatore2

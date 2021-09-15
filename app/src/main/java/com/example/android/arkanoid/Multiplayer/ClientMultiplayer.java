@@ -11,7 +11,7 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
 public class ClientMultiplayer implements Runnable, TimerListener {
-    private final int MASSIMO_TEMPO_VITA = 10000;   //Massimo tempo di vita del server uwu
+    private final int MASSIMO_TEMPO_VITA = 3000;   //Massimo tempo di vita del server uwu
 
     private AbstractScene scena;            //Scena sotto il controllo del client
     private String ipServer;                //Ip del server
