@@ -25,6 +25,7 @@ import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.TimerListener;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
+import java.net.SocketException;
 import java.util.ArrayList;
 
 public class ModalitaMultiplayer extends AbstractModalita implements ClientListener, TimerListener {
