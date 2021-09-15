@@ -208,6 +208,23 @@ public class ServerMultiplayer implements Runnable, TimerListener {
     }
 
     /**
+     * Invia un messaggio ai client
+     * @param messaggio Messaggio da inviare ai client
+     * @param attesa Attesa del messaggio
+     * @param ip Ip del client
+     * @param porta Porta del client
+     */
+    private void inviaMessaggioSingoloClient(String messaggio, int attesa, String ip, int porta){
+        String dati  = ServerMultiplayer.INVIO_MESSAGGIO_SERVER + "=" + messaggio + ":" + attesa;
+        byte[] buffer = dati.getBytes();
+
+        try{
+            DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(ip), porta);
+            this.socket.send(pacchetto);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    /**
      * Controlla se il messaggio contiene una richiesta della posizione della palla
      * @param messaggio Messaggio ricevuto dal client
      */
@@ -297,7 +314,13 @@ public class ServerMultiplayer implements Runnable, TimerListener {
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore2, this.portaGiocatore2);
                 Thread.sleep(2000);
                 if(this.puntiGiocatore1 == 3 || this.puntiGiocatore2 == 3){
-                    this.inviaMessaggioClient("THE END", 1000);
+                    if(this.puntiGiocatore1 == 3){
+                        this.inviaMessaggioSingoloClient("YOU WON", 1000, this.ipGiocatore1, this.portaGiocatore1);
+                        this.inviaMessaggioSingoloClient("YOU LOST", 1000, this.ipGiocatore2, this.portaGiocatore2);
+                    }else{
+                        this.inviaMessaggioSingoloClient("YOU WON", 1000, this.ipGiocatore2, this.portaGiocatore2);
+                        this.inviaMessaggioSingoloClient("YOU LOST", 1000, this.ipGiocatore1, this.portaGiocatore1);
+                    }
                     Thread.sleep(1000);
                     byte[] buffer = ServerMultiplayer.FINE_PARTITA.getBytes();
                     DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
