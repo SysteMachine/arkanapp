@@ -290,6 +290,7 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             }
             this.inviaMessaggioClient("POINT", 2000);
             try{
+                this.posizionePalla.setPosY(this.SCREEN_HEIGHT / 2);
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore1, this.portaGiocatore1);
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore2, this.portaGiocatore2);
                 Thread.sleep(2000);
