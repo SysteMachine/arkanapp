@@ -28,7 +28,7 @@ import com.example.android.arkanoid.VectorMat.Vector2D;
 import java.util.ArrayList;
 
 public class ModalitaMultiplayer extends AbstractModalita implements ClientListener, TimerListener {
-    private final int TICK_AGGIORNAMENTO_PALLA = 200;               //Intervallo di tempo entro il quale aggiornare la posizione della palla
+    private final int TICK_AGGIORNAMENTO_PALLA = 50;               //Intervallo di tempo entro il quale aggiornare la posizione della palla
 
     private ClientMultiplayer client;                               //Client associato alla modalita
 

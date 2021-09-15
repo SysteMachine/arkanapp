@@ -52,6 +52,7 @@ public class multiplayer_activity extends MultiFragmentActivity implements GameO
     protected void onStop() {
         super.onStop();
         this.gameLoop.stop();
+        this.tornaAlMenu();
     }
 
     /**
