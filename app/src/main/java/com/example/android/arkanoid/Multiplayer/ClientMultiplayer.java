@@ -2,13 +2,15 @@ package com.example.android.arkanoid.Multiplayer;
 
 import com.example.android.arkanoid.AgentSystem.GA;
 import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
+import com.example.android.arkanoid.Util.LoopTimer;
+import com.example.android.arkanoid.Util.TimerListener;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
-public class ClientMultiplayer implements Runnable{
+public class ClientMultiplayer implements Runnable, TimerListener {
     private final int MASSIMO_TEMPO_VITA = 10000;   //Massimo tempo di vita del server uwu
 
     private AbstractScene scena;            //Scena sotto il controllo del client
@@ -21,6 +23,7 @@ public class ClientMultiplayer implements Runnable{
     private DatagramSocket socket;         //Socket di comunicazione
 
     private ClientListener listener;        //Listener del client
+    private LoopTimer timerIsAlive;         //Timer di isAlive
 
     public ClientMultiplayer(String ipServer, int portaServer){
         System.out.println("Avviato il client sulla porta: " + ( GA.channel.getPorta() + 1 ) + " il server è: " + ipServer + ":" + portaServer);
@@ -35,6 +38,7 @@ public class ClientMultiplayer implements Runnable{
             this.running = true;
             this.threadRecezione = new Thread(this);
             this.threadRecezione.start();
+            this.timerIsAlive = new LoopTimer(this, 2000);
         }catch (Exception e){e.printStackTrace();}
     }
 
@@ -98,8 +102,6 @@ public class ClientMultiplayer implements Runnable{
             byte[] buffer = new byte[60000];
             DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length);
 
-            this.inviaMessaggioIsAlive();
-
             try{
                 this.socket.receive(pacchetto);
                 this.controlloIsAlive(pacchetto);
@@ -124,5 +126,11 @@ public class ClientMultiplayer implements Runnable{
             DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipServer), this.portaServer);
             this.socket.send(pacchetto);
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    @Override
+    public void timeIsZero() {
+        if(this.running)
+            this.inviaMessaggioIsAlive();
     }
 }

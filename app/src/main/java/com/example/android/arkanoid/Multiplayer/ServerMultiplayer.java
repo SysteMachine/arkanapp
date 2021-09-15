@@ -3,7 +3,8 @@ package com.example.android.arkanoid.Multiplayer;
 import com.example.android.arkanoid.AgentSystem.DF;
 import com.example.android.arkanoid.AgentSystem.GA;
 import com.example.android.arkanoid.AgentSystem.RecordClient;
-import com.example.android.arkanoid.GameElements.ElementiGioco.Paddle;
+import com.example.android.arkanoid.Util.LoopTimer;
+import com.example.android.arkanoid.Util.TimerListener;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.net.DatagramPacket;
@@ -11,7 +12,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
-public class ServerMultiplayer implements Runnable{
+
+public class ServerMultiplayer implements Runnable, TimerListener {
     private final int SCREEN_WIDTH = 720;
     private final int SCREEN_HEIGHT = 1280;
     private final int ZONA_PUNTEGGIO = 60;
@@ -50,6 +52,8 @@ public class ServerMultiplayer implements Runnable{
     private int puntiGiocatore1;                //Punti del giocatore 1
     private int puntiGiocatore2;                //Punti del giocatore 2
 
+    private LoopTimer timerIsAlive;             //Timer per l'invio del segnale di isAlive
+
     public ServerMultiplayer(String emailGiocatore1, String emailGiocatore2, int porta){
         System.out.println("Avvio un server multiplayer sulla porta: " + porta);
         DF df = (DF)GA.container.findAgenteByName("DF");
@@ -75,6 +79,7 @@ public class ServerMultiplayer implements Runnable{
                 this.running = true;
                 this.threadLoop = new Thread(this);
                 this.threadLoop.start();
+                this.timerIsAlive = new LoopTimer(this, 2000);
             }catch (Exception e){e.printStackTrace();}
         }
     }
@@ -88,7 +93,6 @@ public class ServerMultiplayer implements Runnable{
         this.direzionePalla = new Vector2D(1, 0).ruotaVettore((int)(Math.random() * 360));
         this.puntiGiocatore1 = 0;
         this.puntiGiocatore2 = 0;
-        this.inviaEsitoPunteggio();
 
         //Creiamo il thread per non bloccare l'esecuzione
         new Thread(){
@@ -105,6 +109,7 @@ public class ServerMultiplayer implements Runnable{
                     inviaMessaggioClient("GO!", 5000);
                     inviaStart();
                     inviaStartOwner(ipGiocatore1, portaGiocatore1);
+                    inviaEsitoPunteggio();
                 }catch (Exception e){e.printStackTrace();}
             }
         }.start();
@@ -161,8 +166,6 @@ public class ServerMultiplayer implements Runnable{
             byte[] buffer = new byte[60000];
             DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length);
 
-            this.invioMessaggioIsAlive();
-
             try{
                 this.socket.receive(pacchetto);
                 this.controlloIsAlive(pacchetto);
@@ -207,7 +210,7 @@ public class ServerMultiplayer implements Runnable{
     private void richiestaPosizionePalla(DatagramPacket messaggio){
         String dati = new String(messaggio.getData()).substring(0, messaggio.getLength()).trim();
         if(dati.equals(ServerMultiplayer.RICHIESTA_POSIZIONE_DIREZIONE_PALLA)){
-            this.inviaPosizioneDirezionePalla(messaggio.getAddress().getHostName(), messaggio.getPort());
+            this.inviaPosizioneDirezionePalla(messaggio.getAddress().getHostAddress(), messaggio.getPort());
         }
     }
 
@@ -242,11 +245,13 @@ public class ServerMultiplayer implements Runnable{
      * Invia l'esito del punteggio
      */
     private void inviaEsitoPunteggio(){
-        String messaggio = this.emailGiocatore1 + " " + this.puntiGiocatore1 + "-" + this.portaGiocatore2 + " " + this.emailGiocatore2;
+        String messaggio = ServerMultiplayer.ESITO_PUNTEGGIO + "=" + this.puntiGiocatore1 + " - " + this.puntiGiocatore2;
         byte[] buffer = messaggio.getBytes();
         try{
-            this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1));
-            this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2));
+            DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
+            this.socket.send(pacchetto);
+            pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
+            this.socket.send(pacchetto);
         }catch (Exception e){e.printStackTrace();}
     }
 
@@ -258,15 +263,17 @@ public class ServerMultiplayer implements Runnable{
         String dati = new String(messaggio.getData()).substring(0, messaggio.getLength()).trim();
         if(dati.startsWith(ServerMultiplayer.AGGIORNA_TARGET_X_PADDLE)){
             float targetX = Float.valueOf(dati.split("=")[1]);
-            if(messaggio.getAddress().getHostName().equals(this.ipGiocatore2))
-                targetX = this.SCREEN_WIDTH - targetX;
+            targetX = this.SCREEN_WIDTH - targetX;
             String risposta = ServerMultiplayer.TARGET_X_AVVERSARIO + "=" + targetX;
             byte[] buffer = risposta.getBytes();
             try{
-                if(messaggio.getAddress().equals(this.ipGiocatore1))
-                    this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2));
-                else
-                    this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1));
+                if(messaggio.getAddress().getHostAddress().equals(this.ipGiocatore1)) {
+                    DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
+                    this.socket.send(pacchetto);
+                }else {
+                    DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
+                    this.socket.send(pacchetto);
+                }
             }catch (Exception e){e.printStackTrace();}
         }
     }
@@ -326,5 +333,11 @@ public class ServerMultiplayer implements Runnable{
             DatagramPacket risposta = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(ipDestinatario), portaDestinatario);
             this.socket.send(risposta);
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    @Override
+    public void timeIsZero() {
+        if(this.running)
+            this.invioMessaggioIsAlive();
     }
 }

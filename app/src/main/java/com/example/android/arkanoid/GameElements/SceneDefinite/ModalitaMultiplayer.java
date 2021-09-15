@@ -4,9 +4,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
 import com.example.android.arkanoid.GameElements.ElementiBase.GameStatus;
 import com.example.android.arkanoid.GameElements.ElementiBase.Stile;
 import com.example.android.arkanoid.GameElements.ElementiGioco.Ball;
@@ -18,13 +20,14 @@ import com.example.android.arkanoid.Multiplayer.ClientMultiplayer;
 import com.example.android.arkanoid.Multiplayer.MessaggioServerRecord;
 import com.example.android.arkanoid.Multiplayer.ServerMultiplayer;
 import com.example.android.arkanoid.Util.LoopTimer;
+import com.example.android.arkanoid.Util.ParamList;
 import com.example.android.arkanoid.Util.TimerListener;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.util.ArrayList;
 
 public class ModalitaMultiplayer extends AbstractModalita implements ClientListener, TimerListener {
-    private final int TICK_AGGIORNAMENTO_PALLA = 500;               //Intervallo di tempo entro il quale aggiornare la posizione della palla
+    private final int TICK_AGGIORNAMENTO_PALLA = 200;               //Intervallo di tempo entro il quale aggiornare la posizione della palla
 
     private ClientMultiplayer client;                               //Client associato alla modalita
 
@@ -165,7 +168,6 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
     public void touchEvent(Vector2D position, View v, MotionEvent e) {
         if(this.paddleGiocatore != null) {
             this.paddleGiocatore.setTargetX(position.getPosX());
-            this.inviaTargetXPaddle(position.getPosX());
         }
     }
 
@@ -224,8 +226,9 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
      * @param message messaggio ricevuto dal server
      */
     public void riceviEsitoPunteggio(String message){
-        if(message.equals(ServerMultiplayer.ESITO_PUNTEGGIO)){
+        if(message.startsWith(ServerMultiplayer.ESITO_PUNTEGGIO)){
             this.esitoPunteggio = message.split("=")[1];
+            System.out.println("ricevuto il messaggio " + this.esitoPunteggio);
         }
     }
 
@@ -256,7 +259,7 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
     private void riceviTargetXAvversario(String message){
         if(message.startsWith(ServerMultiplayer.TARGET_X_AVVERSARIO)){
             float targetX = Float.valueOf(message.split("=")[1]);
-            this.paddleAvversario.setTargetX(targetX);
+            this.paddleAvversario.setPosition(new Vector2D(targetX, this.paddleAvversario.getPosition().getPosY()));
         }
     }
 
@@ -280,6 +283,7 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
 
     @Override
     public void timeIsZero() {
+        this.inviaTargetXPaddle(this.paddleGiocatore.getPosition().getPosX());
         if(this.isBallOwner)
             this.inviaPosizioneDirezionePalla();
     }
