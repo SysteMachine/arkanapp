@@ -310,7 +310,7 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
      */
     public void riceviStop(String message){
         if(message.equals(ServerMultiplayer.INVIO_STOP))
-            this.palla.startPalla();
+            this.palla.stopPalla();
     }
 
     /**
