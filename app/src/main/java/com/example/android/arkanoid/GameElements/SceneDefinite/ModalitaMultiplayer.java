@@ -374,13 +374,15 @@ public class ModalitaMultiplayer extends AbstractModalita implements ClientListe
 
     @Override
     public void timeIsZero() {
-        this.inviaTargetXPaddle(this.paddleGiocatore.getPosition().getPosX());
-        if(this.isBallOwner)
-            this.inviaPosizioneDirezionePalla();
-        if(!this.client.isServerAlive()) {
-            this.timerAggiornamentoPalla.stop();
-            if(this.gameOverListener != null)
-                this.gameOverListener.gameOver(null);
+        if(this.risorseCaricate){
+            this.inviaTargetXPaddle(this.paddleGiocatore.getPosition().getPosX());
+            if(this.isBallOwner)
+                this.inviaPosizioneDirezionePalla();
+            if(!this.client.isServerAlive()) {
+                this.timerAggiornamentoPalla.stop();
+                if(this.gameOverListener != null)
+                    this.gameOverListener.gameOver(null);
+            }
         }
     }
 }
