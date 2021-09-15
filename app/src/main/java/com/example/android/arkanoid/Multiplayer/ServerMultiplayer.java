@@ -288,8 +288,10 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             }else {
                 this.puntiGiocatore2 ++;
             }
+            this.inviaEsitoPunteggio();
             this.inviaMessaggioClient("POINT", 2000);
             try{
+                this.posizionePalla.setPosX(this.SCREEN_WIDTH / 2);
                 this.posizionePalla.setPosY(this.SCREEN_HEIGHT / 2);
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore1, this.portaGiocatore1);
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore2, this.portaGiocatore2);
