@@ -286,7 +286,7 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             if(esito){
                 this.puntiGiocatore1 ++;
             }else {
-                this.portaGiocatore2++;
+                this.puntiGiocatore2 ++;
             }
             this.inviaMessaggioClient("POINT", 2000);
             try{
