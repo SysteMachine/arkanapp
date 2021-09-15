@@ -58,6 +58,7 @@ public class AgenteDiMatching extends Agente implements MatchListener{
         if(statoConferma && host){
             //Avvio del server
             new ServerMultiplayer(GA.salvataggio.getEmail(), this.emailMatch, GA.channel.getPorta() + 2);
+            //Per convenzione il giocatore 1 è l'host
         }
 
         if(statoConferma){

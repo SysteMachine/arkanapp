@@ -18,7 +18,9 @@ public class ClientMultiplayer implements Runnable{
 
     private boolean running;                //flag di running
     private Thread threadRecezione;         //Thread di recezione
-    private DatagramSocket socket;            //Socket di comunicazione
+    private DatagramSocket socket;         //Socket di comunicazione
+
+    private ClientListener listener;        //Listener del client
 
     public ClientMultiplayer(String ipServer, int portaServer){
         System.out.println("Avviato il client sulla porta: " + ( GA.channel.getPorta() + 1 ) + " il server è: " + ipServer + ":" + portaServer);
@@ -29,7 +31,7 @@ public class ClientMultiplayer implements Runnable{
 
         try{
             this.socket = new DatagramSocket(GA.channel.getPorta() + 1);
-            this.socket.setSoTimeout(2000);
+            this.socket.setSoTimeout(1500);
             this.running = true;
             this.threadRecezione = new Thread(this);
             this.threadRecezione.start();
@@ -74,6 +76,21 @@ public class ClientMultiplayer implements Runnable{
         }catch (Exception e){e.printStackTrace();}
     }
 
+    /**
+     * Ferma il client
+     */
+    public void stopClient(){
+        this.running = false;
+    }
+
+    /**
+     * Imposta il client listener
+     * @param listener Lisener da associar
+     */
+    public void setClientListener(ClientListener listener){
+        this.listener = listener;
+    }
+
     @Override
     public void run() {
         System.out.println("Avviato il cliclo interno del client");
@@ -86,6 +103,8 @@ public class ClientMultiplayer implements Runnable{
             try{
                 this.socket.receive(pacchetto);
                 this.controlloIsAlive(pacchetto);
+                if(this.listener != null)
+                    this.listener.clientMessage(new String(pacchetto.getData()).substring(0, pacchetto.getLength()).trim());
             }catch (SocketTimeoutException e){}
             catch (Exception e){e.printStackTrace();}
 
@@ -94,5 +113,16 @@ public class ClientMultiplayer implements Runnable{
         }
         System.out.println("Terminato il ciclo di running del client");
         this.socket.close();
+    }
+
+    /**
+     * Invia un messaggio al server
+     */
+    public void inviaMessaggioServer(String messaggio){
+        byte[] buffer = messaggio.getBytes();
+        try{
+            DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipServer), this.portaServer);
+            this.socket.send(pacchetto);
+        }catch (Exception e){e.printStackTrace();}
     }
 }

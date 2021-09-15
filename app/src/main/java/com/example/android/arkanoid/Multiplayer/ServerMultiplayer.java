@@ -3,28 +3,36 @@ package com.example.android.arkanoid.Multiplayer;
 import com.example.android.arkanoid.AgentSystem.DF;
 import com.example.android.arkanoid.AgentSystem.GA;
 import com.example.android.arkanoid.AgentSystem.RecordClient;
-import com.example.android.arkanoid.GameElements.ElementiBase.AbstractScene;
-import com.example.android.arkanoid.GameElements.ElementiBase.Entity;
-import com.example.android.arkanoid.GameElements.ElementiGioco.ModalitaMultiplayer.ServerBall;
-import com.example.android.arkanoid.GameElements.ElementiGioco.ModalitaMultiplayer.ServerPaddle;
-import com.example.android.arkanoid.Util.LoopTimer;
-import com.example.android.arkanoid.Util.ParamList;
-import com.example.android.arkanoid.Util.TimerListener;
+import com.example.android.arkanoid.GameElements.ElementiGioco.Paddle;
 import com.example.android.arkanoid.VectorMat.Vector2D;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 
-public class ServerMultiplayer implements Runnable, TimerListener {
+public class ServerMultiplayer implements Runnable{
+    private final int SCREEN_WIDTH = 720;
+    private final int SCREEN_HEIGHT = 1280;
+    private final int ZONA_PUNTEGGIO = 60;
+
     public final static String CLIENT_ALIVE = "CLIENT_ALIVE";
     public final static String SERVER_ALIVE = "SERVER_ALIVE";
+    public final static String INVIO_MESSAGGIO_SERVER = "INVIO_MESSAGGIO_SERVER";
+    public final static String INVIO_START = "START";
+    public final static String INVIO_STOP = "STOP";
+    public final static String RICHIESTA_POSIZIONE_DIREZIONE_PALLA = "RICHIESTA_POSIZIONE_DIREZIONE_PALLA";
+    public final static String RISPOSTA_POSIZIONE_DIREZIONE_PALLA = "RISPOSTA_POSIZIONE_DIREZIONE_PALLA";
+    public final static String AGGIORNA_POSIZIONE_DIREZIONE_PALLA = "AGGIORNA_POSIZIONE_DIREZIONE_PALLA";
+    public final static String START_OWNER = "START_OWNER";
+    public final static String AGGIORNA_TARGET_X_PADDLE = "AGGIORNA_TARGET_X_PADDLE";
+    public final static String TARGET_X_AVVERSARIO = "TARGET_X_AVVERSARIO";
+    public final static String ESITO_PUNTEGGIO = "ESITO_PUNTEGGIO";
 
     private final int MASSIMO_TEMPO_VITA = 10000;     //Tampo massimo entro il quale un giocatore può essere giudicato vivo
-    private final int TICK_SERVER = 20;               //Tick del server
 
+    //private String emailGiocatore1;             //Email del giocatore1
+    //private String emailGiocatore2;             //Email del giocatore2
     private String ipGiocatore1;                //Ip del giocatore 1
     private String ipGiocatore2;                //Ip del giocatore 2
     private int portaGiocatore1;                //Porta del giocatore 1
@@ -36,13 +44,11 @@ public class ServerMultiplayer implements Runnable, TimerListener {
     private boolean running;                    //Flag di running del loop del server
     private DatagramSocket socket;              //Socket di connessione
 
-    //Gestione della logica del server
-    private LoopTimer tickTimer;                    //Tick del server
-    private ServerPaddle paddleGiocatore1;          //Paddle del giocatore 1
-    private ServerPaddle paddleGiocatore2;          //Paddle del giocatore 2
-    private ServerBall palla;                       //Palla del server
-    private ArrayList<Entity> entita;               //Entità del server
-    //--------------------------------
+    //Elementi di gioco
+    private Vector2D posizionePalla;            //Posizione della palla nel server
+    private Vector2D direzionePalla;            //Direzione della palla nel server
+    private int puntiGiocatore1;                //Punti del giocatore 1
+    private int puntiGiocatore2;                //Punti del giocatore 2
 
     public ServerMultiplayer(String emailGiocatore1, String emailGiocatore2, int porta){
         System.out.println("Avvio un server multiplayer sulla porta: " + porta);
@@ -63,22 +69,42 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             System.out.println("Apro il socket");
             try{
                 this.socket = new DatagramSocket(porta);
-                socket.setSoTimeout(2000);
+                socket.setSoTimeout(1500);
                 this.running = true;
                 this.threadLoop = new Thread(this);
                 this.threadLoop.start();
-                this.avviaElementiServer();
             }catch (Exception e){e.printStackTrace();}
         }
     }
 
     /**
-     * Avvia gli elementi di server
+     * Esegue il setup delle componenti del server
      */
-    private void avviaElementiServer(){
-        this.entita = new ArrayList<>();
-        this.paddleGiocatore1 = new ServerPaddle(new Vector2D(720 / 2, 30), new Vector2D(40, 10), new Vector2D(800, 800));
-        this.paddleGiocatore2 = new ServerPaddle(new Vector2D(720 / 2, 1280 - 30), new Vector2D(40, 10), new Vector2D(800, 800));
+    private void setup(){
+        int schermoAvviabile = this.SCREEN_HEIGHT - this.ZONA_PUNTEGGIO;
+        this.posizionePalla = new Vector2D(this.SCREEN_WIDTH * 0.5f, this.ZONA_PUNTEGGIO + schermoAvviabile * 0.5f);
+        this.direzionePalla = new Vector2D(1, 0).ruotaVettore((int)(Math.random() * 360));
+        this.puntiGiocatore1 = 0;
+        this.portaGiocatore2 = 0;
+
+        //Creiamo il thread per non bloccare l'esecuzione
+        new Thread(){
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(5000);//Attesa di connessione
+                    inviaMessaggioClient("Start in 3", 1000);
+                    Thread.sleep(1000);
+                    inviaMessaggioClient("Start in 2", 1000);
+                    Thread.sleep(1000);
+                    inviaMessaggioClient("Start in 1", 1000);
+                    Thread.sleep(1000);
+                    inviaMessaggioClient("GO!", 5000);
+                    inviaStart();
+                    inviaStartOwner(ipGiocatore1, portaGiocatore1);
+                }catch (Exception e){e.printStackTrace();}
+            }
+        }.start();
     }
 
     /**
@@ -119,18 +145,16 @@ public class ServerMultiplayer implements Runnable, TimerListener {
     private void invioMessaggioIsAlive(){
         byte[] buffer = ServerMultiplayer.SERVER_ALIVE.getBytes();
         try{
-            System.out.println("Invia il messaggio di server alive ai client");
-            DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
-            this.socket.send(pacchetto);
-            pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
-            this.socket.send(pacchetto);
+            System.out.println(this.ipGiocatore1 + " - " + this.portaGiocatore1 + " - " + this.ipGiocatore2 + " - " + this.portaGiocatore2);
+            this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1));
+            this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2));
         }catch (Exception e){e.printStackTrace();}
     }
 
     @Override
     public void run() {
         System.out.println("Avviato thread interno del server");
-        this.tickTimer = new LoopTimer(this, this.TICK_SERVER);
+        this.setup();
         while(this.running){
             byte[] buffer = new byte[60000];
             DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length);
@@ -140,6 +164,9 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             try{
                 this.socket.receive(pacchetto);
                 this.controlloIsAlive(pacchetto);
+                this.richiestaPosizionePalla(pacchetto);
+                this.aggiornaPosizioneDirezionePalla(pacchetto);
+                this.aggiornamentoTargetXGiocatore(pacchetto);
 
             }catch (SocketTimeoutException e){}
             catch (Exception e){e.printStackTrace();}
@@ -149,24 +176,149 @@ public class ServerMultiplayer implements Runnable, TimerListener {
                 this.running = false;
         }
         System.out.println("Terminato thread interno del server");
-        this.tickTimer.stop();
         this.socket.close();
     }
 
-    //Logica del server
-    //------ --- ------
+    //Richieste del client e funzioni del server
 
     /**
-     * Metodo invocato quando è necessario inviare un evento
-     * @param evento Identificativo dell'evento
-     * @param parametri Parametri dell'evento
+     * Invia un messaggio ai client
+     * @param messaggio Messaggio da inviare ai client
+     * @param attesa Attesa del messaggio
      */
-    public void sendEvent(String evento, ParamList parametri){
+    private void inviaMessaggioClient(String messaggio, int attesa){
+        String dati  = ServerMultiplayer.INVIO_MESSAGGIO_SERVER + "=" + messaggio + ":" + attesa;
+        byte[] buffer = dati.getBytes();
 
+        try{
+            DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
+            this.socket.send(pacchetto);
+            pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
+            this.socket.send(pacchetto);
+        }catch (Exception e){e.printStackTrace();}
     }
 
-    @Override
-    public void timeIsZero() {
-        //Gestisce il tick del server
+    /**
+     * Controlla se il messaggio contiene una richiesta della posizione della palla
+     * @param messaggio Messaggio ricevuto dal client
+     */
+    private void richiestaPosizionePalla(DatagramPacket messaggio){
+        String dati = new String(messaggio.getData()).substring(0, messaggio.getLength()).trim();
+        if(dati.equals(ServerMultiplayer.RICHIESTA_POSIZIONE_DIREZIONE_PALLA)){
+            this.inviaPosizioneDirezionePalla(messaggio.getAddress().getHostName(), messaggio.getPort());
+        }
+    }
+
+    /**
+     * Invia il segnale di start ai client
+     */
+    private void inviaStart(){
+        String dati  = ServerMultiplayer.INVIO_START;
+        byte[] buffer = dati.getBytes();
+
+        try{
+            DatagramPacket pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1);
+            this.socket.send(pacchetto);
+            pacchetto = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2);
+            this.socket.send(pacchetto);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    /**
+     * Invia il segnale di start owner ad un client
+     * @param ipOwner Ip del client
+     * @param portaOwner porta del client
+     */
+    private void inviaStartOwner(String ipOwner, int portaOwner){
+        byte[] bufferStartOwner = ServerMultiplayer.START_OWNER.getBytes();
+        try{
+            this.socket.send(new DatagramPacket(bufferStartOwner, bufferStartOwner.length, InetAddress.getByName(ipOwner), portaOwner));
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    /**
+     * Invia l'esito del punteggio
+     */
+    private void inviaEsitoPunteggio(){
+        //String messaggio = this.emailGiocatore1 + " " + this.puntiGiocatore1 + "-" + this.portaGiocatore2 + " " + this.emailGiocatore2;
+        //byte[] buffer = messaggio.getBytes();
+    }
+
+    /**
+     * Aggiorna il targetX del paddle di un giocatore
+     * @param messaggio Messaggio raggiunto
+     */
+    private void aggiornamentoTargetXGiocatore(DatagramPacket messaggio){
+        String dati = new String(messaggio.getData()).substring(0, messaggio.getLength()).trim();
+        if(dati.startsWith(ServerMultiplayer.AGGIORNA_TARGET_X_PADDLE)){
+            float targetX = Float.valueOf(dati.split("=")[1]);
+            if(messaggio.getAddress().getHostName().equals(this.ipGiocatore2))
+                targetX = this.SCREEN_WIDTH - targetX;
+            String risposta = ServerMultiplayer.TARGET_X_AVVERSARIO + "=" + targetX;
+            byte[] buffer = risposta.getBytes();
+            try{
+                if(messaggio.getAddress().equals(this.ipGiocatore1))
+                    this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore2), this.portaGiocatore2));
+                else
+                    this.socket.send(new DatagramPacket(buffer, buffer.length, InetAddress.getByName(this.ipGiocatore1), this.portaGiocatore1));
+            }catch (Exception e){e.printStackTrace();}
+        }
+    }
+
+    /**
+     * Aggiorna la posizione del server della palla e la sua direzione
+     * @param messaggio Messaggio raggiunto
+     */
+    private void aggiornaPosizioneDirezionePalla(DatagramPacket messaggio){
+        String dati = new String(messaggio.getData()).substring(0, messaggio.getLength()).trim();
+        if(dati.startsWith(ServerMultiplayer.AGGIORNA_POSIZIONE_DIREZIONE_PALLA)){
+            String[] parti = dati.split("=")[1].split(":");
+            int schermoAvviabile = this.SCREEN_HEIGHT - this.ZONA_PUNTEGGIO;
+            float posX = Float.valueOf(parti[0]);
+            float posY = Float.valueOf(parti[1]);
+            float dirX = Float.valueOf(parti[2]);
+            float dirY = Float.valueOf(parti[3]);
+            if(!messaggio.getAddress().getHostAddress().equals(this.ipGiocatore1)){
+                //Se il mittente è il giocatore 1 allora facciamo gli aggiustamenti della posizione
+                posY = this.ZONA_PUNTEGGIO + schermoAvviabile - (posY - this.ZONA_PUNTEGGIO);
+                posX = this.SCREEN_WIDTH - posX;
+                Vector2D vettoreDirezione = new Vector2D(dirX, dirY).ruotaVettore(180);
+                dirX = vettoreDirezione.getPosX();
+                dirY = vettoreDirezione.getPosY();
+            }
+            this.posizionePalla = new Vector2D(posX, posY);
+            this.direzionePalla = new Vector2D(dirX, dirY);
+            if(messaggio.getAddress().getHostAddress().equals(this.ipGiocatore1))
+                this.inviaPosizioneDirezionePalla(this.ipGiocatore2, this.portaGiocatore2);
+            else
+                this.inviaPosizioneDirezionePalla(this.ipGiocatore1, this.portaGiocatore1);
+        }
+    }
+
+    /**
+     * Invia la posizione e la direzione della palla al destinatario
+     * @param ipDestinatario Indirizzo ip del destinatario
+     * @param portaDestinatario Porta del destinatario
+     */
+    private void inviaPosizioneDirezionePalla(String ipDestinatario, int portaDestinatario){
+        int schermoAvviabile = this.SCREEN_HEIGHT - this.ZONA_PUNTEGGIO;
+        float posX = this.posizionePalla.getPosX();
+        float posY = this.posizionePalla.getPosY();
+        float dirX = this.direzionePalla.getPosX();
+        float dirY = this.direzionePalla.getPosY();
+        if(!ipDestinatario.equals(this.ipGiocatore1)){
+            //Se il destinatario è il giocatore 1 facciamo le operazioni di inversione
+            posY = this.ZONA_PUNTEGGIO + schermoAvviabile - (posY - this.ZONA_PUNTEGGIO);
+            posX = this.SCREEN_WIDTH - posX;
+            Vector2D vettoreDirezione = this.direzionePalla.ruotaVettore(180);
+            dirX = vettoreDirezione.getPosX();
+            dirY = vettoreDirezione.getPosY();
+        }
+        String dati = ServerMultiplayer.RISPOSTA_POSIZIONE_DIREZIONE_PALLA + "=" + posX + ":" + posY + ":" + dirX + ":" + dirY;
+        byte[] buffer = dati.getBytes();
+        try{
+            DatagramPacket risposta = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(ipDestinatario), portaDestinatario);
+            this.socket.send(risposta);
+        }catch (Exception e){e.printStackTrace();}
     }
 }

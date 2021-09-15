@@ -7,8 +7,8 @@ import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 
 public class Channel implements Runnable{
-    private final int MIN_PORTA = 44550;            //Minimo della porta consentito
-    private final int MAX_PORTA = 50000;            //Massimo della porta consentito
+    private final int MIN_PORTA = 30550;            //Minimo della porta consentito
+    private final int MAX_PORTA = 50550;            //Massimo della porta consentito
 
     private int porta;
     private DatagramSocket socket;
