@@ -38,7 +38,7 @@ public class ClientMultiplayer implements Runnable, TimerListener {
             this.running = true;
             this.threadRecezione = new Thread(this);
             this.threadRecezione.start();
-            this.timerIsAlive = new LoopTimer(this, 2000);
+            this.timerIsAlive = new LoopTimer(this, 500);
         }catch (Exception e){e.printStackTrace();}
     }
 

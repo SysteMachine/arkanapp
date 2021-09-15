@@ -81,7 +81,7 @@ public class ServerMultiplayer implements Runnable, TimerListener {
                 this.running = true;
                 this.threadLoop = new Thread(this);
                 this.threadLoop.start();
-                this.timerIsAlive = new LoopTimer(this, 2000);
+                this.timerIsAlive = new LoopTimer(this, 500);
             }catch (Exception e){e.printStackTrace();}
         }
     }
