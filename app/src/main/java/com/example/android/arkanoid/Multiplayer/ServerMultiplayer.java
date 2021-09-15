@@ -285,11 +285,10 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             boolean esito = Boolean.valueOf(dati.split("=")[1]);
             if(esito){
                 this.puntiGiocatore1 ++;
-                this.inviaMessaggioClient(this.emailGiocatore1 + " POINT", 2000);
             }else {
                 this.portaGiocatore2++;
-                this.inviaMessaggioClient(this.emailGiocatore2 + " POINT", 2000);
             }
+            this.inviaMessaggioClient(this.emailGiocatore1 + " POINT", 2000);
             try{
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore1, this.portaGiocatore1);
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore2, this.portaGiocatore2);
