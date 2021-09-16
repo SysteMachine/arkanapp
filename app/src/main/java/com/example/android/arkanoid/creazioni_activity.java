@@ -34,7 +34,7 @@ import com.example.android.arkanoid.GameElements.StiliDefiniti.StileSpaziale;
 import com.example.android.arkanoid.Util.AudioUtil;
 import com.example.android.arkanoid.Util.QueryExecutor;
 
-public class creazioni_activity extends MultiFragmentActivity implements View.OnClickListener, AdapterView.OnItemLongClickListener, TextWatcher, GameOverListener, PausaEventListener, DialogInterface.OnClickListener {
+public class creazioni_activity extends MultiFragmentActivity implements View.OnClickListener, AdapterView.OnItemClickListener, TextWatcher, GameOverListener, PausaEventListener, DialogInterface.OnClickListener {
     private ToggleButton pulsanteCreazioni;
     private ToggleButton pulsanteCreazioniLocale;
     private ToggleButton pulsanteTouch;
@@ -134,7 +134,7 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
         if(this.pulsanteGyro != null)
             this.pulsanteGyro.setOnClickListener(this);
         if(this.listaModalita != null)
-            this.listaModalita.setOnItemLongClickListener(this);
+            this.listaModalita.setOnItemClickListener(this);
         if(this.barraRicerca != null)
             this.barraRicerca.addTextChangedListener(this);
         if(this.containerModalita != null)
@@ -377,13 +377,11 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(parent.equals(this.listaModalita)){
             creazioni_activity.nomeLivello = ((TextView)view).getText().toString();
             this.dialogoCaricamentoLivello.show();
         }
-
-        return true;
     }
 
     @Override
