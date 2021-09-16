@@ -21,7 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class DF extends Agente{
-    private ArrayList<RecordClient> client;         //Client connessi
+    private ArrayList<RecordClient> client;                     //Client connessi
+    private CompitoAggiornamentoStatoConnessione compito;       //Compito dell'agente
 
     public DF() {
         super("DF");
@@ -29,9 +30,10 @@ public class DF extends Agente{
         StrictMode.setThreadPolicy(policy);
 
         this.client = new ArrayList<>();
-        this.MS_DELAY = 2000;
+        this.MS_DELAY = 1000;
 
-        this.addCompito(new CompitoAggiornamentoStatoConnessione());
+        this.compito = new CompitoAggiornamentoStatoConnessione();
+        this.addCompito(this.compito);
     }
 
     /**
@@ -83,6 +85,12 @@ public class DF extends Agente{
         return esito;
     }
 
+    @Override
+    protected void takedown() {
+        super.takedown();
+        this.compito.rimuoviRiferimenti();
+    }
+
     private class CompitoAggiornamentoStatoConnessione extends Compito{
         private final int TTL = 60;         //Tempo di vita massimo di connessione
 
@@ -96,8 +104,7 @@ public class DF extends Agente{
         public CompitoAggiornamentoStatoConnessione() {
             super("Compito di aggiornamento dello stato della connessione");
             this.rimuoviRiferimenti();
-            if(!this.controlloPrimoRiferimento())
-                this.aggiungiPrimoRiferimento();
+            this.aggiungiPrimoRiferimento();
             this.getMyLocalIp();
         }
 
@@ -165,8 +172,9 @@ public class DF extends Agente{
                 String query = DBUtil.repalceJolly(this.QUERY_CONTROLLO_ESISTENZA_RIFERIMENTO, "EMAIL", GA.salvataggio.getEmail());
                 try{
                     String esitoQuery = DBUtil.executeQuery(query);
-                    if(!esitoQuery.equals("ERROR") && new JSONObject(esitoQuery).getInt("N") == 1)
+                    if(!esitoQuery.equals("ERROR") && new JSONObject(esitoQuery).getInt("N") == 1) {
                         esito = true;
+                    }
                 }catch (Exception e){e.printStackTrace();}
             }
 
@@ -217,14 +225,12 @@ public class DF extends Agente{
 
         @Override
         public void action() {
-            super.action();
             if(this.controlloPrimoRiferimento()) {
                 this.aggiornaRiferimento();
             }else {
                 this.aggiungiPrimoRiferimento();
             }
             this.recuperaConnessioni();
-            this.rimuoviRiferimenti();
         }
     }
 }

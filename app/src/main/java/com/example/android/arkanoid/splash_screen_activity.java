@@ -18,7 +18,6 @@ public class splash_screen_activity extends SoundControlActivity implements View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GA.setup(this);
         this.setContentView(R.layout.activity_splash_screen);
     }
 
