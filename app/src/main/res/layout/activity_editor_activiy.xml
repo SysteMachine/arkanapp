@@ -96,6 +96,7 @@
         android:id="@+id/containerFragment"
         android:layout_width="match_parent"
         android:layout_height="500dp"
+        android:layout_marginTop="2dp"
         app:layout_constraintBottom_toTopOf="@+id/tableRow"
         app:layout_constraintTop_toBottomOf="@+id/tableRow3"
         tools:layout_editor_absoluteX="10dp">

@@ -128,21 +128,23 @@ public class parametri_fragment extends Fragment implements View.OnTouchListener
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        editor_activity activity = this.activity();
-        if(activity != null){
-            LayerLivello layerLivello = activity.getLivello().getLayerLivello(activity.getLayerCorrente());
+        if(fromUser){
+            editor_activity activity = this.activity();
+            if(activity != null){
+                LayerLivello layerLivello = activity.getLivello().getLayerLivello(activity.getLayerCorrente());
 
-            if(seekBar.equals(this.pv_pal_seek)){
-                float valore = progress / 100.0f;
-                layerLivello.setPercentualeIncrementoVelocitaPalla(valore);
-            }
+                if(seekBar.equals(this.pv_pal_seek)){
+                    float valore = progress / 100.0f;
+                    layerLivello.setPercentualeIncrementoVelocitaPalla(valore);
+                }
 
-            if(seekBar.equals(this.pv_pad_seek)){
-                float valore = progress / 100.0f;
-                layerLivello.setPercentualeIncrementoVelocitaPaddle(valore);
+                if(seekBar.equals(this.pv_pad_seek)){
+                    float valore = progress / 100.0f;
+                    layerLivello.setPercentualeIncrementoVelocitaPaddle(valore);
+                }
             }
+            this.setStileComponenti();
         }
-        this.setStileComponenti();
     }
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {}

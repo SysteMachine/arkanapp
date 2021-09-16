@@ -86,7 +86,6 @@ public class DF extends Agente{
     private class CompitoAggiornamentoStatoConnessione extends Compito{
         private final int TTL = 60;         //Tempo di vita massimo di connessione
 
-        private final String URL_MY_IP = "http://bigcompany.altervista.org/DBAndroidConnectivity/myip.php";
         private final String QUERY_ELIMINAZIONE_RIFERIMENTI = "DELETE FROM df_table WHERE df_table_user_email LIKE EMAIL";
         private final String QUERY_INSERIMENTO_GIOCATORE = "INSERT INTO df_table (df_table_ip, df_table_local_ip, df_table_port, df_table_user_email) VALUES (IP, LOCAL, PORT, EMAIL)";
         private final String QUERY_CONTROLLO_ESISTENZA_RIFERIMENTO = "SELECT count(*) AS N from df_table WHERE df_table_user_email LIKE EMAIL";
@@ -219,11 +218,13 @@ public class DF extends Agente{
         @Override
         public void action() {
             super.action();
-            if(this.controlloPrimoRiferimento())
+            if(this.controlloPrimoRiferimento()) {
                 this.aggiornaRiferimento();
-            else
+            }else {
                 this.aggiungiPrimoRiferimento();
+            }
             this.recuperaConnessioni();
+            this.rimuoviRiferimenti();
         }
     }
 }
