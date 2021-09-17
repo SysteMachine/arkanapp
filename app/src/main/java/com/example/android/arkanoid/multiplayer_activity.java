@@ -18,6 +18,8 @@ import com.example.android.arkanoid.Multiplayer.ClientMultiplayer;
 import com.example.android.arkanoid.Util.AudioUtil;
 
 public class multiplayer_activity extends MultiFragmentActivity implements GameOverListener {
+    private static boolean chiuso = false;
+
     private FrameLayout containerModalita;
     private GameLoop gameLoop;
 
@@ -32,6 +34,7 @@ public class multiplayer_activity extends MultiFragmentActivity implements GameO
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        multiplayer_activity.chiuso = false;
     }
 
     @Override
@@ -77,7 +80,7 @@ public class multiplayer_activity extends MultiFragmentActivity implements GameO
                     containerModalita.setVisibility(View.VISIBLE);
                 }
             });
-            this.gameLoop.setShowFPS(true);
+            this.gameLoop.setShowFPS(false);
             this.gameLoop.start();
             this.inGame = true;
         }
@@ -95,12 +98,15 @@ public class multiplayer_activity extends MultiFragmentActivity implements GameO
      * Torna al menu principale
      */
     public void tornaAlMenu(){
-        Intent intent = new Intent(this, main_menu_activity.class);
-        AudioUtil.setVolumeAudioMusica(100);
-        AudioUtil.clear();
-        AudioUtil.loadAudio("background_music", R.raw.background_music, AudioUtil.MUSICA, true, this);
-        AudioUtil.avviaAudio("background_music");
-        this.startActivity(intent);
+        if(!multiplayer_activity.chiuso){
+            multiplayer_activity.chiuso = true;
+            Intent intent = new Intent(this, main_menu_activity.class);
+            AudioUtil.setVolumeAudioMusica(100);
+            AudioUtil.clear();
+            AudioUtil.loadAudio("background_music", R.raw.background_music, AudioUtil.MUSICA, true, this);
+            AudioUtil.avviaAudio("background_music");
+            this.startActivity(intent);
+        }
     }
 
     @Override
