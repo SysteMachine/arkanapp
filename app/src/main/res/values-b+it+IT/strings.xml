@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Arkanoido</string>
+    <string name="app_name">Arkanoid</string>
 
     <string name="splash_screen_tabButtonMessage">Premi per iniziare</string>
     <string name="login_login">Accedi</string>
