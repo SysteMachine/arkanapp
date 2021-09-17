@@ -118,7 +118,7 @@ public class main_menu_activity extends MultiFragmentActivity implements View.On
     public void onBackPressed() {
         RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this);
         if(recordSalvataggio.isLogin())
-            this.dialogoLogout.show();
+            this.finishAffinity();
         else
             this.logOut();
     }
