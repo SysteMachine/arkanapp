@@ -92,7 +92,10 @@ public class ServerMultiplayer implements Runnable, TimerListener {
     private void setup(){
         int schermoAvviabile = this.SCREEN_HEIGHT - this.ZONA_PUNTEGGIO;
         this.posizionePalla = new Vector2D(this.SCREEN_WIDTH * 0.5f, this.ZONA_PUNTEGGIO + schermoAvviabile * 0.5f);
-        this.direzionePalla = new Vector2D(1, 0).ruotaVettore((int)(Math.random() * 360));
+        this.direzionePalla = new Vector2D(1, 0);
+        while(this.direzionePalla.getPosX() == 1 || this.direzionePalla.getPosY() == 1) {
+            this.direzionePalla = new Vector2D(1, 0).ruotaVettore((int) (Math.random() * 360));
+        }
         this.puntiGiocatore1 = 0;
         this.puntiGiocatore2 = 0;
 
@@ -310,8 +313,9 @@ public class ServerMultiplayer implements Runnable, TimerListener {
             try{
                 this.posizionePalla.setPosX(this.SCREEN_WIDTH / 2);
                 this.posizionePalla.setPosY(this.SCREEN_HEIGHT / 2);
-                this.direzionePalla = new Vector2D(1, 0);
-                this.direzionePalla.ruotaVettore((int)(Math.random() * 360));
+                while(this.direzionePalla.getPosX() == 1 || this.direzionePalla.getPosY() == 1) {
+                    this.direzionePalla = new Vector2D(1, 0).ruotaVettore((int) (Math.random() * 360));
+                }
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore1, this.portaGiocatore1);
                 this.inviaPosizioneDirezionePalla(this.ipGiocatore2, this.portaGiocatore2);
                 Thread.sleep(2000);
