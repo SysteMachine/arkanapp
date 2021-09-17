@@ -55,6 +55,6 @@ public class splash_screen_activity extends SoundControlActivity implements View
 
     @Override
     public void onBackPressed() {
-        this.finish();
+        this.finishAffinity();
     }
 }

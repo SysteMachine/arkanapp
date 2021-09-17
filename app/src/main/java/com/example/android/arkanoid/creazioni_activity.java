@@ -258,7 +258,7 @@ public class creazioni_activity extends MultiFragmentActivity implements View.On
                 creazioni_activity.modalita = new ModalitaCreazione(this.getStile(livello), new GameStatus(5, 0, this.modalitaControllo), livello);
                 creazioni_activity.modalita.setGameOverListener(this);
                 gameLoop.addGameComponent(creazioni_activity.modalita);
-                gameLoop.setShowFPS(true);
+                gameLoop.setShowFPS(false);
                 gameLoop.start();
 
                 this.containerModalita.setVisibility(View.VISIBLE);

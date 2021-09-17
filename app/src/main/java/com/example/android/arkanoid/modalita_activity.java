@@ -295,7 +295,7 @@ public class modalita_activity extends MultiFragmentActivity implements View.OnC
                     this.nascondiMenuGameOver();
                     this.nascondiMenuPausa();
                     this.gameLoop.removeAll();
-                    this.gameLoop.setShowFPS(true);
+                    this.gameLoop.setShowFPS(false);
                     this.gameLoop.addGameComponent(modalita_activity.modalita);
                     this.inGame = true;
                 }
