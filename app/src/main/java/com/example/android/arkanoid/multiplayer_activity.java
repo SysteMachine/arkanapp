@@ -39,7 +39,7 @@ public class multiplayer_activity extends MultiFragmentActivity implements GameO
         super.onResume();
 
         this.containerModalita = this.findViewById(R.id.containerModalita);
-        this.gameLoop = new GameLoop(this, 60, 720, 1280);
+        this.gameLoop = new GameLoop(this, 30, 720, 1280);
         if(this.containerModalita != null)
             this.containerModalita.addView(this.gameLoop);
 

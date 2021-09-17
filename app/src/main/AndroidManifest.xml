@@ -17,46 +17,36 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".multiplayer_activity"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".creazioni_activity"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".crediti_activity"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".classifica_activity"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".editor_activity"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".main_menu_activity"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".login_activity"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".modalita_activity"
             android:configChanges="orientation"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true" />
+            android:theme="@style/fullScreenStyle" />
         <activity
             android:name=".Controller.LoginController"
-            android:theme="@style/Theme.AppCompat"
-            android:noHistory="true"/>
+            android:theme="@style/Theme.AppCompat" />
         <activity
             android:name=".splash_screen_activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/fullScreenStyle"
-            android:noHistory="true">
+            android:theme="@style/fullScreenStyle" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

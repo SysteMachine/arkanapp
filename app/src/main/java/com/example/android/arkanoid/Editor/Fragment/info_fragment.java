@@ -32,9 +32,9 @@ public class info_fragment extends Fragment implements
         View.OnTouchListener,
         View.OnClickListener,
         AdapterView.OnItemSelectedListener,
-        AdapterView.OnItemLongClickListener,
         DialogInterface.OnClickListener,
-        Runnable{
+        Runnable,
+        AdapterView.OnItemClickListener {
 
     private EditText nomeLivelloField;
     private Spinner spinnerLayer;
@@ -108,7 +108,7 @@ public class info_fragment extends Fragment implements
         if (this.spinnerStile != null)
             this.spinnerStile.setOnItemSelectedListener(this);
         if (this.listaLivelliCreati != null)
-            this.listaLivelliCreati.setOnItemLongClickListener(this);
+            this.listaLivelliCreati.setOnItemClickListener(this);
         if (this.aggiungiButton != null)
             this.aggiungiButton.setOnClickListener(this);
         if (this.rimuoviButton != null)
@@ -210,11 +210,10 @@ public class info_fragment extends Fragment implements
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         TextView tView = (TextView)view;
         this.selectedLevel = tView.getText().toString();
         this.dialogoCaricamentoLivello.show();
-        return true;
     }
 
     @Override
@@ -255,23 +254,25 @@ public class info_fragment extends Fragment implements
     public void run() {
         //Eseguiamo un controllo sul testo inserito come nome per verificare che non sia inserito nel database
         RecordSalvataggio recordSalvataggio = new RecordSalvataggio(this.getContext());
-        while (this.runningControllo){
-            String nomeLivello= this.nomeLivelloField.getText().toString();
-            try{
-                if(this.nomeLivelloField != null){
+        while (this.runningControllo) {
+            String nomeLivello = this.nomeLivelloField.getText().toString();
+            try {
+                if (this.nomeLivelloField != null) {
                     editor_activity activity = this.activity();
-                    if(QueryExecutor.controlloEsistenzaNomeLivelloLocale(nomeLivello, recordSalvataggio.getEmail())){
+                    if (QueryExecutor.controlloEsistenzaNomeLivelloLocale(nomeLivello, recordSalvataggio.getEmail())) {
                         this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontAviableColor));
-                        if(activity != null)
+                        if (activity != null)
                             activity.getLivello().setNomeLivello(nomeLivello);
-                    }else{
+                    } else {
                         this.nomeLivelloField.setTextColor(ContextCompat.getColor(this.getContext(), R.color.fontErrorColor));
-                        if(activity != null)
+                        if (activity != null)
                             activity.getLivello().setNomeLivello("");
                     }
                 }
                 Thread.sleep(1000);
-            }catch (Exception e){e.printStackTrace();}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
